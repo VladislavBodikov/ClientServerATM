@@ -11,7 +11,7 @@ public class ATMService {
 
     public String showBalance(BalanceDTO balanceDTO){
         if (balanceDTO.getAmount() == null){
-            return "Score not found";
+            return "WRONG PIN-CODE";
         }
         return  "\nCARD_NUMBER : "   + balanceDTO.getCardNumber() +
                 "\nBALANCE : "       + balanceDTO.getAmount();
