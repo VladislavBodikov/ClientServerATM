@@ -13,18 +13,18 @@ import java.math.BigDecimal;
 public class Account {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(name = "card_number")
+    @Column(name = "card_number",nullable = false)
     private String cardNumber;
 
-    @Column(name = "score_number")
+    @Column(name = "score_number",nullable = false)
     private String scoreNumber;
 
     private BigDecimal amount;
 
-    @Column(name = "pin_code")
+    @Column(name = "pin_code",nullable = false)
     private String pinCode;
 
     @ManyToOne(fetch = FetchType.LAZY)

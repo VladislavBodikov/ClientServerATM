@@ -14,18 +14,20 @@ import java.util.Optional;
 @Transactional
 @AllArgsConstructor
 public class ScoreService {
+
     private AccountCrudRepository accountCrudRepository;
 
-    public List<Account> getAllScores(){
+    public List<Account> getAllScores() {
         List<Account> list = new ArrayList<>();
         accountCrudRepository.findAll().forEach(list::add);
         return list;
     }
-    public Account save(Account account){
+
+    public Account save(Account account) {
         return accountCrudRepository.save(account);
     }
 
-    public Optional<Account> findByCardNumber(String cardNumber){
+    public Optional<Account> findByCardNumber(String cardNumber) {
         return accountCrudRepository.findByCardNumber(cardNumber);
     }
 }

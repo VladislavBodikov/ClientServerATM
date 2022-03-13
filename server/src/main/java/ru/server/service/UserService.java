@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.server.entity.User;
-import ru.server.exeptions.UserNotFoundException;
 import ru.server.repository.UserCrudRepository;
 
 import java.util.ArrayList;
@@ -15,6 +14,7 @@ import java.util.Optional;
 @Transactional
 @AllArgsConstructor
 public class UserService {
+
     private UserCrudRepository userCrudRepository;
 
     public List<User> getAllUsers() {
@@ -31,7 +31,7 @@ public class UserService {
         return userCrudRepository.save(user);
     }
 
-    public boolean isUserExist(long id){
+    public boolean isUserExistById(long id){
         return findById(id).isPresent();
     }
 

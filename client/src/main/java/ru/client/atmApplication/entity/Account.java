@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Score {
+public class Account {
     private long id;
     private long userId;
     private String cardNumber;
@@ -17,7 +17,7 @@ public class Score {
     private BigDecimal amount;
     private String pinCode;
 
-    public Score(String cardNumber, String pinCode){
+    public Account(String cardNumber, String pinCode){
         this.cardNumber = cardNumber;
         this.pinCode = pinCode;
     }

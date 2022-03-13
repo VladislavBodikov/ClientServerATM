@@ -20,8 +20,8 @@ public class HostRestController {
 
     @PostMapping("/balance")
     public Account getScore(@RequestBody Account account) {
-        Account accountFromDB = scoreService.findByCardNumber(account.getCardNumber()).orElseThrow(()->new ScoreNotFoundException(""));
-        if (account.getPinCode().equals(accountFromDB.getPinCode())){
+        Account accountFromDB = scoreService.findByCardNumber(account.getCardNumber()).orElseThrow(() -> new ScoreNotFoundException(""));
+        if (account.getPinCode().equals(accountFromDB.getPinCode())) {
             account.setAmount(accountFromDB.getAmount());
         }
         return account;
@@ -33,6 +33,7 @@ public class HostRestController {
         scoreService.getAllScores().forEach((x) -> sb.append(x.toString()).append(System.lineSeparator()));
         return sb.toString();
     }
+
     @GetMapping("/users")
     public String getUsers() {
         StringBuilder sb = new StringBuilder();
@@ -43,12 +44,11 @@ public class HostRestController {
     @PostMapping("/create/score")
     public String createScore(@RequestBody Account account) {
         long userId = account.getUser().getId();
-        if (userService.isUserExist(userId)){
+        if (userService.isUserExistById(userId)) {
             Account savedAccount = scoreService.save(account);
             log.info("\nscore saved - id : " + savedAccount.getId() + " score number : " + savedAccount.getScoreNumber());
             return "\nSCORE WAS SAVED: " + account + "\n";
-        }
-        else {
+        } else {
             return "User with ID: " + userId + " not found!";
         }
 
