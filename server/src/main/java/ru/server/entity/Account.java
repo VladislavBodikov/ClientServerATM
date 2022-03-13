@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @Entity
 @Table(name = "ACCOUNTS")
-public class Score {
+public class Account {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

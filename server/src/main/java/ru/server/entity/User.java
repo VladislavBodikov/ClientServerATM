@@ -25,5 +25,5 @@ public class User {
     private String passportData;
 
     @OneToMany(mappedBy = "user")
-    private Set<Score> scores;
+    private Set<Account> accounts;
 }

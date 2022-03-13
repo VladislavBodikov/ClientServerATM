@@ -3,13 +3,11 @@ package ru.server.controller;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import ru.server.entity.Score;
+import ru.server.entity.Account;
 import ru.server.entity.User;
 import ru.server.exeptions.ScoreNotFoundException;
 import ru.server.service.ScoreService;
 import ru.server.service.UserService;
-
-import java.math.BigDecimal;
 
 @RestController
 @AllArgsConstructor
@@ -21,12 +19,12 @@ public class HostRestController {
     private UserService userService;
 
     @PostMapping("/balance")
-    public Score getScore(@RequestBody Score score) {
-        Score scoreFromDB = scoreService.findByCardNumber(score.getCardNumber()).orElseThrow(()->new ScoreNotFoundException(""));
-        if (score.getPinCode().equals(scoreFromDB.getPinCode())){
-            score.setAmount(scoreFromDB.getAmount());
+    public Account getScore(@RequestBody Account account) {
+        Account accountFromDB = scoreService.findByCardNumber(account.getCardNumber()).orElseThrow(()->new ScoreNotFoundException(""));
+        if (account.getPinCode().equals(accountFromDB.getPinCode())){
+            account.setAmount(accountFromDB.getAmount());
         }
-        return score;
+        return account;
     }
 
     @GetMapping("/scores")
@@ -43,12 +41,12 @@ public class HostRestController {
     }
 
     @PostMapping("/create/score")
-    public String createScore(@RequestBody Score score) {
-        long userId = score.getUser().getId();
+    public String createScore(@RequestBody Account account) {
+        long userId = account.getUser().getId();
         if (userService.isUserExist(userId)){
-            Score savedScore = scoreService.save(score);
-            log.info("\nscore saved - id : " + savedScore.getId() + " score number : " + savedScore.getScoreNumber());
-            return "\nSCORE WAS SAVED: " + score + "\n";
+            Account savedAccount = scoreService.save(account);
+            log.info("\nscore saved - id : " + savedAccount.getId() + " score number : " + savedAccount.getScoreNumber());
+            return "\nSCORE WAS SAVED: " + account + "\n";
         }
         else {
             return "User with ID: " + userId + " not found!";

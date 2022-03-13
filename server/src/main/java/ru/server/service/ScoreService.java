@@ -3,9 +3,8 @@ package ru.server.service;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.server.entity.Score;
-import ru.server.exeptions.ScoreNotFoundException;
-import ru.server.repository.ScoreCrudRepository;
+import ru.server.entity.Account;
+import ru.server.repository.AccountCrudRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,18 +14,18 @@ import java.util.Optional;
 @Transactional
 @AllArgsConstructor
 public class ScoreService {
-    private ScoreCrudRepository scoreCrudRepository;
+    private AccountCrudRepository accountCrudRepository;
 
-    public List<Score> getAllScores(){
-        List<Score> list = new ArrayList<>();
-        scoreCrudRepository.findAll().forEach(list::add);
+    public List<Account> getAllScores(){
+        List<Account> list = new ArrayList<>();
+        accountCrudRepository.findAll().forEach(list::add);
         return list;
     }
-    public Score save(Score score){
-        return scoreCrudRepository.save(score);
+    public Account save(Account account){
+        return accountCrudRepository.save(account);
     }
 
-    public Optional<Score> findByCardNumber(String cardNumber){
-        return scoreCrudRepository.findByCardNumber(cardNumber);
+    public Optional<Account> findByCardNumber(String cardNumber){
+        return accountCrudRepository.findByCardNumber(cardNumber);
     }
 }
