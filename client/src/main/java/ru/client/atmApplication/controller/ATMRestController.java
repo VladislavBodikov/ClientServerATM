@@ -1,5 +1,6 @@
 package ru.client.atmApplication.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +13,7 @@ import ru.client.atmApplication.entity.Score;
 
 @RestController
 @RequestMapping("/client")
+@Slf4j
 public class ATMRestController {
 
     final String hostUrl = "http://localhost:8082/host/balance";
@@ -20,7 +22,9 @@ public class ATMRestController {
     public String balance(@RequestBody Score score) {
         RestTemplate restTemplate = new RestTemplate();
         HttpEntity<Score> request = new HttpEntity<>(score);
+        log.info(request.toString());
         ResponseEntity<Score> response = restTemplate.exchange(hostUrl, HttpMethod.POST, request, Score.class);
+        log.info(response.toString());
         try {
             return "\n" + "BALANCE: \t" + response.getBody().getAmount();
         }
