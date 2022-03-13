@@ -1,12 +1,13 @@
 package ru.server.entity;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
 
-@Data
+@Getter
+@Setter
+@ToString
 @NoArgsConstructor
 @Entity
 @Table(name = "ACCOUNTS")
@@ -26,7 +27,7 @@ public class Account {
 
     @Column(name = "pin_code",nullable = false)
     private String pinCode;
-
+    @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;

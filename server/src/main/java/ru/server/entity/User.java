@@ -1,12 +1,14 @@
 package ru.server.entity;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Set;
 
-@Data
+@Getter
+@Setter
+@ToString
 @Table(name = "USERS")
 @Entity
 @NoArgsConstructor
@@ -23,7 +25,7 @@ public class User {
 
     @Column(name = "passport_data")
     private String passportData;
-
-    @OneToMany(mappedBy = "user")
+    @ToString.Exclude
+    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
     private Set<Account> accounts;
 }

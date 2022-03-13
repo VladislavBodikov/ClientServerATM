@@ -13,7 +13,7 @@ import java.util.Optional;
 @Service
 @Transactional
 @AllArgsConstructor
-public class ScoreService {
+public class AccountService {
 
     private AccountCrudRepository accountCrudRepository;
 

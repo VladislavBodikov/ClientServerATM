@@ -20,10 +20,10 @@ get balance of account
 
 #Instruction for work:
 1. Client url - http://localhost:8080/client/
-2. For checking balance need to send "card_number" and "pin_code" 
+2. For checking balance - send "card_number" and "pin_code" 
 to ATM (client)
 
         curl -X POST http://localhost:8080/client/balance -H "Content-Type: application/json" -d {\"cardNumber\":\"1111222211112222\",\"pinCode\":\"1221\"}
 
-3. For get 
+
 
