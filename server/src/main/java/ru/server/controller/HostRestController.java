@@ -3,6 +3,8 @@ package ru.server.controller;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import ru.server.dto.AccountDTO;
+import ru.server.dto.BalanceDTO;
 import ru.server.entity.Account;
 import ru.server.entity.User;
 import ru.server.exeptions.ScoreNotFoundException;
@@ -19,12 +21,18 @@ public class HostRestController {
     private UserService userService;
 
     @PostMapping("/balance")
-    public Account getScore(@RequestBody Account account) {
-        Account accountFromDB = scoreService.findByCardNumber(account.getCardNumber()).orElseThrow(() -> new ScoreNotFoundException(""));
-        if (account.getPinCode().equals(accountFromDB.getPinCode())) {
-            account.setAmount(accountFromDB.getAmount());
+    public BalanceDTO getScore(@RequestBody AccountDTO accountDTO) {
+        Account accountFromDB = scoreService.findByCardNumber(accountDTO.getCardNumber()).orElseThrow(() -> new ScoreNotFoundException(""));
+        BalanceDTO outputBalance = new BalanceDTO();
+
+        String inputPinCode = accountDTO.getPinCode();
+        String PinCodeFromDB = accountFromDB.getPinCode();
+        // if pin_code is correct
+        if (inputPinCode.equals(PinCodeFromDB)) {
+            outputBalance.setCardNumber(accountDTO.getCardNumber());
+            outputBalance.setAmount(accountFromDB.getAmount());
         }
-        return account;
+        return outputBalance;
     }
 
     @GetMapping("/scores")

@@ -1,14 +1,12 @@
 package ru.client.dto;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Data;
 
 import java.math.BigDecimal;
 
-@RequiredArgsConstructor
-@Getter
+@Data
 public class BalanceDTO {
-    private final String cardNumber;
-    private final BigDecimal amount;
+    private String cardNumber;
+    private BigDecimal amount;
 
 }
