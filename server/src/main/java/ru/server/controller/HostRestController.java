@@ -56,53 +56,56 @@ public class HostRestController {
         userService.getAllUsers().forEach((x) -> sb.append(x.toString()).append(System.lineSeparator()));
         return sb.toString();
     }
-    @GetMapping("/test")
-    public String showTestCode(){
-        User user = userService.findById(2L).get();
-        List<Account> account = accountService.getAllScores();
-        return "";
-    }
 
-    @PostMapping("/create/score")
-    public String createScore(@RequestBody Account account) {
+    @PostMapping("/create/account")
+    public String createAccount(@RequestBody Account account) {
         long userId = account.getUser().getId();
+        Optional<User> userFromDB = userService.findById(userId);
         // if user with ID exist
-        if (userService.isUserExistById(userId)) {
-            User userFromDB = userService.findById(userId).get();
-            account.setUser(userFromDB);
+        if (userFromDB.isPresent()) {
+            account.setUser(userFromDB.get());
             Optional<Account> savedAccount = accountService.save(account);
-            // if account saved (has not duplicate by card number)
+            // if account saved (has not duplicate by card_number or score_number)
             if (savedAccount.isPresent()) {
-                log.info("\naccount saved - id : " + savedAccount.get().getId() + " score number : " + savedAccount.get().getScoreNumber());
+                log.info("\naccount saved :" + savedAccount.get());
                 return "\nACCOUNT SAVED: " + account + "\n";
             }
-            return "Account with card_number : " + account.getCardNumber() + "\t already exist!";
+            return "Account with (card_number | score_number) already exist! : " + account;
         }
         return "User with ID: " + userId + " not found!";
     }
 
     @PostMapping("/create/user")
     public String createUser(@RequestBody User user) {
-        User savedUser = userService.save(user);
-        log.info("\nuser saved -  id : " + savedUser.getId() + " name : " + savedUser.getFirstName());
-        return "\nUSER SAVED: " + user + "\n";
+        Optional<User> savedUser = userService.save(user);
+        // if user was saved
+        if (savedUser.isPresent()){
+            log.info("\nuser saved : " + savedUser);
+            return "\nUSER SAVED: " + savedUser + "\n";
+        }
+        else {
+            return "\nuser with same data already exist!";
+        }
     }
 
-    @GetMapping("/accounts/{userId}")
-    public String getAccounts(@PathVariable long userId){
-        Optional<User> userFromBD = userService.findById(userId);
-        if (userFromBD.isPresent()){
-            User user  = userFromBD.get();
-            Set<Account> accounts = user.getAccounts();
+    @PostMapping("/remove/user")
+    public String removeUser(@RequestBody User user){
+        int changedRows = userService.removeByFirstNameAndLastName(user);
 
-            StringBuilder sb = new StringBuilder();
-            sb      .append(user)
-                    .append(System.lineSeparator())
-                    .append("ACCOUNTS: ")
-                    .append(System.lineSeparator());
-            accounts.forEach((x)->sb.append(x).append(System.lineSeparator()));
-            return sb.toString();
+        if (changedRows > 0){
+            log.info("user removed: " + user);
+            return "\nuser removed: " + user;
         }
-        return "user not found";
+        return "user not found to remove";
+    }
+    @PostMapping("/remove/account")
+    public String removeAccount(@RequestBody Account account){
+        int changedRows = accountService.removeByScoreNumber(account.getScoreNumber());
+
+        if (changedRows > 0){
+            log.info("account removed: " + account);
+            return "\naccount " + " removed" + account;
+        }
+        return "account not found to remove";
     }
 }
