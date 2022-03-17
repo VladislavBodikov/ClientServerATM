@@ -23,11 +23,19 @@ public class AccountService {
         return list;
     }
 
-    public Account save(Account account) {
-        return accountCrudRepository.save(account);
+    public Optional<Account> save(Account account) {
+        if (    findByCardNumber(account.getCardNumber()).isPresent()
+                && findByScoreNumber(account.getScoreNumber()).isPresent()){
+            return Optional.empty();
+        }
+        return Optional.of(accountCrudRepository.save(account));
     }
 
     public Optional<Account> findByCardNumber(String cardNumber) {
+        return accountCrudRepository.findByCardNumber(cardNumber);
+    }
+
+    public Optional<Account> findByScoreNumber(String cardNumber) {
         return accountCrudRepository.findByCardNumber(cardNumber);
     }
 }

@@ -25,18 +25,22 @@ public class HostRestController {
     private UserService userService;
 
     @PostMapping("/balance")
-    public BalanceDTO getScore(@RequestBody AccountDTO accountDTO) {
+    public BalanceDTO getBalance(@RequestBody AccountDTO accountDTO) {
         Account accountFromDB = accountService.findByCardNumber(accountDTO.getCardNumber()).orElseThrow(() -> new ScoreNotFoundException(""));
         BalanceDTO outputBalance = new BalanceDTO();
 
-        String inputPinCode = accountDTO.getPinCode();
-        String PinCodeFromDB = accountFromDB.getPinCode();
         // if pin_code is correct
-        if (inputPinCode.equals(PinCodeFromDB)) {
+        if (isCorrectPinCode(accountDTO, accountFromDB)) {
             outputBalance.setCardNumber(accountDTO.getCardNumber());
             outputBalance.setAmount(accountFromDB.getAmount());
         }
         return outputBalance;
+    }
+
+    private boolean isCorrectPinCode(AccountDTO accountDTO, Account accountFromDB) {
+        String inputPinCode = accountDTO.getPinCode();
+        String PinCodeFromDB = accountFromDB.getPinCode();
+        return inputPinCode.equals(PinCodeFromDB);
     }
 
     @GetMapping("/accounts")
@@ -62,15 +66,19 @@ public class HostRestController {
     @PostMapping("/create/score")
     public String createScore(@RequestBody Account account) {
         long userId = account.getUser().getId();
+        // if user with ID exist
         if (userService.isUserExistById(userId)) {
             User userFromDB = userService.findById(userId).get();
             account.setUser(userFromDB);
-            Account savedAccount = accountService.save(account);
-            log.info("\nscore saved - id : " + savedAccount.getId() + " score number : " + savedAccount.getScoreNumber());
-            return "\nSCORE SAVED: " + account + "\n";
-        } else {
-            return "User with ID: " + userId + " not found!";
+            Optional<Account> savedAccount = accountService.save(account);
+            // if account saved (has not duplicate by card number)
+            if (savedAccount.isPresent()) {
+                log.info("\naccount saved - id : " + savedAccount.get().getId() + " score number : " + savedAccount.get().getScoreNumber());
+                return "\nACCOUNT SAVED: " + account + "\n";
+            }
+            return "Account with card_number : " + account.getCardNumber() + "\t already exist!";
         }
+        return "User with ID: " + userId + " not found!";
     }
 
     @PostMapping("/create/user")
