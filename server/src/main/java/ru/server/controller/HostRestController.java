@@ -67,18 +67,17 @@ public class HostRestController {
             account.setUser(userFromDB);
             Account savedAccount = accountService.save(account);
             log.info("\nscore saved - id : " + savedAccount.getId() + " score number : " + savedAccount.getScoreNumber());
-            return "\nSCORE WAS SAVED: " + account + "\n";
+            return "\nSCORE SAVED: " + account + "\n";
         } else {
             return "User with ID: " + userId + " not found!";
         }
-
     }
 
     @PostMapping("/create/user")
     public String createUser(@RequestBody User user) {
         User savedUser = userService.save(user);
         log.info("\nuser saved -  id : " + savedUser.getId() + " name : " + savedUser.getFirstName());
-        return "\nUSER WAS SAVED: " + user + "\n";
+        return "\nUSER SAVED: " + user + "\n";
     }
 
     @GetMapping("/accounts/{userId}")
