@@ -2,43 +2,24 @@ package controller;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 
-import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.client.RestTemplate;
-import ru.server.Application;
-import ru.server.controller.HostRestController;
 import ru.server.dto.AccountDTO;
 import ru.server.dto.BalanceDTO;
 import ru.server.entity.Account;
 import ru.server.entity.User;
-import ru.server.repository.UserCrudRepository;
-import ru.server.service.UserService;
 
 import java.math.BigDecimal;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 //@SpringBootTest(classes = {Application.class})
 //@AutoConfigureMockMvc
@@ -50,79 +31,166 @@ import java.util.regex.Pattern;
 public class ControllerTest {
 //    @Autowired
 //    private MockMvc mockMvc;
-    //@Autowired
-    private RestTemplate restTemplate;
-
-
 
     @Test
     @DisplayName("Создание пользователя в базе")
     public void createUser() throws Exception {
-        final String serverURL = "http://localhost:8082/host/create/user";
+        User user = getBaseTestUser();
 
-        User user = new User();
-        user.setFirstName("Vlad");
-        user.setLastName("Bodik");
-        restTemplate = new RestTemplate();
-        HttpEntity<User> request = new HttpEntity<>(user);
-
-        ResponseEntity<String> response = restTemplate.exchange(serverURL, HttpMethod.POST, request, String.class);
-
-        String responseBody = response.getBody();
+        boolean isSaveUser = createUser(user);
+        boolean isRemoveUser = removeUser(user);
         assertAll(
-                ()->assertTrue(responseBody.contains("USER SAVED:")),
-                ()->assertTrue(responseBody.contains("Vlad")),
-                ()->assertFalse(responseBody.contains("id=null")),
-                ()->assertTrue(responseBody.contains("Bodik"))
+                ()->assertTrue(isRemoveUser),
+                ()->assertTrue(isSaveUser)
         );
     }
+
     @Test
     @DisplayName("Сохранение счета в базе - УСПЕХ")
     void createScoreSuccess(){
-        final String serverURL = "http://localhost:8082/host/create/score";
+        Account account = getBaseTestAccount();
 
-        Account account = new Account();
-        account.setUser(new User());
-        account.getUser().setId(1);
-        account.setAmount(new BigDecimal("9999.0111"));
-        account.setCardNumber("1234");
-        account.setScoreNumber("4321");
-        account.setPinCode("1111");
-
-        restTemplate = new RestTemplate();
-        HttpEntity<Account> request = new HttpEntity<>(account);
-        ResponseEntity<String> response = restTemplate.exchange(serverURL, HttpMethod.POST, request, String.class);
-
-        String responseBody = response.getBody();
+        boolean isSaveUser = createUser(account.getUser());
+        boolean isSaveAccount = createAccount(account);
+        boolean isRemoveAccount = removeAccount(account);
+        boolean isRemoveUser = removeUser(account.getUser());
         assertAll(
-                ()->assertTrue(responseBody.contains("SCORE SAVED:")),
-                ()->assertTrue(responseBody.contains("scoreNumber=4321")),
-                ()->assertFalse(responseBody.contains("id=null")),
-                ()->assertTrue(responseBody.contains("pinCode=1111"))
+                ()->assertTrue(isSaveUser),
+                ()->assertTrue(isSaveAccount),
+                ()->assertTrue(isRemoveAccount),
+                ()->assertTrue(isRemoveUser)
         );
     }
     @Test
     @DisplayName("Сохранение счета в базе - ПРОВАЛ (юзер не найден)")
     void createScoreFailure(){
-        final String serverURL = "http://localhost:8082/host/create/score";
         final long notExistUserId = Long.MAX_VALUE;
+        Account account = getBaseTestAccount();
+        account.getUser().setId(notExistUserId);
+
+        User user = getBaseTestUser();
+
+        boolean isSaveUser = createUser(user);
+        boolean isSaveAccount = createAccount(account);
+        boolean isRemoveUser = removeUser(account.getUser());
+        assertAll(
+                ()->assertTrue(isSaveUser),
+                ()->assertFalse(isSaveAccount),
+                ()->assertTrue(isRemoveUser)
+        );
+    }
+    @Test
+    @DisplayName("Получение баланса - УСПЕХ")
+    void getBalanceSuccess(){
+        //save new User and Account
+        Account account = getBaseTestAccount();
+        String expectedCardNumber = account.getCardNumber();
+        String expectedAmount = account.getAmount().toString();
+
+        boolean isSaveUser = createUser(account.getUser());
+        boolean isSaveAccount = createAccount(account);
+        //get balance of new Account
+        AccountDTO accountDTO = new AccountDTO();
+        accountDTO.setCardNumber(account.getCardNumber());
+        accountDTO.setPinCode(account.getPinCode());
+
+        BalanceDTO balanceDTO = getBalance(accountDTO);
+
+        boolean isRemoveAccount = removeAccount(account);
+        boolean isRemoveUser = removeUser(account.getUser());
+        assertAll(
+                ()->assertTrue(isSaveUser),
+                ()->assertTrue(isSaveAccount),
+                ()->assertTrue(isRemoveAccount),
+                ()->assertTrue(isRemoveUser),
+                ()->assertEquals(expectedCardNumber,balanceDTO.getCardNumber()),
+                ()->assertEquals(expectedAmount,balanceDTO.getAmount().toString())
+        );
+    }
+    @Test
+    @DisplayName("Получение баланса - ПРОВАЛ (неверный пин-код)")
+    void getBalanceFailure(){
+        //save new User and Account
+        Account account = getBaseTestAccount();
+
+        boolean isSaveUser = createUser(account.getUser());
+        boolean isSaveAccount = createAccount(account);
+        //prepare data to POST
+        AccountDTO accountDTO = new AccountDTO();
+        accountDTO.setCardNumber(account.getCardNumber());
+        //set WRONG-PIN
+        accountDTO.setPinCode("9000");
+
+        BalanceDTO balanceDTO = getBalance(accountDTO);
+
+        boolean isRemoveAccount = removeAccount(account);
+        boolean isRemoveUser = removeUser(account.getUser());
+        assertAll(
+                ()->assertTrue(isSaveUser),
+                ()->assertTrue(isSaveAccount),
+                ()->assertTrue(isRemoveAccount),
+                ()->assertTrue(isRemoveUser),
+                ()->assertNull(balanceDTO.getCardNumber()),
+                ()->assertNull(balanceDTO.getAmount())
+        );
+    }
+    private BalanceDTO getBalance(AccountDTO accountDTO){
+        final String getBalanceURL = "http://localhost:8082/host/balance";
+        RestTemplate restTemplate = new RestTemplate();
+        HttpEntity<AccountDTO> requestBalance = new HttpEntity<>(accountDTO);
+        ResponseEntity<BalanceDTO> responseBalance = restTemplate.postForEntity(getBalanceURL, requestBalance, BalanceDTO.class);
+        return responseBalance.getBody();
+    }
+    private boolean createUser(User user){
+        final String createUserURL = "http://localhost:8082/host/create/user";
+        RestTemplate restTemplate = new RestTemplate();
+        HttpEntity<User> request = new HttpEntity<>(user);
+        ResponseEntity<String> response = restTemplate.postForEntity(createUserURL,request,String.class);
+
+        return response.getBody().contains("USER SAVED");
+    }
+    private boolean createAccount(Account account){
+        final String createAccountURL = "http://localhost:8082/host/create/account";
+        RestTemplate restTemplate = new RestTemplate();
+        HttpEntity<Account> request = new HttpEntity<>(account);
+        ResponseEntity<String> response = restTemplate.postForEntity(createAccountURL,request,String.class);
+
+        return response.getBody().contains("ACCOUNT SAVED");
+    }
+    private boolean removeUser(User user){
+        final String removeUserURL = "http://localhost:8082/host/remove/user";
+        RestTemplate restTemplate = new RestTemplate();
+        HttpEntity<User> request = new HttpEntity<>(user);
+        ResponseEntity<String> response = restTemplate.postForEntity(removeUserURL,request,String.class);
+
+        return response.getBody().contains("removed");
+    }
+    private boolean removeAccount(Account account){
+        final String removeAccURL = "http://localhost:8082/host/remove/account";
+
+        RestTemplate restTemplate = new RestTemplate();
+        HttpEntity<Account> request = new HttpEntity<>(account);
+        ResponseEntity<String> response = restTemplate.postForEntity(removeAccURL,request,String.class);
+
+        return response.getBody().contains("removed");
+    }
+    private User getBaseTestUser(){
+        User user = new User();
+        user.setFirstName("Vlad");
+        user.setLastName("Bodik");
+
+        return user;
+    }
+    private Account getBaseTestAccount(){
+        User user = getBaseTestUser();
 
         Account account = new Account();
-        account.setUser(new User());
-        account.getUser().setId(notExistUserId);
+        account.setUser(user);
         account.setAmount(new BigDecimal("9999.0111"));
         account.setCardNumber("1234");
         account.setScoreNumber("4321");
         account.setPinCode("1111");
 
-        restTemplate = new RestTemplate();
-        HttpEntity<Account> request = new HttpEntity<>(account);
-        ResponseEntity<String> response = restTemplate.exchange(serverURL, HttpMethod.POST, request, String.class);
-
-        String responseBody = response.getBody();
-        assertAll(
-                ()->assertTrue(responseBody.contains("User with ID: " + notExistUserId)),
-                ()->assertTrue(responseBody.contains("not found!"))
-        );
+        return account;
     }
 }
