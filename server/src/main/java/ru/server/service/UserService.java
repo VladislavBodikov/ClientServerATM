@@ -27,12 +27,29 @@ public class UserService {
         return userCrudRepository.findById(id);
     }
 
-    public User save(User user) {
-        return userCrudRepository.save(user);
+    public Optional<User> save(User user) {
+        boolean isUserExists = isUserExistsByFirstNameAndLastName(user);
+        if (isUserExists){
+            return Optional.empty();
+        }
+        return Optional.of(userCrudRepository.save(user));
+    }
+
+    public int removeByFirstNameAndLastName(User user){
+        if (isUserExistsByFirstNameAndLastName(user)){
+            return userCrudRepository.removeByFirstNameAndLastName(user.getFirstName(), user.getLastName());
+        }
+        return 0;
     }
 
     public boolean isUserExistById(long id){
         return findById(id).isPresent();
+    }
+
+    public boolean isUserExistsByFirstNameAndLastName(User user){
+        // temporary stub
+        // filter to avoid duplicate by first_&_last name INSTEAD passport_data
+        return userCrudRepository.findByFirstNameAndLastName(user.getFirstName(), user.getLastName()).isPresent();
     }
 
     public Optional<User> findByPassportData(String passportData){

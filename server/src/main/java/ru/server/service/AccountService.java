@@ -24,8 +24,10 @@ public class AccountService {
     }
 
     public Optional<Account> save(Account account) {
-        if (    findByCardNumber(account.getCardNumber()).isPresent()
-                && findByScoreNumber(account.getScoreNumber()).isPresent()){
+        boolean isScoreNumberExists = findByScoreNumber(account.getScoreNumber()).isPresent();
+        boolean isCardNumberExists = findByCardNumber(account.getCardNumber()).isPresent();
+
+        if (isCardNumberExists || isScoreNumberExists){
             return Optional.empty();
         }
         return Optional.of(accountCrudRepository.save(account));
@@ -35,7 +37,29 @@ public class AccountService {
         return accountCrudRepository.findByCardNumber(cardNumber);
     }
 
-    public Optional<Account> findByScoreNumber(String cardNumber) {
-        return accountCrudRepository.findByCardNumber(cardNumber);
+    public Optional<Account> findByScoreNumber(String scoreNumber) {
+        return accountCrudRepository.findByScoreNumber(scoreNumber);
+    }
+
+    public int removeByCardNumber(String cardNumber){
+        if (isCardNumberExist(cardNumber)){
+            return accountCrudRepository.removeByCardNumber(cardNumber);
+        }
+        return 0;
+    }
+
+    public int removeByScoreNumber(String scoreNumber){
+        if (isScoreNumberExist(scoreNumber)) {
+            return accountCrudRepository.removeByScoreNumber(scoreNumber);
+        }
+        return 0;
+    }
+
+    public boolean isScoreNumberExist(String scoreNumber){
+        return findByScoreNumber(scoreNumber).isPresent();
+    }
+
+    public boolean isCardNumberExist(String cardNumber){
+        return findByCardNumber(cardNumber).isPresent();
     }
 }

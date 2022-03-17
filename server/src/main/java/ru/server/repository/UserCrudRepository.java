@@ -10,4 +10,8 @@ import java.util.Optional;
 public interface UserCrudRepository extends CrudRepository<User,Long> {
 
     Optional<User> findByPassportData(String passportData);
+
+    Optional<User> findByFirstNameAndLastName(String firstName, String lastName);
+
+    int removeByFirstNameAndLastName(String firstName, String lastName);
 }
