@@ -59,8 +59,7 @@ public class HostRestController {
 
     @PostMapping("/create/account")
     public String createAccount(@RequestBody Account account) {
-        long userId = account.getUser().getId();
-        Optional<User> userFromDB = userService.findById(userId);
+        Optional<User> userFromDB = userService.findByNameIfNotHaveId(account.getUser());
         // if user with ID exist
         if (userFromDB.isPresent()) {
             account.setUser(userFromDB.get());
@@ -72,7 +71,7 @@ public class HostRestController {
             }
             return "Account with (card_number | score_number) already exist! : " + account;
         }
-        return "User with ID: " + userId + " not found!";
+        return "User :" + account.getUser() + " not found!";
     }
 
     @PostMapping("/create/user")
