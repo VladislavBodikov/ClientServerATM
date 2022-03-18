@@ -36,6 +36,10 @@ public class HostRestController {
         }
         return outputBalance;
     }
+    @GetMapping
+    public String test(){
+        return "completed test";
+    }
 
     private boolean isCorrectPinCode(AccountDTO accountDTO, Account accountFromDB) {
         String inputPinCode = accountDTO.getPinCode();

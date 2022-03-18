@@ -11,7 +11,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import org.junit.jupiter.api.Test;
 
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 import ru.server.dto.AccountDTO;
@@ -28,7 +27,7 @@ import java.math.BigDecimal;
 //@ContextConfiguration(classes = {Application.class,HostRestController.class})
 
 //@SpringBootTest(classes = {Application.class})
-public class ControllerTest {
+public class ControllerManualTest {
 //    @Autowired
 //    private MockMvc mockMvc;
 
