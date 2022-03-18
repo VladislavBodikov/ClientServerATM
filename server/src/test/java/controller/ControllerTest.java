@@ -186,7 +186,7 @@ public class ControllerTest {
 
         Account account = new Account();
         account.setUser(user);
-        account.setAmount(new BigDecimal("9999.0111"));
+        account.setAmount(new BigDecimal("9999.01"));
         account.setCardNumber("1234");
         account.setScoreNumber("4321");
         account.setPinCode("1111");

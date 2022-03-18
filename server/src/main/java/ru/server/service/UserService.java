@@ -27,6 +27,16 @@ public class UserService {
         return userCrudRepository.findById(id);
     }
 
+    public Optional<User> findByNameIfNotHaveId(User user){
+        if (user.getId() != 0){
+            return findById(user.getId());
+        }
+        if (user.getFirstName() != null && user.getLastName() != null){
+            return findByFirstNameAndLastName(user);
+        }
+        return Optional.empty();
+    }
+
     public Optional<User> save(User user) {
         boolean isUserExists = isUserExistsByFirstNameAndLastName(user);
         if (isUserExists){
@@ -54,6 +64,10 @@ public class UserService {
 
     public Optional<User> findByPassportData(String passportData){
         return userCrudRepository.findByPassportData(passportData);
+    }
+
+    public Optional<User> findByFirstNameAndLastName(User user){
+        return userCrudRepository.findByFirstNameAndLastName(user.getFirstName(), user.getLastName());
     }
 
 }
