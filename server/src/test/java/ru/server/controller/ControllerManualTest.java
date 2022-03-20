@@ -1,4 +1,4 @@
-package controller;
+package ru.server.controller;
 
 import static org.junit.jupiter.api.Assertions.*;
 

@@ -2,6 +2,7 @@ package ru.server.controller;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.server.dto.AccountDTO;
 import ru.server.dto.BalanceDTO;
@@ -20,8 +21,9 @@ import java.util.Set;
 @RequestMapping("/host")
 @Slf4j
 public class HostRestController {
-
+    @Autowired
     private AccountService accountService;
+    @Autowired
     private UserService userService;
 
     @PostMapping("/balance")
@@ -83,8 +85,8 @@ public class HostRestController {
         Optional<User> savedUser = userService.save(user);
         // if user was saved
         if (savedUser.isPresent()){
-            log.info("\nuser saved : " + savedUser);
-            return "\nUSER SAVED: " + savedUser + "\n";
+            log.info("\nuser saved : " + savedUser.get());
+            return "\nUSER SAVED: " + savedUser.get();
         }
         else {
             return "\nuser with same data already exist!";
@@ -96,7 +98,7 @@ public class HostRestController {
         int changedRows = userService.removeByFirstNameAndLastName(user);
 
         if (changedRows > 0){
-            log.info("user removed: " + user);
+            log.info("\nuser removed: " + user);
             return "\nuser removed: " + user;
         }
         return "user not found to remove";
