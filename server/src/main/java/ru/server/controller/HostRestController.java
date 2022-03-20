@@ -38,10 +38,6 @@ public class HostRestController {
         }
         return outputBalance;
     }
-    @GetMapping
-    public String test(){
-        return "completed test";
-    }
 
     private boolean isCorrectPinCode(AccountDTO accountDTO, Account accountFromDB) {
         String inputPinCode = accountDTO.getPinCode();
@@ -84,31 +80,31 @@ public class HostRestController {
     public String createUser(@RequestBody User user) {
         Optional<User> savedUser = userService.save(user);
         // if user was saved
-        if (savedUser.isPresent()){
+        if (savedUser.isPresent()) {
             log.info("\nuser saved : " + savedUser.get());
             return "\nUSER SAVED: " + savedUser.get();
-        }
-        else {
+        } else {
             return "\nuser with same data already exist!";
         }
     }
 
     @PostMapping("/remove/user")
-    public String removeUser(@RequestBody User user){
+    public String removeUser(@RequestBody User user) {
         int changedRows = userService.removeByFirstNameAndLastName(user);
 
-        if (changedRows > 0){
+        if (changedRows > 0) {
             log.info("\nuser removed: " + user);
             return "\nuser removed: " + user;
         }
         return "user not found to remove";
     }
+
     @PostMapping("/remove/account")
-    public String removeAccount(@RequestBody Account account){
+    public String removeAccount(@RequestBody Account account) {
         int changedRows = accountService.removeByScoreNumber(account.getScoreNumber());
 
-        if (changedRows > 0){
-            log.info("account removed: " + account);
+        if (changedRows > 0) {
+            log.info("\naccount removed: " + account);
             return "\naccount " + " removed" + account;
         }
         return "account not found to remove";

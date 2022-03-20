@@ -17,12 +17,6 @@ public class AccountService {
 
     private AccountCrudRepository accountCrudRepository;
 
-    public List<Account> getAllScores() {
-        List<Account> list = new ArrayList<>();
-        accountCrudRepository.findAll().forEach(list::add);
-        return list;
-    }
-
     public Optional<Account> save(Account account) {
         boolean isScoreNumberExists = findByScoreNumber(account.getScoreNumber()).isPresent();
         boolean isCardNumberExists = findByCardNumber(account.getCardNumber()).isPresent();
@@ -31,6 +25,12 @@ public class AccountService {
             return Optional.empty();
         }
         return Optional.of(accountCrudRepository.save(account));
+    }
+
+    public List<Account> getAllScores() {
+        List<Account> list = new ArrayList<>();
+        accountCrudRepository.findAll().forEach(list::add);
+        return list;
     }
 
     public Optional<Account> findByCardNumber(String cardNumber) {
