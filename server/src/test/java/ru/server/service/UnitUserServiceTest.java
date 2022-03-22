@@ -10,6 +10,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import ru.server.entity.User;
 import ru.server.repository.UserCrudRepository;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static ru.server.DataForUnitTests.getUser;
@@ -50,11 +52,13 @@ public class UnitUserServiceTest {
     @DisplayName("REMOVE - by name - SUCCESS")
     void removeByNameSuccess(){
         User user = getUser();
+        Mockito.when(userCrudRepository.findByFirstNameAndLastName(Mockito.any(),Mockito.any()))
+                .thenReturn(Optional.of(user));
         Mockito.when(userCrudRepository.removeByFirstNameAndLastName(user.getFirstName(), user.getLastName()))
                 .thenReturn(1);
-        boolean someRowWasChangedInDB = userService.removeByFirstNameAndLastName(user) > 0;
+        boolean someRowWasChangedInDB = userService.removeByFirstNameAndLastName(user) == 1;
 
-        assertFalse(someRowWasChangedInDB);
+        assertTrue(someRowWasChangedInDB);
     }
     @Test
     @DisplayName("REMOVE - by name - FAILURE")
@@ -159,6 +163,41 @@ public class UnitUserServiceTest {
         boolean isUserFound = userService.findByNameIfNotHaveId(user).isPresent();
 
         assertTrue(isUserFound);
+    }
+    @Test
+    @DisplayName("Exist by ID - failure")
+    void isExistByIdFailure(){
+        User user = getUser();
+        Mockito.when(userCrudRepository.findById(Mockito.any()))
+                .thenReturn(Optional.empty());
+        boolean isUserExist = userService.isExistById(user.getId());
+
+        assertFalse(isUserExist);
+    }
+    @Test
+    @DisplayName("Exist by ID - success")
+    void isExistByIdSuccess(){
+        User user = getUser();
+        Mockito.when(userCrudRepository.findById(Mockito.any()))
+                .thenReturn(Optional.of(user));
+        boolean isUserExist = userService.isExistById(user.getId());
+
+        assertTrue(isUserExist);
+    }
+    @Test
+    @DisplayName("get all users")
+    void getAllUsers(){
+        User user1 = getUser();
+        user1.setId(2);
+        User user2 = getUser();
+        user1.setId(4);
+        Mockito.when(userCrudRepository.findAll())
+                .thenReturn(new ArrayList<User>(){{add(user1);add(user2);}});
+        List<User> usersFromRepo = userService.getAllUsers();
+        boolean containUsersWithId2And4 = usersFromRepo.contains(user1)
+                                        && usersFromRepo.contains(user2);
+
+        assertTrue(containUsersWithId2And4);
     }
 
 }
