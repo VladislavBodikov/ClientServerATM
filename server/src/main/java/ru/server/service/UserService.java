@@ -36,11 +36,19 @@ public class UserService {
         return userCrudRepository.findById(id);
     }
 
+    public Optional<User> findByFirstNameAndLastName(User user) {
+        return userCrudRepository.findByFirstNameAndLastName(user.getFirstName(), user.getLastName());
+    }
+
+    public Optional<User> findByPassportData(String passportData) {
+        return userCrudRepository.findByPassportData(passportData);
+    }
+
     public Optional<User> findByNameIfNotHaveId(User user) {
         if (user.getId() != 0) {
             return findById(user.getId());
         }
-        if (user.getFirstName() != null && user.getLastName() != null) {
+        else if (user.getFirstName() != null && user.getLastName() != null) {
             return findByFirstNameAndLastName(user);
         }
         return Optional.empty();
@@ -54,14 +62,6 @@ public class UserService {
         // temporary stub
         // filter to avoid duplicate by first_&_last name INSTEAD passport_data
         return userCrudRepository.findByFirstNameAndLastName(user.getFirstName(), user.getLastName()).isPresent();
-    }
-
-    public Optional<User> findByPassportData(String passportData) {
-        return userCrudRepository.findByPassportData(passportData);
-    }
-
-    public Optional<User> findByFirstNameAndLastName(User user) {
-        return userCrudRepository.findByFirstNameAndLastName(user.getFirstName(), user.getLastName());
     }
 
     public List<User> getAllUsers() {

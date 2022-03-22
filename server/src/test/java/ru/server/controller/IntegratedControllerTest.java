@@ -27,7 +27,7 @@ import java.math.BigDecimal;
 //@ContextConfiguration(classes = {Application.class,HostRestController.class})
 
 //@SpringBootTest(classes = {Application.class})
-public class ControllerManualTest {
+public class IntegratedControllerTest {
 //    @Autowired
 //    private MockMvc mockMvc;
 

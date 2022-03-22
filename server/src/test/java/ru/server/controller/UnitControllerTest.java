@@ -1,6 +1,8 @@
 package ru.server.controller;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static ru.server.DataForUnitTests.getAccount;
+import static ru.server.DataForUnitTests.getUser;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,6 +13,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
+import ru.server.DataForUnitTests;
 import ru.server.dto.AccountDTO;
 import ru.server.dto.BalanceDTO;
 import ru.server.entity.Account;
@@ -272,29 +275,6 @@ public class UnitControllerTest {
         boolean isAccountSaved = createAccount(account);
 
         assertFalse(isAccountSaved);
-    }
-
-
-    private User getUser() {
-        User user = new User();
-        user.setId(1);
-        user.setFirstName("Vlad");
-        user.setLastName("Bodik");
-        return user;
-    }
-
-    private Account getAccount(){
-        User user = getUser();
-
-        Account account = new Account();
-        account.setId(1);
-        account.setUser(user);
-        account.setAmount(new BigDecimal("9999.01"));
-        account.setCardNumber("1234");
-        account.setScoreNumber("4321");
-        account.setPinCode("1111");
-
-        return account;
     }
 
     private BalanceDTO getBalance(AccountDTO accountDTO){
