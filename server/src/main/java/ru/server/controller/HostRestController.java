@@ -12,9 +12,7 @@ import ru.server.exeptions.ScoreNotFoundException;
 import ru.server.service.AccountService;
 import ru.server.service.UserService;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @RestController
 @AllArgsConstructor
@@ -48,7 +46,7 @@ public class HostRestController {
     @GetMapping("/accounts")
     public String getScores() {
         StringBuilder sb = new StringBuilder();
-        accountService.getAllScores().forEach((x) -> sb.append(x.toString()).append(System.lineSeparator()));
+        accountService.getAllAccounts().forEach((x) -> sb.append(x.toString()).append(System.lineSeparator()));
         return sb.toString();
     }
 

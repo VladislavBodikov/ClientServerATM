@@ -2,6 +2,7 @@ package ru.server.controller;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -27,6 +28,7 @@ import java.math.BigDecimal;
 //@ContextConfiguration(classes = {Application.class,HostRestController.class})
 
 //@SpringBootTest(classes = {Application.class})
+@Disabled
 public class IntegratedControllerTest {
 //    @Autowired
 //    private MockMvc mockMvc;

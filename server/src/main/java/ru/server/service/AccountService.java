@@ -27,20 +27,6 @@ public class AccountService {
         return Optional.of(accountCrudRepository.save(account));
     }
 
-    public List<Account> getAllScores() {
-        List<Account> list = new ArrayList<>();
-        accountCrudRepository.findAll().forEach(list::add);
-        return list;
-    }
-
-    public Optional<Account> findByCardNumber(String cardNumber) {
-        return accountCrudRepository.findByCardNumber(cardNumber);
-    }
-
-    public Optional<Account> findByScoreNumber(String scoreNumber) {
-        return accountCrudRepository.findByScoreNumber(scoreNumber);
-    }
-
     public int removeByCardNumber(String cardNumber){
         if (isCardNumberExist(cardNumber)){
             return accountCrudRepository.removeByCardNumber(cardNumber);
@@ -53,6 +39,20 @@ public class AccountService {
             return accountCrudRepository.removeByScoreNumber(scoreNumber);
         }
         return 0;
+    }
+
+    public List<Account> getAllAccounts() {
+        List<Account> list = new ArrayList<>();
+        accountCrudRepository.findAll().forEach(list::add);
+        return list;
+    }
+
+    public Optional<Account> findByCardNumber(String cardNumber) {
+        return accountCrudRepository.findByCardNumber(cardNumber);
+    }
+
+    public Optional<Account> findByScoreNumber(String scoreNumber) {
+        return accountCrudRepository.findByScoreNumber(scoreNumber);
     }
 
     public boolean isScoreNumberExist(String scoreNumber){
