@@ -1,8 +1,7 @@
-package ru.client.atmApplication.service;
+package ru.client.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.client.atmApplication.entity.Account;
 import ru.client.dto.BalanceDTO;
 
 @Service

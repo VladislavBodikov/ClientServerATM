@@ -1,15 +1,17 @@
-package ru.client.atmApplication.controller;
+package ru.client.controller;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
-import ru.client.atmApplication.service.ATMService;
+
 import ru.client.dto.AccountDTO;
 import ru.client.dto.BalanceDTO;
+import ru.client.service.ATMService;
 
 @RestController
 @RequestMapping("/client")
@@ -17,8 +19,11 @@ import ru.client.dto.BalanceDTO;
 @Slf4j
 public class ATMRestController {
 
+    private final String SERVER_URL = "http://localhost:8082/host/balance";
+    @Autowired
     private ATMService atmService;
-    final String serverURL = "http://localhost:8082/host/balance";
+//    @Autowired
+//    private RestTemplate restTemplate;
 
     @PostMapping(path = "/balance", consumes = "application/json")
     public String balance(@RequestBody AccountDTO accountDTO) {
@@ -26,7 +31,7 @@ public class ATMRestController {
         HttpEntity<AccountDTO> request = new HttpEntity<>(accountDTO);
         log.info(request.toString());
 
-        ResponseEntity<BalanceDTO> response = restTemplate.exchange(serverURL, HttpMethod.POST, request, BalanceDTO.class);
+        ResponseEntity<BalanceDTO> response = restTemplate.postForEntity(SERVER_URL, request, BalanceDTO.class);
         log.info(response.toString());
 
         return atmService.showBalance(response.getBody());

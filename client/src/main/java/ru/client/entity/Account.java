@@ -1,4 +1,4 @@
-package ru.client.atmApplication.entity;
+package ru.client.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,9 +16,4 @@ public class Account {
     private String scoreNumber;
     private BigDecimal amount;
     private String pinCode;
-
-    public Account(String cardNumber, String pinCode){
-        this.cardNumber = cardNumber;
-        this.pinCode = pinCode;
-    }
 }
