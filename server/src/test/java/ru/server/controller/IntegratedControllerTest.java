@@ -2,14 +2,15 @@ package ru.server.controller;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestTemplate;
 import ru.server.dto.AccountDTO;
 import ru.server.dto.BalanceDTO;
 import ru.server.entity.Account;
@@ -17,10 +18,11 @@ import ru.server.entity.User;
 
 import java.math.BigDecimal;
 
-@Disabled
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class IntegratedControllerTest {
 
-    private RestTemplate restTemplate = new RestTemplate();
+    @Autowired
+    private TestRestTemplate restTemplate;
 
     @Test
     @DisplayName("Создание пользователя в базе")
@@ -129,14 +131,14 @@ public class IntegratedControllerTest {
     }
 
     private BalanceDTO getBalance(AccountDTO accountDTO) {
-        final String getBalanceURL = "http://localhost:8082/host/balance";
+        final String getBalanceURL = "/host/balance";
         HttpEntity<AccountDTO> requestBalance = new HttpEntity<>(accountDTO);
         ResponseEntity<BalanceDTO> responseBalance = restTemplate.postForEntity(getBalanceURL, requestBalance, BalanceDTO.class);
         return responseBalance.getBody();
     }
 
     private boolean createUser(User user) {
-        final String createUserURL = "http://localhost:8082/host/create/user";
+        final String createUserURL = "/host/create/user";
         HttpEntity<User> request = new HttpEntity<>(user);
         ResponseEntity<String> response = restTemplate.postForEntity(createUserURL, request, String.class);
 
@@ -144,7 +146,7 @@ public class IntegratedControllerTest {
     }
 
     private boolean createAccount(Account account) {
-        final String createAccountURL = "http://localhost:8082/host/create/account";
+        final String createAccountURL = "/host/create/account";
         HttpEntity<Account> request = new HttpEntity<>(account);
         ResponseEntity<String> response = restTemplate.postForEntity(createAccountURL, request, String.class);
 
@@ -152,7 +154,7 @@ public class IntegratedControllerTest {
     }
 
     private boolean removeUser(User user) {
-        final String removeUserURL = "http://localhost:8082/host/remove/user";
+        final String removeUserURL = "/host/remove/user";
         HttpEntity<User> request = new HttpEntity<>(user);
         ResponseEntity<String> response = restTemplate.postForEntity(removeUserURL, request, String.class);
 
@@ -160,7 +162,7 @@ public class IntegratedControllerTest {
     }
 
     private boolean removeAccount(Account account) {
-        final String removeAccURL = "http://localhost:8082/host/remove/account";
+        final String removeAccURL = "/host/remove/account";
         HttpEntity<Account> request = new HttpEntity<>(account);
         ResponseEntity<String> response = restTemplate.postForEntity(removeAccURL, request, String.class);
 
