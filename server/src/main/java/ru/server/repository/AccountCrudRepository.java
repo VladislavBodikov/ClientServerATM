@@ -8,8 +8,12 @@ import java.util.Optional;
 
 @Repository
 public interface AccountCrudRepository extends CrudRepository<Account, Long> {
+
     Optional<Account> findByCardNumber(String cardNumber);
+
     Optional<Account> findByScoreNumber(String scoreNumber);
+
     int removeByCardNumber(String cardNumber);
+
     int removeByScoreNumber(String scoreNumber);
 }
