@@ -1,8 +1,8 @@
 package ru.server.controller;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static ru.server.DataForUnitTests.getAccount;
-import static ru.server.DataForUnitTests.getUser;
+import static ru.server.DataForUnitTests.getAccountWithId;
+import static ru.server.DataForUnitTests.getUserWithId;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,7 +13,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
-import ru.server.DataForUnitTests;
 import ru.server.dto.AccountDTO;
 import ru.server.dto.BalanceDTO;
 import ru.server.entity.Account;
@@ -51,11 +50,11 @@ public class UnitControllerTest {
     @DisplayName("GET BALANCE - success")
     void getBalanceSuccessTest(){
         // 1. save User
-        User user = getUser();
+        User user = getUserWithId();
         Mockito.when(userService.save(Mockito.any())).thenReturn(Optional.of(user));
         boolean isUserSaved = createUser(user);
         // 2. save Account
-        Account account = getAccount();
+        Account account = getAccountWithId();
         Mockito.when(accountService.save(Mockito.any())).thenReturn(Optional.of(account));
         Mockito.when(userService.findByNameIfNotHaveId(Mockito.any())).thenReturn(Optional.of(user));
         boolean isAccountSaved = createAccount(account);
@@ -88,11 +87,11 @@ public class UnitControllerTest {
     @DisplayName("GET BALANCE - failure (wrong-pin-code)")
     void getBalanceFailureTest(){
         // 1. save User
-        User user = getUser();
+        User user = getUserWithId();
         Mockito.when(userService.save(Mockito.any())).thenReturn(Optional.of(user));
         boolean isUserSaved = createUser(user);
         // 2. save Account
-        Account account = getAccount();
+        Account account = getAccountWithId();
         Mockito.when(accountService.save(Mockito.any())).thenReturn(Optional.of(account));
         Mockito.when(userService.findByNameIfNotHaveId(Mockito.any())).thenReturn(Optional.of(user));
         boolean isAccountSaved = createAccount(account);
@@ -130,7 +129,7 @@ public class UnitControllerTest {
     @DisplayName("USER - Create and remove")
     void createAndRemoveUserTest(){
         // 1. save User
-        User user = getUser();
+        User user = getUserWithId();
         Mockito.when(userService.save(Mockito.any())).thenReturn(Optional.of(user));
         boolean isSaved = createUser(user);
 
@@ -147,7 +146,7 @@ public class UnitControllerTest {
     @DisplayName("USER - Can`t create duplicate")
     void createDuplicateUserTest(){
         // 1. save User
-        User user = getUser();
+        User user = getUserWithId();
         Mockito.when(userService.save(Mockito.any())).thenReturn(Optional.of(user));
         boolean isSaved = createUser(user);
         // 2. try save duplicate user
@@ -167,7 +166,7 @@ public class UnitControllerTest {
     @DisplayName("USER - Can`t remove User that not exist")
     void removeUserThatNotExistTest(){
         // 1. try to remove user that not exist in DB
-        User user = getUser();
+        User user = getUserWithId();
         Mockito.when(userService.removeByFirstNameAndLastName(Mockito.any())).thenReturn(0);
         boolean isRemoved = removeUser(user);
 
@@ -183,11 +182,11 @@ public class UnitControllerTest {
     @DisplayName("ACCOUNT - Create and remove ")
     void createAndRemoveAccount(){
         // 1. save User
-        User user = getUser();
+        User user = getUserWithId();
         Mockito.when(userService.save(Mockito.any())).thenReturn(Optional.of(user));
         boolean isUserSaved = createUser(user);
         // 2. save Account
-        Account account = getAccount();
+        Account account = getAccountWithId();
         Mockito.when(accountService.save(Mockito.any())).thenReturn(Optional.of(account));
         Mockito.when(userService.findByNameIfNotHaveId(Mockito.any())).thenReturn(Optional.of(user));
         boolean isAccountSaved = createAccount(account);
@@ -209,11 +208,11 @@ public class UnitControllerTest {
     @DisplayName("ACCOUNT - Can`t create duplicate") //by scoreNumber and cardNumber
     void createDuplicateAccount(){
         // 1. save User
-        User user = getUser();
+        User user = getUserWithId();
         Mockito.when(userService.save(Mockito.any())).thenReturn(Optional.of(user));
         boolean isUserSaved = createUser(user);
         // 2. save Account
-        Account account = getAccount();
+        Account account = getAccountWithId();
         Mockito.when(accountService.save(Mockito.any())).thenReturn(Optional.of(account));
         Mockito.when(userService.findByNameIfNotHaveId(Mockito.any())).thenReturn(Optional.of(user));
         boolean isAccountSaved = createAccount(account);
@@ -240,11 +239,11 @@ public class UnitControllerTest {
     @DisplayName("ACCOUNT - Cant remove account that not exist ")
     void removeAccountThatNotExist(){
         // 1. save User
-        User user = getUser();
+        User user = getUserWithId();
         Mockito.when(userService.save(Mockito.any())).thenReturn(Optional.of(user));
         boolean isUserSaved = createUser(user);
         // 2. save Account
-        Account account = getAccount();
+        Account account = getAccountWithId();
         Mockito.when(accountService.save(Mockito.any())).thenReturn(Optional.of(account));
         Mockito.when(userService.findByNameIfNotHaveId(Mockito.any())).thenReturn(Optional.of(user));
         boolean isAccountSaved = createAccount(account);
@@ -270,7 +269,7 @@ public class UnitControllerTest {
     @DisplayName("ACCOUNT - Cant create account if User not found")
     void createAccountIfUserNotFound(){
         // 2. save Account
-        Account account = getAccount();
+        Account account = getAccountWithId();
         Mockito.when(userService.findByNameIfNotHaveId(Mockito.any())).thenReturn(Optional.empty());
         boolean isAccountSaved = createAccount(account);
 

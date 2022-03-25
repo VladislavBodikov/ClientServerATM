@@ -1,5 +1,5 @@
 # ClientServerATM
-client-server REST service
+client(ATM)-server(bank-server) REST service
 
 #MVP
 get balance of account
@@ -22,8 +22,11 @@ get balance of account
 1. Client url - http://localhost:8080/client/
 2. For checking balance - send "card_number" and "pin_code" 
 to ATM (client)
+       
 
-        curl -X POST http://localhost:8080/client/balance -H "Content-Type: application/json" -d {\"cardNumber\":\"1111222211112222\",\"pinCode\":\"1221\"}
+   Example:
+
+           curl -X POST http://localhost:8080/client/balance -H "Content-Type: application/json" -d {\"cardNumber\":\"1111222211112222\",\"pinCode\":\"1221\"}
 
 
 

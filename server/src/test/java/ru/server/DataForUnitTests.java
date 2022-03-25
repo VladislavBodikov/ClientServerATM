@@ -6,7 +6,7 @@ import ru.server.entity.User;
 import java.math.BigDecimal;
 
 public class DataForUnitTests {
-    public static User getUser() {
+    public static User getUserWithId() {
         User user = new User();
         user.setId(1);
         user.setFirstName("Vlad");
@@ -14,11 +14,32 @@ public class DataForUnitTests {
         return user;
     }
 
-    public static Account getAccount(){
-        User user = getUser();
+    public static Account getAccountWithId(){
+        User user = getUserWithId();
 
         Account account = new Account();
         account.setId(1);
+        account.setUser(user);
+        account.setAmount(new BigDecimal("9999.01"));
+        account.setCardNumber("1234");
+        account.setScoreNumber("4321");
+        account.setPinCode("1111");
+
+        return account;
+    }
+
+    public static User getUserWithoutId() {
+        User user = new User();
+        user.setFirstName("Vlad");
+        user.setLastName("Bodik");
+
+        return user;
+    }
+
+    public static Account getAccountWithoutId() {
+        User user = getUserWithoutId();
+
+        Account account = new Account();
         account.setUser(user);
         account.setAmount(new BigDecimal("9999.01"));
         account.setCardNumber("1234");

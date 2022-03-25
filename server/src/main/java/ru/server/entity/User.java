@@ -3,16 +3,14 @@ package ru.server.entity;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.HashSet;
 import java.util.Set;
 
-@Getter
-@Setter
-@ToString
+@Data
 @Table(name = "USERS")
 @Entity
 @NoArgsConstructor
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -25,7 +23,9 @@ public class User {
 
     @Column(name = "passport_data")
     private String passportData;
+
     @ToString.Exclude
-    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
+    @EqualsAndHashCode.Exclude
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Set<Account> accounts;
 }

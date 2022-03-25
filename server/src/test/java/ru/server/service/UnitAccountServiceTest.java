@@ -25,7 +25,7 @@ public class UnitAccountServiceTest {
     @Test
     @DisplayName("SAVE - success")
     void saveSuccess(){
-        Account account = getAccount();
+        Account account = getAccountWithId();
         Mockito.when(accountCrudRepository.findByCardNumber(Mockito.any())).thenReturn(Optional.empty());
         Mockito.when(accountCrudRepository.findByScoreNumber(Mockito.any())).thenReturn(Optional.empty());
         Mockito.when(accountCrudRepository.save(Mockito.any())).thenReturn(account);
@@ -37,7 +37,7 @@ public class UnitAccountServiceTest {
     @Test
     @DisplayName("SAVE - failure (card_number exist)")
     void saveFailureCard(){
-        Account account = getAccount();
+        Account account = getAccountWithId();
         Mockito.when(accountCrudRepository.findByCardNumber(Mockito.any())).thenReturn(Optional.of(account));
         Mockito.when(accountCrudRepository.findByScoreNumber(Mockito.any())).thenReturn(Optional.empty());
 
@@ -48,7 +48,7 @@ public class UnitAccountServiceTest {
     @Test
     @DisplayName("SAVE - failure (score_number exist)")
     void saveFailureScore(){
-        Account account = getAccount();
+        Account account = getAccountWithId();
         Mockito.when(accountCrudRepository.findByCardNumber(Mockito.any())).thenReturn(Optional.empty());
         Mockito.when(accountCrudRepository.findByScoreNumber(Mockito.any())).thenReturn(Optional.of(account));
 
@@ -59,7 +59,7 @@ public class UnitAccountServiceTest {
     @Test
     @DisplayName("REMOVE - by card number - success")
     void removeByCardNumberSuccess(){
-        Account account = getAccount();
+        Account account = getAccountWithId();
         Mockito.when(accountCrudRepository.findByCardNumber(Mockito.any())).thenReturn(Optional.of(account));
         Mockito.when(accountCrudRepository.removeByCardNumber(Mockito.any())).thenReturn(1);
         boolean isAccountRemoved = accountService.removeByCardNumber(account.getCardNumber()) > 0;
@@ -69,7 +69,7 @@ public class UnitAccountServiceTest {
     @Test
     @DisplayName("REMOVE - by card number - failure")
     void removeByCardNumberFailure(){
-        Account account = getAccount();
+        Account account = getAccountWithId();
         Mockito.when(accountCrudRepository.removeByCardNumber(Mockito.any())).thenReturn(0);
         boolean isAccountRemoved = accountService.removeByCardNumber(account.getCardNumber()) > 0;
 
@@ -78,7 +78,7 @@ public class UnitAccountServiceTest {
     @Test
     @DisplayName("REMOVE - by score number - success")
     void removeByScoreNumberSuccess(){
-        Account account = getAccount();
+        Account account = getAccountWithId();
         Mockito.when(accountCrudRepository.findByScoreNumber(Mockito.any())).thenReturn(Optional.of(account));
         Mockito.when(accountCrudRepository.removeByScoreNumber(Mockito.any())).thenReturn(1);
         boolean isAccountRemoved = accountService.removeByScoreNumber(account.getScoreNumber()) > 0;
@@ -88,7 +88,7 @@ public class UnitAccountServiceTest {
     @Test
     @DisplayName("REMOVE - by score number - failure")
     void removeByScoreNumberFailure(){
-        Account account = getAccount();
+        Account account = getAccountWithId();
         Mockito.when(accountCrudRepository.removeByScoreNumber(Mockito.any())).thenReturn(0);
         boolean isAccountRemoved = accountService.removeByScoreNumber(account.getScoreNumber()) > 0;
 
@@ -97,9 +97,9 @@ public class UnitAccountServiceTest {
     @Test
     @DisplayName("GET ALL ACCOUNTS")
     void getAccounts(){
-        Account account1 = getAccount();
+        Account account1 = getAccountWithId();
         account1.setId(56);
-        Account account2 = getAccount();
+        Account account2 = getAccountWithId();
         account2.setId(90);
 
         Mockito.when(accountCrudRepository.findAll())

@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static ru.server.DataForUnitTests.getUser;
+import static ru.server.DataForUnitTests.getUserWithId;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class UnitUserServiceTest {
@@ -26,7 +26,7 @@ public class UnitUserServiceTest {
     @Test
     @DisplayName("SAVE - failure ( user already exist)")
     void saveUserFailure(){
-        User user = getUser();
+        User user = getUserWithId();
         Mockito.when(userCrudRepository.findByFirstNameAndLastName(user.getFirstName(), user.getLastName()))
                 .thenReturn(Optional.of(user));
         Optional<User> optUser = userService.save(user);
@@ -37,7 +37,7 @@ public class UnitUserServiceTest {
     @Test
     @DisplayName("SAVE - success")
     void saveUserSuccess(){
-        User user = getUser();
+        User user = getUserWithId();
         Mockito.when(userCrudRepository.findByFirstNameAndLastName(user.getFirstName(), user.getLastName()))
                 .thenReturn(Optional.empty());
         Mockito.when(userCrudRepository.save(Mockito.any()))
@@ -51,7 +51,7 @@ public class UnitUserServiceTest {
     @Test
     @DisplayName("REMOVE - by name - SUCCESS")
     void removeByNameSuccess(){
-        User user = getUser();
+        User user = getUserWithId();
         Mockito.when(userCrudRepository.findByFirstNameAndLastName(Mockito.any(),Mockito.any()))
                 .thenReturn(Optional.of(user));
         Mockito.when(userCrudRepository.removeByFirstNameAndLastName(user.getFirstName(), user.getLastName()))
@@ -63,7 +63,7 @@ public class UnitUserServiceTest {
     @Test
     @DisplayName("REMOVE - by name - FAILURE")
     void removeByNameFailure(){
-        User user = getUser();
+        User user = getUserWithId();
         Mockito.when(userCrudRepository.removeByFirstNameAndLastName(user.getFirstName(), user.getLastName()))
                 .thenReturn(0);
         boolean someRowWasChangedInDB = userService.removeByFirstNameAndLastName(user) > 0;
@@ -74,7 +74,7 @@ public class UnitUserServiceTest {
     @DisplayName("Find by ID - failure")
     void findByIdFailure(){
 
-        User user = getUser();
+        User user = getUserWithId();
         Mockito.when(userCrudRepository.findById(Mockito.any()))
                 .thenReturn(Optional.empty());
         boolean isUserFound = userService.findById(user.getId()).isPresent();
@@ -84,7 +84,7 @@ public class UnitUserServiceTest {
     @Test
     @DisplayName("Find by ID - success")
     void findByIdSuccess(){
-        User user = getUser();
+        User user = getUserWithId();
         Mockito.when(userCrudRepository.findById(Mockito.any()))
                 .thenReturn(Optional.of(user));
         boolean isUserFound = userService.findById(user.getId()).isPresent();
@@ -94,7 +94,7 @@ public class UnitUserServiceTest {
     @Test
     @DisplayName("Find by NAME - failure")
     void findByNameFailure(){
-        User user = getUser();
+        User user = getUserWithId();
         Mockito.when(userCrudRepository.findByFirstNameAndLastName(Mockito.any(),Mockito.any()))
                 .thenReturn(Optional.empty());
         boolean isUserFound = userService.findByFirstNameAndLastName(user).isPresent();
@@ -104,7 +104,7 @@ public class UnitUserServiceTest {
     @Test
     @DisplayName("Find by NAME - success")
     void findByNameSuccess(){
-        User user = getUser();
+        User user = getUserWithId();
         Mockito.when(userCrudRepository.findByFirstNameAndLastName(Mockito.any(),Mockito.any()))
                 .thenReturn(Optional.of(user));
         boolean isUserFound = userService.findByFirstNameAndLastName(user).isPresent();
@@ -114,7 +114,7 @@ public class UnitUserServiceTest {
     @Test
     @DisplayName("Find by PASSPORT - failure")
     void findByPassportFailure(){
-        User user = getUser();
+        User user = getUserWithId();
         Mockito.when(userCrudRepository.findByPassportData(Mockito.any()))
                 .thenReturn(Optional.empty());
         boolean isUserFound = userService.findByPassportData(user.getPassportData()).isPresent();
@@ -124,7 +124,7 @@ public class UnitUserServiceTest {
     @Test
     @DisplayName("Find by PASSPORT - success")
     void findByPassportSuccess(){
-        User user = getUser();
+        User user = getUserWithId();
         Mockito.when(userCrudRepository.findByPassportData(Mockito.any()))
                 .thenReturn(Optional.of(user));
         boolean isUserFound = userService.findByPassportData(user.getPassportData()).isPresent();
@@ -134,7 +134,7 @@ public class UnitUserServiceTest {
     @Test
     @DisplayName("Find by NAME OR ID - failure")
     void findByNameOfNotHaveIdFailure(){
-        User user = getUser();
+        User user = getUserWithId();
         user.setId(0);
         user.setFirstName(null);
         user.setLastName(null);
@@ -145,7 +145,7 @@ public class UnitUserServiceTest {
     @Test
     @DisplayName("Find by NAME OR ID - success")
     void findByNameOfNotHaveIdSuccessById(){
-        User user = getUser();
+        User user = getUserWithId();
         user.setId(1);
         Mockito.when(userCrudRepository.findById(Mockito.any()))
                 .thenReturn(Optional.of(user));
@@ -156,7 +156,7 @@ public class UnitUserServiceTest {
     @Test
     @DisplayName("Find by NAME OR ID - success")
     void findByNameOfNotHaveIdSuccessByName(){
-        User user = getUser();
+        User user = getUserWithId();
         user.setId(0);
         Mockito.when(userCrudRepository.findByFirstNameAndLastName(Mockito.any(),Mockito.any()))
                 .thenReturn(Optional.of(user));
@@ -167,7 +167,7 @@ public class UnitUserServiceTest {
     @Test
     @DisplayName("Exist by ID - failure")
     void isExistByIdFailure(){
-        User user = getUser();
+        User user = getUserWithId();
         Mockito.when(userCrudRepository.findById(Mockito.any()))
                 .thenReturn(Optional.empty());
         boolean isUserExist = userService.isExistById(user.getId());
@@ -177,7 +177,7 @@ public class UnitUserServiceTest {
     @Test
     @DisplayName("Exist by ID - success")
     void isExistByIdSuccess(){
-        User user = getUser();
+        User user = getUserWithId();
         Mockito.when(userCrudRepository.findById(Mockito.any()))
                 .thenReturn(Optional.of(user));
         boolean isUserExist = userService.isExistById(user.getId());
@@ -187,9 +187,9 @@ public class UnitUserServiceTest {
     @Test
     @DisplayName("get all users")
     void getAllUsers(){
-        User user1 = getUser();
+        User user1 = getUserWithId();
         user1.setId(2);
-        User user2 = getUser();
+        User user2 = getUserWithId();
         user1.setId(4);
         Mockito.when(userCrudRepository.findAll())
                 .thenReturn(new ArrayList<User>(){{add(user1);add(user2);}});

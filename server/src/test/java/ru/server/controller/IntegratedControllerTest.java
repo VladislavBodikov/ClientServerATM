@@ -1,6 +1,8 @@
 package ru.server.controller;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static ru.server.DataForUnitTests.getAccountWithoutId;
+import static ru.server.DataForUnitTests.getUserWithoutId;
 
 import org.junit.jupiter.api.DisplayName;
 
@@ -16,8 +18,6 @@ import ru.server.dto.BalanceDTO;
 import ru.server.entity.Account;
 import ru.server.entity.User;
 
-import java.math.BigDecimal;
-
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class IntegratedControllerTest {
 
@@ -27,7 +27,7 @@ public class IntegratedControllerTest {
     @Test
     @DisplayName("Создание пользователя в базе")
     public void createUser() {
-        User user = getBaseTestUser();
+        User user = getUserWithoutId();
 
         boolean isSaveUser = createUser(user);
         boolean isRemoveUser = removeUser(user);
@@ -40,7 +40,7 @@ public class IntegratedControllerTest {
     @Test
     @DisplayName("Сохранение счета в базе - УСПЕХ")
     void createScoreSuccess() {
-        Account account = getBaseTestAccount();
+        Account account = getAccountWithoutId();
 
         boolean isSaveUser = createUser(account.getUser());
         boolean isSaveAccount = createAccount(account);
@@ -58,10 +58,10 @@ public class IntegratedControllerTest {
     @DisplayName("Сохранение счета в базе - ПРОВАЛ (юзер не найден)")
     void createScoreFailure() {
         final long notExistUserId = Long.MAX_VALUE;
-        Account account = getBaseTestAccount();
+        Account account = getAccountWithoutId();
         account.getUser().setId(notExistUserId);
 
-        User user = getBaseTestUser();
+        User user = getUserWithoutId();
 
         boolean isSaveUser = createUser(user);
         boolean isSaveAccount = createAccount(account);
@@ -77,7 +77,7 @@ public class IntegratedControllerTest {
     @DisplayName("Получение баланса - УСПЕХ")
     void getBalanceSuccess() {
         //save new User and Account
-        Account account = getBaseTestAccount();
+        Account account = getAccountWithoutId();
         String expectedCardNumber = account.getCardNumber();
         String expectedAmount = account.getAmount().toString();
 
@@ -106,7 +106,7 @@ public class IntegratedControllerTest {
     @DisplayName("Получение баланса - ПРОВАЛ (неверный пин-код)")
     void getBalanceFailure() {
         //save new User and Account
-        Account account = getBaseTestAccount();
+        Account account = getAccountWithoutId();
 
         boolean isSaveUser = createUser(account.getUser());
         boolean isSaveAccount = createAccount(account);
@@ -169,24 +169,5 @@ public class IntegratedControllerTest {
         return response.getBody().contains("removed");
     }
 
-    private User getBaseTestUser() {
-        User user = new User();
-        user.setFirstName("Vlad");
-        user.setLastName("Bodik");
 
-        return user;
-    }
-
-    private Account getBaseTestAccount() {
-        User user = getBaseTestUser();
-
-        Account account = new Account();
-        account.setUser(user);
-        account.setAmount(new BigDecimal("9999.01"));
-        account.setCardNumber("1234");
-        account.setScoreNumber("4321");
-        account.setPinCode("1111");
-
-        return account;
-    }
 }
