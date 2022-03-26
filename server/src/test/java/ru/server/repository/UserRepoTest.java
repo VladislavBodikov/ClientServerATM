@@ -1,6 +1,8 @@
 package ru.server.repository;
 
 import static org.junit.jupiter.api.Assertions.*;
+
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,7 @@ import java.util.Optional;
 import static ru.server.DataForUnitTests.getUserWithoutId;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Slf4j
 public class UserRepoTest {
 
     @Autowired
@@ -32,6 +35,8 @@ public class UserRepoTest {
 
         List<User> users = new ArrayList<>();
         userCrudRepository.findAll().forEach(users::add);
+
+        clearRepo();
 
         assertAll(
                 ()->assertNotNull(saved),
@@ -52,6 +57,8 @@ public class UserRepoTest {
 
         Optional<User> deletedUser = userCrudRepository.findByFirstNameAndLastName(user.getFirstName(), user.getLastName());
 
+        clearRepo();
+
         assertAll(
                 ()->assertNotNull(saved),
                 ()->assertFalse(deletedUser.isPresent())
@@ -68,10 +75,15 @@ public class UserRepoTest {
 
         Optional<User> deletedUser = userCrudRepository.findByFirstNameAndLastName(user.getFirstName(), user.getLastName());
 
+        clearRepo();
+
         assertAll(
                 ()->assertNotNull(saved),
                 ()->assertEquals(1, rows),
                 ()->assertFalse(deletedUser.isPresent())
         );
+    }
+    private void clearRepo(){
+        userCrudRepository.deleteAll();
     }
 }

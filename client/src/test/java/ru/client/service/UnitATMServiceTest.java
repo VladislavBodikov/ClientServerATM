@@ -6,12 +6,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import ru.client.Application;
 import ru.client.dto.BalanceDTO;
 
 import java.math.BigDecimal;
 
-@SpringBootTest(classes = Application.class , webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class UnitATMServiceTest {
 
     @Autowired
@@ -20,14 +19,19 @@ public class UnitATMServiceTest {
     @Test
     @DisplayName("SHOW BALANCE - success")
     void showBalanceSuccess() {
-        BalanceDTO balanceDTO = new BalanceDTO();
-        balanceDTO.setCardNumber("1111");
-        balanceDTO.setAmount(new BigDecimal("999.5"));
+        BalanceDTO balanceDTO = getBalanceDTO();
 
         String response = atmService.showBalance(balanceDTO);
 
         assertTrue(response.contains("BALANCE : " + balanceDTO.getAmount()));
     }
+    private BalanceDTO getBalanceDTO() {
+        BalanceDTO balanceDTO = new BalanceDTO();
+        balanceDTO.setCardNumber("1111");
+        balanceDTO.setAmount(new BigDecimal("999.5"));
+        return balanceDTO;
+    }
+
     @Test
     @DisplayName("SHOW BALANCE - failure")
     void showBalanceFailure() {
