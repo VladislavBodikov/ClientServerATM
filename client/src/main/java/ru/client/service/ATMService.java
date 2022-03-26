@@ -1,11 +1,9 @@
 package ru.client.service;
 
-import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.client.dto.BalanceDTO;
 
 @Service
-@AllArgsConstructor
 public class ATMService {
 
     public String showBalance(BalanceDTO balanceDTO){

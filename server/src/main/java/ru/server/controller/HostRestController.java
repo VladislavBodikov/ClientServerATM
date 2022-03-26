@@ -69,9 +69,9 @@ public class HostRestController {
                 log.info("\naccount saved :" + savedAccount.get());
                 return "\nACCOUNT SAVED: " + account + "\n";
             }
-            return "Account with (card_number | score_number) already exist! : " + account;
+            return "Account with (card_number | score_number) already exist! : " + account + "\n";
         }
-        return "User :" + account.getUser() + " not found!";
+        return "User :" + account.getUser() + " not found!" + "\n";
     }
 
     @PostMapping("/create/user")
@@ -79,10 +79,10 @@ public class HostRestController {
         Optional<User> savedUser = userService.save(user);
         // if user was saved
         if (savedUser.isPresent()) {
-            log.info("\nuser saved : " + savedUser.get());
-            return "\nUSER SAVED: " + savedUser.get();
+            log.info("\nuser saved : " + savedUser.get() + "\n");
+            return "\nUSER SAVED: " + savedUser.get() + "\n";
         } else {
-            return "\nuser with same data already exist!";
+            return "\nuser with same data already exist!" + "\n";
         }
     }
 
@@ -91,10 +91,10 @@ public class HostRestController {
         int changedRows = userService.removeByFirstNameAndLastName(user);
 
         if (changedRows > 0) {
-            log.info("\nuser removed: " + user);
-            return "\nuser removed: " + user;
+            log.info("\nuser removed: " + user + "\n");
+            return "\nuser removed: " + user + "\n";
         }
-        return "user not found to remove";
+        return "\nuser not found to remove\n";
     }
 
     @PostMapping("/remove/account")
@@ -102,9 +102,9 @@ public class HostRestController {
         int changedRows = accountService.removeByScoreNumber(account.getScoreNumber());
 
         if (changedRows > 0) {
-            log.info("\naccount removed: " + account);
-            return "\naccount " + " removed" + account;
+            log.info("\naccount removed: " + account + "\n");
+            return "\naccount " + " removed" + account + "\n";
         }
-        return "account not found to remove";
+        return "\naccount not found to remove\n";
     }
 }
