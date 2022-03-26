@@ -79,7 +79,7 @@ public class HostRestController {
         Optional<User> savedUser = userService.save(user);
         // if user was saved
         if (savedUser.isPresent()) {
-            log.info("\nuser saved : " + savedUser.get() + "\n");
+            log.info("\nuser saved : " + savedUser.get());
             return "\nUSER SAVED: " + savedUser.get() + "\n";
         } else {
             return "\nuser with same data already exist!" + "\n";
@@ -91,7 +91,7 @@ public class HostRestController {
         int changedRows = userService.removeByFirstNameAndLastName(user);
 
         if (changedRows > 0) {
-            log.info("\nuser removed: " + user + "\n");
+            log.info("\nuser removed: " + user);
             return "\nuser removed: " + user + "\n";
         }
         return "\nuser not found to remove\n";
@@ -102,7 +102,7 @@ public class HostRestController {
         int changedRows = accountService.removeByScoreNumber(account.getScoreNumber());
 
         if (changedRows > 0) {
-            log.info("\naccount removed: " + account + "\n");
+            log.info("\naccount removed: " + account);
             return "\naccount " + " removed" + account + "\n";
         }
         return "\naccount not found to remove\n";
