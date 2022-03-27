@@ -1,13 +1,11 @@
 package ru.client.controller;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import ru.client.service.ATMService;
@@ -16,14 +14,15 @@ import ru.client.dto.BalanceDTO;
 
 @RestController
 @RequestMapping("/client")
+@AllArgsConstructor
 @Slf4j
 public class ATMRestController {
 
     private final String SERVER_URL = "http://localhost:8082/host/balance";
 
-    @Autowired
+//    @Autowired
     private ATMService atmService;
-    @Autowired
+//    @Autowired
     private RestTemplate restTemplate;
 
     @PostMapping(path = "/balance", consumes = "application/json")
@@ -45,5 +44,10 @@ public class ATMRestController {
         return (response.getBody() == null) ?
                 RESPONSE_HAS_NULL_BODY :
                 atmService.showBalance(response.getBody());
+    }
+
+    @GetMapping("/")
+    public String getIndex(){
+        return "index";
     }
 }
