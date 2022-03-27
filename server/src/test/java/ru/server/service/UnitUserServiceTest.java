@@ -143,7 +143,7 @@ public class UnitUserServiceTest {
         assertFalse(isUserFound);
     }
     @Test
-    @DisplayName("Find by NAME OR ID - success")
+    @DisplayName("Find by NAME OR ID (by ID) - success")
     void findByNameOfNotHaveIdSuccessById(){
         User user = getUserWithId();
         user.setId(1);
@@ -154,7 +154,7 @@ public class UnitUserServiceTest {
         assertTrue(isUserFound);
     }
     @Test
-    @DisplayName("Find by NAME OR ID - success")
+    @DisplayName("Find by NAME OR ID (by Name) - success")
     void findByNameOfNotHaveIdSuccessByName(){
         User user = getUserWithId();
         user.setId(0);

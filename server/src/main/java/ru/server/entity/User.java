@@ -3,6 +3,7 @@ package ru.server.entity;
 import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.Pattern;
 import java.util.Set;
 
 @Data
@@ -16,12 +17,15 @@ public class User {
     private long id;
 
     @Column(name = "first_name")
+    @Pattern(regexp = "^[А-Яа-яё]|[A-Za-z]+$")
     private String firstName;
 
     @Column(name = "last_name")
+    @Pattern(regexp = "^[А-Яа-яё]|[A-Za-z]+$")
     private String lastName;
 
     @Column(name = "passport_data")
+    @Pattern(regexp = "^[\\d]+$")
     private String passportData;
 
     @ToString.Exclude

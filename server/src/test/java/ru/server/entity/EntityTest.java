@@ -25,7 +25,7 @@ public class EntityTest {
                 ()->assertEquals("Bodik",user.getLastName()),
                 ()->assertEquals("4518",user.getPassportData()),
                 ()->assertEquals(new HashSet<>(),user.getAccounts()),
-                ()->assertEquals("Account(id=1, cardNumber=1234, scoreNumber=4321, amount=99.5, pinCode=1111)",account.toString()),
+                ()->assertEquals("Account(id=1, cardNumber=1234, scoreNumber=4321, amount=99.5, pinCode=****)",account.toString()),
                 ()->assertEquals("User(id=1, firstName=Vlad, lastName=Bodik, passportData=4518)",user.toString())
 //                ()->
         );

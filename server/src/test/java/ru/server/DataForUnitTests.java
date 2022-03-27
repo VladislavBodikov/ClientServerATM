@@ -21,8 +21,8 @@ public class DataForUnitTests {
         account.setId(1);
         account.setUser(user);
         account.setAmount(new BigDecimal("9999.01"));
-        account.setCardNumber("1234");
-        account.setScoreNumber("4321");
+        account.setCardNumber("1111000011110000");
+        account.setScoreNumber("40804080408040804080");
         account.setPinCode("1111");
 
         return account;
@@ -42,8 +42,8 @@ public class DataForUnitTests {
         Account account = new Account();
         account.setUser(user);
         account.setAmount(new BigDecimal("9999.01"));
-        account.setCardNumber("1234");
-        account.setScoreNumber("4321");
+        account.setCardNumber("1111000011110000");
+        account.setScoreNumber("40804080408040804080");
         account.setPinCode("1111");
 
         return account;

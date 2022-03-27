@@ -26,7 +26,7 @@ public class UserRepoTest {
     @DisplayName("SAVE and FIND user")
     void saveAndFind(){
         User user = getUserWithoutId();
-        user.setPassportData("40 18");
+        user.setPassportData("4018198815");
         User saved = userCrudRepository.save(user);
 
         Optional<User> userFromDbByName = userCrudRepository.findByFirstNameAndLastName(user.getFirstName(),user.getLastName());

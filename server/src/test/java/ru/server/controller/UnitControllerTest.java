@@ -66,7 +66,7 @@ public class UnitControllerTest {
         accountDTO.setPinCode(account.getPinCode());       // pinCode = 1111
         BalanceDTO balanceDTO = getBalance(accountDTO);
         boolean isGetBalance = new BigDecimal("9999.01").equals(balanceDTO.getAmount())
-                                && "1234".equals(balanceDTO.getCardNumber());
+                                && "1111000011110000".equals(balanceDTO.getCardNumber());
 
         // 4. remove Account
         Mockito.when(accountService.removeByScoreNumber(Mockito.any())).thenReturn(1);
