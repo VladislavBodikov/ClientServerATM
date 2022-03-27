@@ -18,9 +18,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.client.RestTemplate;
+import ru.client.service.ATMService;
 import ru.client.dto.AccountDTO;
 import ru.client.dto.BalanceDTO;
-import ru.client.service.ATMService;
+
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.*;

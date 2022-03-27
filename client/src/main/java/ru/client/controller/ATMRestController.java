@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import ru.client.service.ATMService;
 import ru.client.dto.AccountDTO;
 import ru.client.dto.BalanceDTO;
-import ru.client.service.ATMService;
 
 @RestController
 @RequestMapping("/client")
@@ -23,8 +23,8 @@ public class ATMRestController {
 
     @Autowired
     private ATMService atmService;
-
-    private RestTemplate restTemplate = new RestTemplate();
+    @Autowired
+    private RestTemplate restTemplate;
 
     @PostMapping(path = "/balance", consumes = "application/json")
     public String balance(@RequestBody AccountDTO accountDTO) {

@@ -4,9 +4,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.web.client.RestTemplate;
 import ru.client.controller.ATMRestController;
-import ru.client.dto.BalanceDTO;
+
 import ru.client.service.ATMService;
+import ru.client.dto.BalanceDTO;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -18,6 +20,8 @@ public class ApplicationTest {
     private ATMService atmService;
     @Autowired
     private ATMRestController atmRestController;
+    @Autowired
+    private RestTemplate restTemplate;
 
     @Test
     @DisplayName("Контекст загружается")
@@ -25,6 +29,7 @@ public class ApplicationTest {
         atmService.showBalance(new BalanceDTO());
         assertAll(
                 () -> assertNotNull(atmService),
+                () -> assertNotNull(restTemplate),
                 () -> assertNotNull(atmRestController));
     }
 }
