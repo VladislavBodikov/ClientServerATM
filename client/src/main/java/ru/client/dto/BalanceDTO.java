@@ -3,6 +3,7 @@ package ru.client.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.http.HttpStatus;
 
 import java.math.BigDecimal;
 
@@ -12,5 +13,6 @@ import java.math.BigDecimal;
 public class BalanceDTO {
     private String cardNumber;
     private BigDecimal amount;
+    private HttpStatus status;
 
 }

@@ -14,6 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -89,6 +90,7 @@ public class UnitControllerTest {
         BalanceDTO balanceDTO = new BalanceDTO();
         balanceDTO.setCardNumber("111");
         balanceDTO.setAmount(new BigDecimal("10.5"));
+        balanceDTO.setStatus(HttpStatus.OK);
         return balanceDTO;
     }
 

@@ -47,14 +47,14 @@ public class AccountRepoTest {
     @Test
     @DisplayName("SAVE and DELETE")
     void saveAndDeleteAccount(){
-        Account account1 = getAccountWithSavedUser("4444","6666");
-        Account account2 = getAccountWithSavedUser("1111","9999");
+        Account account1 = getAccountWithSavedUser("1111000011110000","40804080408040804080");
+        Account account2 = getAccountWithSavedUser("2222000022220000","40904090409040904090");
 
         accountCrudRepository.save(account1);
         accountCrudRepository.save(account2);
 
-        int rowsAccRemovedByCardNumber = accountCrudRepository.removeByCardNumber("4444");
-        int rowsAccRemovedByAccNumber = accountCrudRepository.removeByScoreNumber("9999");
+        int rowsAccRemovedByCardNumber = accountCrudRepository.removeByCardNumber("1111000011110000");
+        int rowsAccRemovedByAccNumber = accountCrudRepository.removeByScoreNumber("40904090409040904090");
 
         boolean isAccFoundByCardNumber = rowsAccRemovedByCardNumber == 1;
         boolean isAccFoundByAccNumber = rowsAccRemovedByAccNumber == 1;

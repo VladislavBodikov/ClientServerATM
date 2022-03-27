@@ -77,6 +77,7 @@ public class TestWithAutowired {
         BalanceDTO balanceDTO = new BalanceDTO();
         balanceDTO.setCardNumber("1111");
         balanceDTO.setAmount(new BigDecimal("100.5"));
+        balanceDTO.setStatus(HttpStatus.OK);
         return balanceDTO;
     }
 
