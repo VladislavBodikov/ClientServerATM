@@ -49,9 +49,19 @@ public class UnitATMServiceTest {
     }
 
     @Test
-    @DisplayName("SHOW BALANCE - failure - unexpected status")
-    void showBalanceFailure() {
+    @DisplayName("SHOW BALANCE - failure - balance status == null")
+    void showBalanceFailureNull() {
         BalanceDTO balanceDTO = new BalanceDTO();
+
+        String response = atmService.showBalance(balanceDTO);
+
+        assertTrue(response.contains("Balance status is null"));
+    }
+    @Test
+    @DisplayName("SHOW BALANCE - failure - unexpected status")
+    void showBalanceFailureUnexpectedStatus() {
+        BalanceDTO balanceDTO = new BalanceDTO();
+        balanceDTO.setStatus(HttpStatus.CHECKPOINT); // unknown status for ATMService
 
         String response = atmService.showBalance(balanceDTO);
 
