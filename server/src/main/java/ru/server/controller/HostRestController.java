@@ -25,6 +25,10 @@ public class HostRestController {
 
     private UserService userService;
 
+    @GetMapping
+    public String hello(){
+        return "Hello Vlad";
+    }
     @PostMapping(value = "/balance",consumes = "application/json")
     public BalanceDTO getBalance(@Valid @RequestBody AccountDTO accountDTO, BindingResult bindingResult){
         BalanceDTO responseBalance = new BalanceDTO();

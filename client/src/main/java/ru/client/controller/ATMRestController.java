@@ -3,6 +3,7 @@ package ru.client.controller;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestClientException;
@@ -42,5 +43,15 @@ public class ATMRestController {
     @GetMapping("/")
     public String getIndex(){
         return "index";
+    }
+
+    private HttpHeaders getAuthHeaders(AccountDTO accountDTO){
+        HttpHeaders headers = new HttpHeaders();
+
+        String login = accountDTO.getCardNumber();
+        String password = accountDTO.getPinCode();
+
+        headers.setBasicAuth(login,password);
+        return headers;
     }
 }
