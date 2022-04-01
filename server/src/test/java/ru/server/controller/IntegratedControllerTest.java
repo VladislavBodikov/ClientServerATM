@@ -24,6 +24,10 @@ public class IntegratedControllerTest {
     @Autowired
     private TestRestTemplate restTemplate;
 
+    //Basic auth
+    private String USERNAME = "admin";
+    private String PASSWORD = "admin";
+
     @Test
     @DisplayName("Создание пользователя в базе")
     public void createUser() {
@@ -133,38 +137,42 @@ public class IntegratedControllerTest {
     private BalanceDTO getBalance(AccountDTO accountDTO) {
         final String getBalanceURL = "/host/balance";
         HttpEntity<AccountDTO> requestBalance = new HttpEntity<>(accountDTO);
-        ResponseEntity<BalanceDTO> responseBalance = restTemplate.postForEntity(getBalanceURL, requestBalance, BalanceDTO.class);
+        ResponseEntity<BalanceDTO> responseBalance = restTemplate.withBasicAuth(USERNAME,PASSWORD).postForEntity(getBalanceURL, requestBalance, BalanceDTO.class);
         return responseBalance.getBody();
     }
 
     private boolean createUser(User user) {
-        final String createUserURL = "/host/create/user";
+        String url = "/host/create/user";
         HttpEntity<User> request = new HttpEntity<>(user);
-        ResponseEntity<String> response = restTemplate.postForEntity(createUserURL, request, String.class);
+        ResponseEntity<String> response = postToServer(url,request);
 
         return response.getBody().contains("USER SAVED");
     }
 
+    private ResponseEntity<String> postToServer(String url,HttpEntity request){
+        return restTemplate.withBasicAuth(USERNAME,PASSWORD).postForEntity(url,request,String.class);
+    }
+
     private boolean createAccount(Account account) {
-        final String createAccountURL = "/host/create/account";
+        String url = "/host/create/account";
         HttpEntity<Account> request = new HttpEntity<>(account);
-        ResponseEntity<String> response = restTemplate.postForEntity(createAccountURL, request, String.class);
+        ResponseEntity<String> response = postToServer(url,request);
 
         return response.getBody().contains("ACCOUNT SAVED");
     }
 
     private boolean removeUser(User user) {
-        final String removeUserURL = "/host/remove/user";
+        String url = "/host/remove/user";
         HttpEntity<User> request = new HttpEntity<>(user);
-        ResponseEntity<String> response = restTemplate.postForEntity(removeUserURL, request, String.class);
+        ResponseEntity<String> response = postToServer(url,request);
 
         return response.getBody().contains("removed");
     }
 
     private boolean removeAccount(Account account) {
-        final String removeAccURL = "/host/remove/account";
+        String url = "/host/remove/account";
         HttpEntity<Account> request = new HttpEntity<>(account);
-        ResponseEntity<String> response = restTemplate.postForEntity(removeAccURL, request, String.class);
+        ResponseEntity<String> response = postToServer(url,request);
 
         return response.getBody().contains("removed");
     }
