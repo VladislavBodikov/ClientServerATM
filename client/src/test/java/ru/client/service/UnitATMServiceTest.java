@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import ru.client.dto.BalanceDTO;
 
 import java.math.BigDecimal;
@@ -17,12 +18,15 @@ public class UnitATMServiceTest {
     @Autowired
     private ATMService atmService;
 
+    private ResponseEntity<BalanceDTO> responseEntity;
+
     @Test
     @DisplayName("SHOW BALANCE - success")
     void showBalanceSuccess() {
         BalanceDTO balanceDTO = getBalanceDTO();
 
-        String response = atmService.showBalance(balanceDTO);
+        responseEntity = new ResponseEntity<>(balanceDTO,HttpStatus.OK);
+        String response = atmService.printBalanceResponse(responseEntity);
 
         assertTrue(response.contains("BALANCE : " + balanceDTO.getAmount()));
     }
@@ -32,7 +36,8 @@ public class UnitATMServiceTest {
         BalanceDTO balanceDTO = getBalanceDTO();
         balanceDTO.setStatus(HttpStatus.BAD_REQUEST);
 
-        String response = atmService.showBalance(balanceDTO);
+        responseEntity = new ResponseEntity<>(balanceDTO,HttpStatus.BAD_REQUEST);
+        String response = atmService.printBalanceResponse(responseEntity);
 
         assertTrue(response.contains("Invalid input data : check card_number and pin_code!"));
     }
@@ -43,7 +48,8 @@ public class UnitATMServiceTest {
         BalanceDTO balanceDTO = new BalanceDTO();
         balanceDTO.setStatus(HttpStatus.EXPECTATION_FAILED);
 
-        String response = atmService.showBalance(balanceDTO);
+        responseEntity = new ResponseEntity<>(balanceDTO,HttpStatus.EXPECTATION_FAILED);
+        String response = atmService.printBalanceResponse(responseEntity);
 
         assertTrue(response.contains("WRONG PIN-CODE"));
     }
@@ -53,7 +59,8 @@ public class UnitATMServiceTest {
     void showBalanceFailureNull() {
         BalanceDTO balanceDTO = new BalanceDTO();
 
-        String response = atmService.showBalance(balanceDTO);
+        responseEntity = new ResponseEntity<>(balanceDTO,HttpStatus.OK);
+        String response = atmService.printBalanceResponse(responseEntity);
 
         assertTrue(response.contains("Balance status is null"));
     }
@@ -63,7 +70,8 @@ public class UnitATMServiceTest {
         BalanceDTO balanceDTO = new BalanceDTO();
         balanceDTO.setStatus(HttpStatus.CHECKPOINT); // unknown status for ATMService
 
-        String response = atmService.showBalance(balanceDTO);
+        responseEntity = new ResponseEntity<>(balanceDTO,HttpStatus.CHECKPOINT);
+        String response = atmService.printBalanceResponse(responseEntity);
 
         assertTrue(response.contains("Unexpected HttpResponse status!!!"));
     }

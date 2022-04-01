@@ -2,8 +2,6 @@ package ru.client.controller;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,35 +23,23 @@ public class ATMRestController {
 
     private ATMService atmService;
     private RestTemplate restTemplate;
-    @Autowired
-    private RestTemplateBuilder restTemplateBuilder;
 
     @PostMapping(path = "/balance", consumes = "application/json")
     public String balance(@RequestBody AccountDTO accountDTO) {
         setRestTemplateWithBasicAuth(accountDTO);
-        //restTemplate = getRestTemplateWithBasicAuth(accountDTO);
 
-        ResponseEntity<BalanceDTO> response = requestBalanceByAccountDTOData(accountDTO);
+        ResponseEntity<BalanceDTO> response = requestBalanceByAccountData(accountDTO);
 
         return atmService.printBalanceResponse(response);
     }
-    //stub
-    private RestTemplate getRestTemplateWithBasicAuth(AccountDTO accountDTO){
-        RestTemplateBuilder restTemplateBuilder = new RestTemplateBuilder();
 
-        String username = accountDTO.getCardNumber();
-        String password = accountDTO.getPinCode();
-        return restTemplate = restTemplateBuilder
-                .basicAuthentication(username, password)
-                .build();
-    }
     private void setRestTemplateWithBasicAuth(AccountDTO accountDTO){
         String username = accountDTO.getCardNumber();
         String password = accountDTO.getPinCode();
         restTemplate.getInterceptors().add(new BasicAuthenticationInterceptor(username,password));
     }
 
-    private ResponseEntity<BalanceDTO> requestBalanceByAccountDTOData(AccountDTO accountDTO){
+    private ResponseEntity<BalanceDTO> requestBalanceByAccountData(AccountDTO accountDTO){
         HttpEntity<AccountDTO> request = new HttpEntity<>(accountDTO);
         log.debug("REQUEST : " + request);
 
@@ -67,10 +53,4 @@ public class ATMRestController {
         log.debug("RESPONSE : " + response);
         return response;
     }
-
-    @GetMapping("/")
-    public String getIndex(){
-        return "index";
-    }
-
 }
