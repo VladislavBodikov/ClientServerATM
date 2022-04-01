@@ -3,6 +3,7 @@ package ru.server.controller;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.RequestEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.server.dto.AccountDTO;
@@ -84,7 +85,7 @@ public class HostRestController {
     }
 
     @GetMapping("/users")
-    public String getUsers() {
+    public String getUsers(RequestEntity request) {
         StringBuilder sb = new StringBuilder();
         userService.getAllUsers().forEach((x) -> sb.append(x.toString()).append(System.lineSeparator()));
         return sb.toString();

@@ -1,18 +1,24 @@
 package ru.client.service;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.client.dto.BalanceDTO;
-
-import java.util.Objects;
 
 @Service
 public class ATMService {
 
-    public String showBalance(BalanceDTO balanceDTO) {
+    public String printBalanceResponse(ResponseEntity<BalanceDTO> response) {
+        if (response.getBody() == null){
+            return  "ERROR : Response.body == null";
+        }
+
+        BalanceDTO balanceDTO = response.getBody();
         HttpStatus balanceStatus = balanceDTO.getStatus();
-        if (balanceStatus == null)
+
+        if (balanceStatus == null){
             return "Balance status is null";
+        }
 
         switch (balanceStatus) {
             case OK:
