@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static ru.server.DataForUnitTests.getAccountWithId;
 import static ru.server.DataForUnitTests.getUserWithId;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -11,8 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestTemplate;
 import ru.server.dto.AccountDTO;
 import ru.server.dto.BalanceDTO;
 import ru.server.entity.Account;
@@ -42,6 +45,11 @@ public class UnitControllerTest {
     private AccountService accountService;
     @Autowired
     private TestRestTemplate restTemplate;
+
+    //Basic auth
+    private String USERNAME = "admin";
+    private String PASSWORD = "admin";
+
     /**
      * In this section check controller mapping to URLs:
      *      1) /host/balance
@@ -279,22 +287,26 @@ public class UnitControllerTest {
     private BalanceDTO getBalance(AccountDTO accountDTO){
         String url = "/host/balance";
         HttpEntity<AccountDTO> requestBalance = new HttpEntity<>(accountDTO);
-        ResponseEntity<BalanceDTO> responseBalance = restTemplate.postForEntity(url, requestBalance, BalanceDTO.class);
+        ResponseEntity<BalanceDTO> responseBalance = restTemplate.withBasicAuth(USERNAME,PASSWORD).postForEntity(url, requestBalance, BalanceDTO.class);
         return responseBalance.getBody();
     }
 
     private boolean createUser(User user){
         String url = "/host/create/user";
         HttpEntity<User> request = new HttpEntity<>(user);
-        ResponseEntity<String> response = restTemplate.postForEntity(url,request,String.class);
+        ResponseEntity<String> response = postToServer(url,request);
 
         return response.getBody().contains("USER SAVED");
+    }
+
+    private ResponseEntity<String> postToServer(String url,HttpEntity request){
+        return restTemplate.withBasicAuth(USERNAME,PASSWORD).postForEntity(url,request,String.class);
     }
 
     private boolean createAccount(Account account){
         String url = "/host/create/account";
         HttpEntity<Account> request = new HttpEntity<>(account);
-        ResponseEntity<String> response = restTemplate.postForEntity(url,request,String.class);
+        ResponseEntity<String> response = postToServer(url,request);
 
         return response.getBody().contains("ACCOUNT SAVED");
     }
@@ -302,7 +314,7 @@ public class UnitControllerTest {
     private boolean removeUser(User user){
         String url = "/host/remove/user";
         HttpEntity<User> request = new HttpEntity<>(user);
-        ResponseEntity<String> response = restTemplate.postForEntity(url,request,String.class);
+        ResponseEntity<String> response = postToServer(url,request);
 
         return response.getBody().contains("removed");
     }
@@ -310,7 +322,7 @@ public class UnitControllerTest {
     private boolean removeAccount(Account account){
         String url = "/host/remove/account";
         HttpEntity<Account> request = new HttpEntity<>(account);
-        ResponseEntity<String> response = restTemplate.postForEntity(url,request,String.class);
+        ResponseEntity<String> response = postToServer(url,request);
 
         return response.getBody().contains("removed");
     }

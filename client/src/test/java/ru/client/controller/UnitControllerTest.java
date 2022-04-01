@@ -1,6 +1,5 @@
 package ru.client.controller;
 
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,25 +10,21 @@ import org.mockito.Spy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.client.RestTemplate;
 import ru.client.service.ATMService;
 import ru.client.dto.AccountDTO;
 import ru.client.dto.BalanceDTO;
 
-import static org.hamcrest.Matchers.*;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+
 import java.math.BigDecimal;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -52,14 +47,14 @@ public class UnitControllerTest {
     @DisplayName("CHECK balance - success")
     void checkBalance() throws Exception {
         // 1. request
-        AccountDTO accountDTO = getAccountDTO("11110000", "1001");
+        AccountDTO accountDTO = getAccountDTO("1111222211112222", "1221");
         // 2. response from SERVER
         ResponseEntity response = ResponseEntity
                 .ok()
                 .body(getBalanceDTO());
         Mockito.when(restTemplate.postForEntity(Mockito.anyString(), Mockito.any(), Mockito.any(Class.class)))
                 .thenReturn(response);
-        Mockito.when(atmService.showBalance(Mockito.any())).thenCallRealMethod();
+        Mockito.when(atmService.printBalanceResponse(Mockito.any())).thenCallRealMethod();
 
         String answer = atmRestController.balance(accountDTO);
         String expect = "\nCARD_NUMBER : "   + getBalanceDTO().getCardNumber() +
@@ -67,10 +62,20 @@ public class UnitControllerTest {
 
         Assertions.assertEquals(expect,answer);
     }
+
     @Test
     @DisplayName("/balance - check controller mapping ")
     void checkMappingBalance(){
+        AccountDTO accountDTO = getAccountDTO("1123","111");
 
+        ResponseEntity response = ResponseEntity
+                .ok()
+                .body(getBalanceDTO());
+        Mockito.when(restTemplate.postForEntity(Mockito.anyString(), Mockito.any(), Mockito.any(Class.class)))
+                .thenReturn(response);
+
+        String responseStr = sendAccountDTO(accountDTO);
+        System.out.println();
     }
 
     private String sendAccountDTO(AccountDTO accountRequest) {
@@ -88,7 +93,7 @@ public class UnitControllerTest {
 
     private BalanceDTO getBalanceDTO() {
         BalanceDTO balanceDTO = new BalanceDTO();
-        balanceDTO.setCardNumber("111");
+        balanceDTO.setCardNumber("1111222211112222");
         balanceDTO.setAmount(new BigDecimal("10.5"));
         balanceDTO.setStatus(HttpStatus.OK);
         return balanceDTO;
