@@ -75,7 +75,7 @@ public class UnitControllerTest {
                 .thenReturn(response);
 
         String responseStr = sendAccountDTO(accountDTO);
-        System.out.println();
+        Assertions.assertEquals("ERROR : Response.body == null",responseStr);
     }
 
     private String sendAccountDTO(AccountDTO accountRequest) {
