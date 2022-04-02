@@ -33,7 +33,7 @@ public class RemoveDataControllerIntegrationTest {
 
     private void clearRepositories() {
         if (repositories == null) {
-            repositories = new ArrayList<>() {{
+            repositories = new ArrayList() {{
                 add(accountRepository);
                 add(userRepository);
             }};

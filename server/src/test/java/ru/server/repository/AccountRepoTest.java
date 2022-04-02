@@ -49,7 +49,7 @@ public class AccountRepoTest {
     }
     private void clearRepositories(){
         if (repositories == null) {
-            repositories = new ArrayList<>() {{
+            repositories = new ArrayList() {{
                 add(accountCrudRepository);
                 add(userCrudRepository);
             }};

@@ -115,7 +115,7 @@ public class UserRepoTest {
 
     private List<CrudRepository> initListReposForClear() {
         if (listReposForClear == null) {
-            listReposForClear = new ArrayList<>() {{
+            listReposForClear = new ArrayList() {{
                 add(userCrudRepository);
             }};
         }
