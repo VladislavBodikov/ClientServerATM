@@ -18,21 +18,6 @@ import ru.server.entity.Permission;
 @EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-//    @Override
-//    protected void configure(HttpSecurity http) throws Exception {
-//        http
-//                .csrf().disable()
-//                .authorizeRequests()
-//                .antMatchers("/").permitAll()
-//                .antMatchers(HttpMethod.GET,"/host/**").hasAnyRole(Role.USER.name(),Role.ADMIN.name())
-//                .antMatchers(HttpMethod.POST,"/host/balance").hasAnyRole(Role.USER.name(),Role.ADMIN.name())
-//                .antMatchers(HttpMethod.POST,"/host/create/**").hasRole(Role.ADMIN.name())
-//                .antMatchers(HttpMethod.POST,"/host/remove/**").hasRole(Role.ADMIN.name())
-//                .anyRequest()
-//                .authenticated()
-//                .and()
-//                .httpBasic();
-//    }
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
@@ -70,21 +55,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                         .build()
         );
     }
+
     @Bean
     protected PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder(12);
     }
-
-//    @Bean
-//    protected DaoAuthenticationProvider daoAuthenticationProvider(){
-//        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-//        provider.setPasswordEncoder(passwordEncoder());
-//        provider.setUserDetailsService(userDetailsService);
-//        return provider;
-//    }
-//
-//    @Override
-//    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-//        auth.authenticationProvider(daoAuthenticationProvider());
-//    }
 }
