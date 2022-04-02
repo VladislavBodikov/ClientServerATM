@@ -18,13 +18,20 @@ public class AccountService {
     private AccountCrudRepository accountCrudRepository;
 
     public Optional<Account> save(Account account) {
-        boolean isScoreNumberExists = findByScoreNumber(account.getScoreNumber()).isPresent();
+        boolean isAccountNumberExists = findByAccountNumber(account.getAccountNumber()).isPresent();
         boolean isCardNumberExists = findByCardNumber(account.getCardNumber()).isPresent();
 
-        if (isCardNumberExists || isScoreNumberExists){
+        if (isCardNumberExists || isAccountNumberExists){
             return Optional.empty();
         }
         return Optional.of(accountCrudRepository.save(account));
+    }
+
+    public int removeById(Long id){
+        if (accountCrudRepository.existsById(id)){
+            return accountCrudRepository.removeById(id);
+        }
+        return 0;
     }
 
     public int removeByCardNumber(String cardNumber){
@@ -34,9 +41,9 @@ public class AccountService {
         return 0;
     }
 
-    public int removeByScoreNumber(String scoreNumber){
-        if (isScoreNumberExist(scoreNumber)) {
-            return accountCrudRepository.removeByScoreNumber(scoreNumber);
+    public int removeByAccountNumber(String scoreNumber){
+        if (isAccountNumberExist(scoreNumber)) {
+            return accountCrudRepository.removeByAccountNumber(scoreNumber);
         }
         return 0;
     }
@@ -51,12 +58,12 @@ public class AccountService {
         return accountCrudRepository.findByCardNumber(cardNumber);
     }
 
-    public Optional<Account> findByScoreNumber(String scoreNumber) {
-        return accountCrudRepository.findByScoreNumber(scoreNumber);
+    public Optional<Account> findByAccountNumber(String scoreNumber) {
+        return accountCrudRepository.findByAccountNumber(scoreNumber);
     }
 
-    public boolean isScoreNumberExist(String scoreNumber){
-        return findByScoreNumber(scoreNumber).isPresent();
+    public boolean isAccountNumberExist(String scoreNumber){
+        return findByAccountNumber(scoreNumber).isPresent();
     }
 
     public boolean isCardNumberExist(String cardNumber){

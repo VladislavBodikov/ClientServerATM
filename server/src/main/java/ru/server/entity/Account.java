@@ -23,9 +23,9 @@ public class Account {
     @Pattern(regexp = "^[\\d]{16}$")
     private String cardNumber;
 
-    @Column(name = "score_number",nullable = false)
+    @Column(name = "account_number",nullable = false)
     @Pattern(regexp = "^[\\d]{20}$")
-    private String scoreNumber;
+    private String accountNumber;
 
     private BigDecimal amount;
 
@@ -38,6 +38,6 @@ public class Account {
     private User user;
 
     public String toString() {
-        return "Account(id=" + this.getId() + ", cardNumber=" + this.getCardNumber() + ", scoreNumber=" + this.getScoreNumber() + ", amount=" + this.getAmount() + ", pinCode=****)";
+        return "Account(id=" + this.getId() + ", cardNumber=" + this.getCardNumber() + ", scoreNumber=" + this.getAccountNumber() + ", amount=" + this.getAmount() + ", pinCode=****)";
     }
 }
