@@ -1,5 +1,6 @@
 package ru.server.entity;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -10,6 +11,7 @@ import java.util.Set;
 public class EntityTest {
 
     @Test
+    @DisplayName("Account entity fields")
     void accountTest(){
         Account account = initAccount();
         User user = account.getUser();
@@ -17,7 +19,7 @@ public class EntityTest {
 //                ()->assertFalse(isNull),
                 ()->assertEquals(1,account.getId()),
                 ()->assertEquals(new BigDecimal("99.5"),account.getAmount()),
-                ()->assertEquals("4321",account.getScoreNumber()),
+                ()->assertEquals("4321",account.getAccountNumber()),
                 ()->assertEquals("1234",account.getCardNumber()),
                 ()->assertEquals("1111",account.getPinCode()),
                 ()->assertEquals(1,user.getId()),
@@ -26,7 +28,7 @@ public class EntityTest {
                 ()->assertEquals("4518",user.getPassportData()),
                 ()->assertEquals(new HashSet<>(),user.getAccounts()),
                 ()->assertEquals("Account(id=1, cardNumber=1234, scoreNumber=4321, amount=99.5, pinCode=****)",account.toString()),
-                ()->assertEquals("User(id=1, firstName=Vlad, lastName=Bodik, passportData=4518, status=null, role=null)",user.toString())
+                ()->assertEquals("User(id=1, firstName=Vlad, lastName=Bodik, passportData=4518, status=ACTIVE, role=USER)",user.toString())
 //                ()->
         );
 
@@ -49,7 +51,7 @@ public class EntityTest {
         account.setUser(user);
         account.setAmount(new BigDecimal("99.5"));
         account.setCardNumber("1234");
-        account.setScoreNumber("4321");
+        account.setAccountNumber("4321");
         account.setPinCode("1111");
         account.setId(1);
 
