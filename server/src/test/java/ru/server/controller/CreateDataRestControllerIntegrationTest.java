@@ -123,7 +123,7 @@ public class CreateDataRestControllerIntegrationTest {
     }
     @Test
     @DisplayName("Сохранение счета в базе - ПРОВАЛ (Попытка сохранить дубликат Account)")
-    void createScoreFailureDuplicate() {
+    void createAccountFailureDuplicate() {
         Account account = getAccountWithoutId();
         User user = account.getUser();
 
@@ -142,7 +142,7 @@ public class CreateDataRestControllerIntegrationTest {
 
     @Test
     @DisplayName("Сохранение счета в базе - ПРОВАЛ (юзер не найден)")
-    void createScoreFailure() {
+    void createAccountFailure() {
         final long notExistUserId = Long.MAX_VALUE;
         Account account = getAccountWithoutId();
         account.getUser().setId(notExistUserId);
@@ -162,7 +162,7 @@ public class CreateDataRestControllerIntegrationTest {
 
     @Test
     @DisplayName("Сохранение счета в базе - ПРОВАЛ (не валидные данные для сохранения)")
-    void createScoreFailureInvalidData() {
+    void createAccountFailureInvalidData() {
         Account account = getAccountWithoutId();
         User user = account.getUser();
         account.setPinCode("0");
