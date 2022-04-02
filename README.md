@@ -48,7 +48,7 @@ Server URL: http://localhost:8082/
       Debug API (USER,ADMIN authorities):
          Method GET: http://localhost:8082/host/users - get all Users in database at server;
          Method GET: http://localhost:8082/host/accounts - get all Accounts in database at server;
----
+
 <h1>Available auth users:</h1>
 Since work on the implementation of authentication and authorization continues, 3 users are currently available
 
@@ -70,21 +70,21 @@ Password  :  pin_code;
            Username: "admin";
            Password: "admin";
 
----
+
 <h1>Require to install and work:</h1>
 1. JDK 8
 
 2. cURL
 
 
----
+
 <h1>How to install:</h1>
 1. Download and open the project
 2. For submodules "client" and "server" should run - <b>*mvn clean package*</b> 
 3. Run JAR by console : <b>*java -jar name_of_JAR*</b>
 
 
----
+
 <h1>Preparing app data for work:</h1>
 
 1. Init 2 test Users and 3 test Accounts with cURL requests
@@ -99,7 +99,7 @@ Password  :  pin_code;
 3. Application now is ready for work
 
 
----
+
 <h1>Instruction for work:</h1>
 1. For checking balance on card: send JSON with <b>"card_number"</b> and <b>"pin_code"</b> to Client API:
 
