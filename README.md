@@ -20,12 +20,12 @@ Stack:
 
 
 
-#MVP (Minimum Viable Product)
+<h1>MVP (Minimum Viable Product)</h1>
 
 Get balance on the card.
 
 ---
-<b>Available APIs:</b>
+<h1>Available APIs:</h1>
 
 Client URL: http://localhost:8080/
 
@@ -50,6 +50,7 @@ Server URL: http://localhost:8082/
          Method GET: http://localhost:8082/host/accounts - get all Accounts in database at server;
 
 <h1>Available auth users:</h1>
+
 Since work on the implementation of authentication and authorization continues, 3 users are currently available
 
 Username  :  card_number;
@@ -80,6 +81,7 @@ Password  :  pin_code;
 
 
 <h1>How to install:</h1>
+
 1. Download and open the project
 2. For submodules "client" and "server" should run - <b>*mvn clean package*</b> 
 3. Run JAR by console : <b>*java -jar name_of_JAR*</b>
