@@ -1,4 +1,4 @@
-package security;
+package ru.server.entity;
 
 public enum Permission {
     READ("read"),

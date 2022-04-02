@@ -2,7 +2,6 @@ package ru.server.entity;
 
 import lombok.Getter;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import security.Permission;
 
 import java.util.Set;
 import java.util.stream.Collectors;

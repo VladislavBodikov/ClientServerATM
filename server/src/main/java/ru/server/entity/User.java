@@ -35,8 +35,8 @@ public class User {
 
     @Enumerated(value = EnumType.STRING)
     @Column(name = "status")
-    private Status status;
+    private Status status = Status.ACTIVE;
     @Enumerated(value = EnumType.STRING)
     @Column(name = "role")
-    private Role role;
+    private Role role = Role.USER;
 }

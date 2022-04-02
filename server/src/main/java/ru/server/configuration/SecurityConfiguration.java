@@ -12,7 +12,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import ru.server.entity.Role;
-import security.Permission;
+import ru.server.entity.Permission;
 
 @Configuration
 @EnableWebSecurity
@@ -43,6 +43,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST,"/host/balance").hasAuthority(Permission.READ.getPermission())
                 .antMatchers(HttpMethod.POST,"/host/create/**").hasAuthority(Permission.WRITE.getPermission())
                 .antMatchers(HttpMethod.POST,"/host/remove/**").hasAuthority(Permission.WRITE.getPermission())
+                .antMatchers(HttpMethod.DELETE,"/host/remove/**").hasAuthority(Permission.WRITE.getPermission())
                 .anyRequest()
                 .authenticated()
                 .and()
