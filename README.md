@@ -18,6 +18,8 @@ Stack:
 
 --Spring Security
 
+
+
 #MVP (Minimum Viable Product)
 
 Get balance on the card.
@@ -67,14 +69,20 @@ Password  :  pin_code;
            Username: "admin";
            Password: "admin";
 
-
+---
 #Require to install and work:
 1. JDK 8
 2. cURL
+
+
+---
 #How to install:
 1. Download and open the project
 2. For submodules "client" and "server" should run - <b>*mvn clean package*</b> 
 3. Run JAR by console : <b>*java -jar name_of_JAR*</b>
+
+
+---
 #Preparing app data for work:
 
 1. Init 2 test Users and 3 test Accounts with cURL requests
@@ -88,6 +96,8 @@ Password  :  pin_code;
         curl -X POST http://localhost:8082/host/create/account -H "Authorization: Basic YWRtaW46YWRtaW4=" -H "Content-Type: application/json" -d {\"cardNumber\":\"1111333311113333\",\"accountNumber\":\"40800000000000000003\",\"amount\":\"4444.50\",\"pinCode\":\"1221\",\"user\":{\"id\":2}}
 3. Application now is ready for work
 
+
+---
 #Instruction for work:
 1. For checking balance on card: send JSON with <b>"card_number"</b> and <b>"pin_code"</b> to Client API:
 
