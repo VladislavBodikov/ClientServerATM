@@ -14,6 +14,8 @@ import ru.client.dto.BalanceDTO;
 import ru.client.dto.TransactionDTO;
 import ru.client.service.ATMService;
 
+import java.math.BigDecimal;
+
 @RestController
 @RequestMapping("/client")
 @AllArgsConstructor
@@ -62,10 +64,13 @@ public class ATMRestController {
         setRestTemplateWithBasicAuth(transactionDTO.getAccountFrom());
 
         ResponseEntity<BalanceDTO> balanceBeforeTransfer = requestBalance(transactionDTO.getAccountFrom());
+        ResponseEntity<BalanceDTO> balanceAfterTransfer;
 
-        ResponseEntity<BalanceDTO> balanceAfterTransfer = transfer(transactionDTO);
-
-        return atmService.printResultOfTransaction(balanceBeforeTransfer,balanceAfterTransfer,transactionDTO.getAmountToTransfer());
+        if (balanceBeforeTransfer.getBody().getAmount().subtract(transactionDTO.getAmountToTransfer()).compareTo(new BigDecimal(0)) >= 0){
+            balanceAfterTransfer = transfer(transactionDTO);
+            return atmService.printResultOfTransaction(balanceBeforeTransfer,balanceAfterTransfer,transactionDTO.getAmountToTransfer());
+        }
+        return "\ndont have enough money to transfer\n";
     }
 
     private ResponseEntity<BalanceDTO> transfer(TransactionDTO transactionDTO){
