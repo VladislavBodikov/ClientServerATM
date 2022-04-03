@@ -5,6 +5,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.client.dto.BalanceDTO;
 
+import java.math.BigDecimal;
+
 @Service
 public class ATMService {
 
@@ -30,5 +32,21 @@ public class ATMService {
             default:
                 return "\nUnexpected HttpResponse status!!!\n";
         }
+    }
+
+    public String printResultOfTransaction(
+            ResponseEntity<BalanceDTO> balanceBeforeTransfer,
+            ResponseEntity<BalanceDTO> balanceAfterTransfer,
+            BigDecimal amountToTransfer){
+
+        BigDecimal before = balanceBeforeTransfer.getBody().getAmount();
+        BigDecimal after = balanceAfterTransfer.getBody().getAmount();
+
+        if (before.subtract(amountToTransfer).compareTo(after) == 0){
+            return "\nTransfer success!\n" +
+                    "Balance BEFORE: " + before + "\n" +
+                    "Balance AFTER: " + after + "\n";
+        }
+        return "\nTransfer denied!\n";
     }
 }
