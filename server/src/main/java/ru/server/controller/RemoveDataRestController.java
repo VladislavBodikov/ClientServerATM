@@ -24,42 +24,83 @@ public class RemoveDataRestController {
     public String removeUser(@Valid @RequestBody User user) {
         int changedRows = userService.removeByFirstNameAndLastName(user);
 
-        if (changedRows > 0) {
-            log.info("\nuser removed: " + user);
-            return "\nuser removed: " + user + "\n";
+        boolean isSomeRowsWasChangedInDatabase = changedRows > 0;
+        if (isSomeRowsWasChangedInDatabase) {
+            String userRemovedSuccess = userRemovedSuccessful(user);
+            log.info(userRemovedSuccess);
+            return userRemovedSuccess;
         }
-        return "\nuser not found to remove\n";
+        return userNotFoundToRemove(user);
+    }
+
+    private String userRemovedSuccessful(User user) {
+        return "\nuser removed: " + user + "\n";
+    }
+
+    private String userNotFoundToRemove(User user) {
+        return "\nuser not found to remove" + user + "\n";
+    }
+
+    @DeleteMapping("/user/{id}")
+    public String removeUserById(@PathVariable Long id) {
+        int changedRows = userService.removeById(id);
+
+        boolean isSomeRowsWasChangedInDatabase = changedRows > 0;
+        if (isSomeRowsWasChangedInDatabase) {
+            String userRemovedSuccess = userRemovedByIdSuccess(id);
+            log.info(userRemovedSuccess);
+            return userRemovedSuccess;
+        }
+        return userNotFoundByIdToRemove(id);
+    }
+
+    private String userRemovedByIdSuccess(Long id) {
+        return "\nuser with ID: " + id + " removed";
+    }
+
+    private String userNotFoundByIdToRemove(Long id) {
+        return "\nuser with ID: " + id + " not found to remove\n";
     }
 
     @PostMapping("/account")
     public String removeAccount(@Valid @RequestBody Account account) {
         int changedRows = accountService.removeByAccountNumber(account.getAccountNumber());
 
-        if (changedRows > 0) {
-            log.info("\naccount removed: " + account);
-            return "\naccount " + " removed" + account + "\n";
+        boolean isSomeRowsWasChangedInDatabase = changedRows > 0;
+        if (isSomeRowsWasChangedInDatabase) {
+            String accountRemovedSuccessful = accountRemovedSuccessful(account);
+            log.info(accountRemovedSuccessful);
+            return accountRemovedSuccessful;
         }
-        return "\naccount not found to remove\n";
+        return accountNotFoundToRemove(account);
+    }
+
+    private String accountRemovedSuccessful(Account account) {
+        return "\naccount removed: " + account + "\n";
+    }
+
+    private String accountNotFoundToRemove(Account account) {
+        return "\naccount not found to remove" + account + "\n";
     }
 
     @DeleteMapping("/account/{id}")
-    public String removeAccountById(@PathVariable Long id){
+    public String removeAccountById(@PathVariable Long id) {
         int changedRows = accountService.removeById(id);
 
-        if (changedRows > 0) {
-            log.info("\naccount with ID: "+ id + " removed");
-            return "\naccount with ID: "+ id + " removed\n";
+        boolean isSomeRowsWasChangedInDatabase = changedRows > 0;
+        if (isSomeRowsWasChangedInDatabase) {
+            String accountRemovedSuccess = accountRemovedByIdSuccess(id);
+            log.info(accountRemovedSuccess);
+            return accountRemovedSuccess;
         }
-        return "\naccount not found to remove\n";
+        return accountNotFoundToRemoveById(id);
     }
-    @DeleteMapping("/user/{id}")
-    public String removeUserById(@PathVariable Long id){
-        int changedRows = userService.removeById(id);
 
-        if (changedRows > 0) {
-            log.info("\nuser with ID: "+ id + " removed");
-            return "\nuser with ID: " + id + " removed\n";
-        }
-        return "\nuser not found to remove\n";
+    private String accountRemovedByIdSuccess(Long id) {
+        return "\naccount with ID: " + id + " removed\n";
+    }
+
+    private String accountNotFoundToRemoveById(Long id) {
+        return "\naccount with ID: " + id + "not found to remove\n";
     }
 }

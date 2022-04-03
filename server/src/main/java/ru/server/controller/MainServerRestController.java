@@ -24,23 +24,27 @@ public class MainServerRestController {
 
     private UserService userService;
 
-    @PostMapping(value = "/balance",consumes = "application/json")
-    public BalanceDTO getBalance(@Valid @RequestBody AccountDTO accountDTO, BindingResult bindingResult){
+    @PostMapping(value = "/balance", consumes = "application/json")
+    public BalanceDTO getBalance(@Valid @RequestBody AccountDTO accountDTO, BindingResult bindingResult) {
         BalanceDTO responseBalance = new BalanceDTO();
-        // if not valid input data
-        if (bindingResult.hasErrors()){
+
+        boolean isInputDataNotValid = bindingResult.hasErrors();
+        if (isInputDataNotValid) {
             prepareBalanceToResponseInvalidInputData(responseBalance);
             return responseBalance;
         }
 
         Optional<Account> accountFromDB = accountService.findByCardNumber(accountDTO.getCardNumber());
-        if (accountFromDB.isPresent()){
-            Account accountDB = accountFromDB.get();
-            if (isCorrectPinCode(accountDTO, accountDB)){
-                prepareBalanceToResponsePinCodeIsCorrect(responseBalance, accountDB);
-            }
-            else {
-                prepareBalanceToResponsePinCodeIsNotCorrect(responseBalance);
+        boolean isAccountFound = accountFromDB.isPresent();
+        if (isAccountFound) {
+            Account accountFromDb = accountFromDB.get();
+            String incomingPin = accountDTO.getPinCode();
+            String databasePin = accountFromDb.getPinCode();
+            
+            if (isPinCorrect(incomingPin, databasePin)) {
+                prepareBalanceToResponsePinCorrect(responseBalance, accountFromDb);
+            } else {
+                prepareBalanceToResponsePinNotCorrect(responseBalance);
             }
         }
         return responseBalance;
@@ -50,20 +54,18 @@ public class MainServerRestController {
         responseBalance.setStatus(HttpStatus.BAD_REQUEST);
     }
 
-    private void prepareBalanceToResponsePinCodeIsNotCorrect(BalanceDTO responseBalance) {
-        responseBalance.setStatus(HttpStatus.EXPECTATION_FAILED);
+    private boolean isPinCorrect(String inputPin, String pinFromDatabase) {
+        return inputPin.equals(pinFromDatabase);
     }
 
-    private void prepareBalanceToResponsePinCodeIsCorrect(BalanceDTO responseBalance, Account accountDB) {
+    private void prepareBalanceToResponsePinCorrect(BalanceDTO responseBalance, Account accountDB) {
         responseBalance.setCardNumber(accountDB.getCardNumber());
         responseBalance.setAmount(accountDB.getAmount());
         responseBalance.setStatus(HttpStatus.OK);
     }
 
-    private boolean isCorrectPinCode(AccountDTO accountDTO, Account accountFromDB) {
-        String inputPinCode = accountDTO.getPinCode();
-        String PinCodeFromDB = accountFromDB.getPinCode();
-        return inputPinCode.equals(PinCodeFromDB);
+    private void prepareBalanceToResponsePinNotCorrect(BalanceDTO responseBalance) {
+        responseBalance.setStatus(HttpStatus.EXPECTATION_FAILED);
     }
 
     @GetMapping("/accounts")
