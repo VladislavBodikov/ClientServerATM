@@ -107,7 +107,6 @@ Password  :  pin_code;
 
 1. For checking balance on card: send JSON with <b>"card_number"</b> and <b>"pin_code"</b> to Client API:
 
-   
 
       Method POST: http://localhost:8080/client/balance 
 
