@@ -57,14 +57,6 @@ public class AccountService {
     }
 
     public Optional<Account> findByCardNumber(String cardNumber) {
-        Optional<Account> op = accountCrudRepository.findByCardNumber(cardNumber);
-        if (op.isPresent()){
-            User user = op.get().getUser();
-            Account accountToResponse = op.get();
-            accountToResponse.setUser(user);
-            return Optional.of(accountToResponse);
-        }
-
         return accountCrudRepository.findByCardNumber(cardNumber);
     }
 
