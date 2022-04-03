@@ -108,16 +108,17 @@ Password  :  pin_code;
 1. For checking balance on card: send JSON with <b>"card_number"</b> and <b>"pin_code"</b> to Client API:
 
    
+
       Method POST: http://localhost:8080/client/balance 
 
    Example:
 
-      Data:
-         card_number: 1111222211112222
-         pin_code:    1221
 
+      Data:
+      card_number: 1111222211112222
+      pin_code:    1221    
       Request:
-         curl -X POST http://localhost:8080/client/balance -H "Content-Type: application/json" -d {\"cardNumber\":\"1111222211112222\",\"pinCode\":\"1221\"}
+      curl -X POST http://localhost:8080/client/balance -H "Content-Type: application/json" -d {\"cardNumber\":\"1111222211112222\",\"pinCode\":\"1221\"}
 
 Response should be like:
 
@@ -132,7 +133,6 @@ Response should be like:
       Data:
          card_number: 1111222211112222
          pin_code:    9999
-
       Request:
          curl -X POST http://localhost:8080/client/balance -H "Content-Type: application/json" -d {\"cardNumber\":\"1111222211112222\",\"pinCode\":\"9999\"}
 
@@ -145,12 +145,13 @@ Response should be like:
 3. If pin-code has not valid - pin=code should consist of 4 digits
 
 
+
       Data:
          card_number: 1111222211112222
          pin_code:    asd11235
-   
+      
       Request:
-      curl -X POST http://localhost:8080/client/balance -H "Content-Type: application/json" -d {\"cardNumber\":\"1111222211112222\",\"pinCode\":\"9999\"}
+         curl -X POST http://localhost:8080/client/balance -H "Content-Type: application/json" -d {\"cardNumber\":\"1111222211112222\",\"pinCode\":\"9999\"}
 
 Response should be like:
 
