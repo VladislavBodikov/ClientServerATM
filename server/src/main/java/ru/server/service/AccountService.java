@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.server.entity.Account;
+import ru.server.entity.User;
 import ru.server.repository.AccountCrudRepository;
 
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ import java.util.Optional;
 public class AccountService {
 
     private AccountCrudRepository accountCrudRepository;
+    private UserService userService;
 
     public Optional<Account> save(Account account) {
         boolean isAccountNumberExists = findByAccountNumber(account.getAccountNumber()).isPresent();
@@ -55,6 +57,14 @@ public class AccountService {
     }
 
     public Optional<Account> findByCardNumber(String cardNumber) {
+        Optional<Account> op = accountCrudRepository.findByCardNumber(cardNumber);
+        if (op.isPresent()){
+            User user = op.get().getUser();
+            Account accountToResponse = op.get();
+            accountToResponse.setUser(user);
+            return Optional.of(accountToResponse);
+        }
+
         return accountCrudRepository.findByCardNumber(cardNumber);
     }
 

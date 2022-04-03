@@ -59,9 +59,9 @@ public class CreateDataRestController {
                 log.info("\naccount saved :" + savedAccount.get());
                 return "\nACCOUNT SAVED: " + account + "\n";
             }
-            return "Account with (card_number or score_number) already exist! : " + account + "\n";
+            return "\nAccount with (card_number or score_number) already exist! : " + account + "\n";
         }
-        return "User :" + account.getUser() + " not found!" + "\n";
+        return "\nUser :" + account.getUser() + " not found!" + "\n";
     }
 
     private String responseIfInputDataNotValid() {
