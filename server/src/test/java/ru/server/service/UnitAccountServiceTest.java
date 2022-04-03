@@ -13,6 +13,7 @@ import static ru.server.DataForUnitTests.*;
 
 import ru.server.entity.Account;
 import ru.server.repository.AccountCrudRepository;
+import ru.server.repository.UserCrudRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +23,8 @@ import java.util.Optional;
 public class UnitAccountServiceTest {
     @MockBean
     private AccountCrudRepository accountCrudRepository;
+    @MockBean
+    private UserService userService;
     @Autowired
     private AccountService accountService;
 
@@ -32,6 +35,7 @@ public class UnitAccountServiceTest {
         Mockito.when(accountCrudRepository.findByCardNumber(Mockito.any())).thenReturn(Optional.empty());
         Mockito.when(accountCrudRepository.findByAccountNumber(Mockito.any())).thenReturn(Optional.empty());
         Mockito.when(accountCrudRepository.save(Mockito.any())).thenReturn(account);
+        Mockito.when(userService.findByNameIfNotHaveId(Mockito.any())).thenReturn(Optional.of(account.getUser()));
 
         boolean isAccountSave = accountService.save(account).isPresent();
 

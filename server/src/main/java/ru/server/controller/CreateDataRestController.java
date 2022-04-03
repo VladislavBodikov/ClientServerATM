@@ -62,26 +62,14 @@ public class CreateDataRestController {
             return responseIfInputDataNotValid();
         }
 
-        Optional<User> userFromDB = userService.findByNameIfNotHaveId(account.getUser());
-        boolean isUserExist = userFromDB.isPresent();
-        if (isUserExist) {
-            account.setUser(userFromDB.get());
-            Optional<Account> savedAccount = accountService.save(account);
-            boolean isAccountSaved = savedAccount.isPresent();
-            if (isAccountSaved) {
-
-                String accountSavedSuccessful = accountSavedSuccess(savedAccount.get());
-                log.info(accountSavedSuccessful);
-                return accountSavedSuccessful;
-            }
-            return accountAlreadyExist(account);
+        Optional<Account> savedAccount = accountService.save(account);
+        boolean isAccountSaved = savedAccount.isPresent();
+        if (isAccountSaved) {
+            String accountSavedSuccessful = accountSavedSuccess(savedAccount.get());
+            log.info(accountSavedSuccessful);
+            return accountSavedSuccessful;
         }
-
-        return userNotFound(account.getUser());
-    }
-
-    private String userNotFound(User user) {
-        return "\nUser :" + user + " not found!" + "\n";
+        return accountAlreadyExist(account);
     }
 
     private String accountSavedSuccess(Account account){
@@ -89,6 +77,6 @@ public class CreateDataRestController {
     }
 
     private String accountAlreadyExist(Account account) {
-        return "\nAccount with (card_number or score_number) already exist! : " + account + "\n";
+        return "\nAccount with (card_number || score_number) already exist! : " + account + "\n";
     }
 }

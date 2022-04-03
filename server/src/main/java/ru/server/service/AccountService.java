@@ -26,7 +26,15 @@ public class AccountService {
         if (isCardNumberExists || isAccountNumberExists){
             return Optional.empty();
         }
-        return Optional.of(accountCrudRepository.save(account));
+
+        Optional<User> userFromDB = userService.findByNameIfNotHaveId(account.getUser());
+        boolean isUserExist = userFromDB.isPresent();
+        if (isUserExist) {
+            account.setUser(userFromDB.get());
+            return Optional.of(accountCrudRepository.save(account));
+        } else {
+            return Optional.empty();
+        }
     }
 
     public int removeById(Long id){
