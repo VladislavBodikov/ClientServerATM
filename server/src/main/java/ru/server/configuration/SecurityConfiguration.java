@@ -26,6 +26,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/").permitAll()
                 .antMatchers(HttpMethod.GET, "/host/**").hasAuthority(Permission.READ.getPermission())
                 .antMatchers(HttpMethod.POST, "/host/balance").hasAuthority(Permission.READ.getPermission())
+                .antMatchers(HttpMethod.POST, "/host/money/transfer").hasAuthority(Permission.READ.getPermission())
                 .antMatchers(HttpMethod.POST, "/host/create/**").hasAuthority(Permission.WRITE.getPermission())
                 .antMatchers(HttpMethod.POST, "/host/remove/**").hasAuthority(Permission.WRITE.getPermission())
                 .antMatchers(HttpMethod.DELETE, "/host/remove/**").hasAuthority(Permission.WRITE.getPermission())
