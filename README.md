@@ -104,51 +104,55 @@ Password  :  pin_code;
 
 
 <h1>Instruction for work:</h1>
+
 1. For checking balance on card: send JSON with <b>"card_number"</b> and <b>"pin_code"</b> to Client API:
 
    
-      Method POST: http://localhost:8080/client/balance 
+         Method POST: http://localhost:8080/client/balance 
 
    Example:
 
-      Data:
-         card_number: 1111222211112222
-         pin_code:    1221
-
-      Request:
-         curl -X POST http://localhost:8080/client/balance -H "Content-Type: application/json" -d {\"cardNumber\":\"1111222211112222\",\"pinCode\":\"1221\"}
+         Data:
+            card_number: 1111222211112222
+            pin_code:    1221
+   
+         Request:
+            curl -X POST http://localhost:8080/client/balance -H "Content-Type: application/json" -d {\"cardNumber\":\"1111222211112222\",\"pinCode\":\"1221\"}
 
 Response should be like:
 
 
-      CARD_NUMBER : 1111222211112222
-      BALANCE : 390.50
+         CARD_NUMBER : 1111222211112222
+         BALANCE : 390.50
+
+
 2. If data has wong PIN-code
 
 
-      Data:
-         card_number: 1111222211112222
-         pin_code:    9999
+         Data:
+            card_number: 1111222211112222
+            pin_code:    9999
+   
+         Request:
+            curl -X POST http://localhost:8080/client/balance -H "Content-Type: application/json" -d {\"cardNumber\":\"1111222211112222\",\"pinCode\":\"9999\"}
 
-      Request:
+Response should be like:
+
+
+         WRONG PIN-CODE
+
+
+3. If pin-code has not valid - pin=code should consist of 4 digits
+
+
+         Data:
+            card_number: 1111222211112222
+            pin_code:    asd11235
+      
+         Request:
          curl -X POST http://localhost:8080/client/balance -H "Content-Type: application/json" -d {\"cardNumber\":\"1111222211112222\",\"pinCode\":\"9999\"}
 
 Response should be like:
 
 
-      WRONG PIN-CODE
-
-3. If pin-code has not valid - pin=code should consist of 4 digits
-
-
-      Data:
-         card_number: 1111222211112222
-         pin_code:    asd11235
-   
-      Request:
-      curl -X POST http://localhost:8080/client/balance -H "Content-Type: application/json" -d {\"cardNumber\":\"1111222211112222\",\"pinCode\":\"9999\"}
-
-Response should be like:
-
-
-     Invalid input data : check card_number and pin_code!
+      Invalid input data : check card_number and pin_code!
