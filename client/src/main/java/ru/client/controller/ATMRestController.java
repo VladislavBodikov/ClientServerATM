@@ -66,11 +66,15 @@ public class ATMRestController {
         ResponseEntity<BalanceDTO> balanceBeforeTransfer = requestBalance(transactionDTO.getAccountFrom());
         ResponseEntity<BalanceDTO> balanceAfterTransfer;
 
-        if (balanceBeforeTransfer.getBody().getAmount().subtract(transactionDTO.getAmountToTransfer()).compareTo(new BigDecimal(0)) >= 0){
+        boolean isEnoughBalanceForTransfer = balanceBeforeTransfer.getBody().getAmount()
+                .subtract(transactionDTO.getAmountToTransfer())
+                .compareTo(new BigDecimal(0)) >= 0;
+
+        if (isEnoughBalanceForTransfer){
             balanceAfterTransfer = transfer(transactionDTO);
             return atmService.printResultOfTransaction(balanceBeforeTransfer,balanceAfterTransfer,transactionDTO.getAmountToTransfer());
         }
-        return "\ndont have enough money to transfer\n";
+        return "\nDon`t have enough money to transfer!\n";
     }
 
     private ResponseEntity<BalanceDTO> transfer(TransactionDTO transactionDTO){
@@ -82,7 +86,7 @@ public class ATMRestController {
             response = restTemplate.postForEntity(SERVER_URL + MONEY_TRANSFER_URL, request, BalanceDTO.class);
         } catch (RestClientException exception) {
             log.error(exception.getMessage());
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
+            return new ResponseEntity<>(new BalanceDTO(),HttpStatus.CONFLICT);
         }
         log.debug("RESPONSE : " + response);
         return response;
