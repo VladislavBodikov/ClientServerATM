@@ -83,7 +83,7 @@ public class AccountService {
         return findByCardNumber(cardNumber).isPresent();
     }
 
-    public Account transfer(String cardNumberFrom, BigDecimal amountToTransfer, String cardNumberTo){
+    public Account transactionCardToCard(String cardNumberFrom, BigDecimal amountToTransfer, String cardNumberTo){
         Optional<Account> accountFromOpt = accountCrudRepository.findByCardNumber(cardNumberFrom);
         Optional<Account> accountToOpt   = accountCrudRepository.findByCardNumber(cardNumberTo);
         boolean isExistAccountFrom = accountFromOpt.isPresent();
@@ -108,9 +108,10 @@ public class AccountService {
                 save(accountFrom);
                 save(accountTo);
 
-                return accountCrudRepository.findByCardNumber(cardNumberFrom).get();
+//                return accountCrudRepository.findByCardNumber(cardNumberFrom).get();
+                return accountFrom;
             }
-            String exceptionMessage = "\nAccount : " + accountFrom + "\n Dont have enough money to transfer : "+ amountToTransfer + "\n";
+            String exceptionMessage = "\nAccount : " + accountFrom + "\n Don`t have enough money to transfer : "+ amountToTransfer + "\n";
             throw new DontHaveEnoughMoneyException(exceptionMessage);
         }
         String exceptionMessage = "\nAccount with card_number : " + cardNumberFrom + " or account with card_number : "+ cardNumberTo + " not found\n";

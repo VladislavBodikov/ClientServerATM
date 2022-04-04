@@ -96,26 +96,27 @@ public class MainServerRestController {
 
         Account accountAfterTransfer;
         try{
-            accountAfterTransfer = accountService.transfer(cardNumberFrom,amountToTransfer,cardNumberTo);
+            accountAfterTransfer = accountService.transactionCardToCard(cardNumberFrom,amountToTransfer,cardNumberTo);
+            prepareBalanceToResponseSuccess(responseBalance, accountAfterTransfer);
         }
         catch (DontHaveEnoughMoneyException moneyEx){
+            log.info(moneyEx.getMessage());
             prepareResponseBalanceIfDontHaveEnoughMoneyToTransfer(responseBalance, moneyEx);
             return responseBalance;
         }
         catch (AccountNotFoundException accEx){
+            log.info(accEx.getMessage());
             prepareResponseBalanceIfAccountsForTransferNotFound(responseBalance,accEx);
             return responseBalance;
         }
-        prepareBalanceToResponseSuccess(responseBalance, accountAfterTransfer);
+        log.info("\nSUCCESS TRANSACTION \nFrom card: " + cardNumberFrom + " to card: " + cardNumberTo + " \nVALUE : " + amountToTransfer + "\n");
         return responseBalance;
     }
 
     private void prepareResponseBalanceIfDontHaveEnoughMoneyToTransfer(BalanceDTO responseBalance, DontHaveEnoughMoneyException e) {
-        log.info(e.getMessage());
         responseBalance.setStatus(HttpStatus.BAD_GATEWAY);
     }
     private void prepareResponseBalanceIfAccountsForTransferNotFound(BalanceDTO responseBalance, AccountNotFoundException e) {
-        log.info(e.getMessage());
         responseBalance.setStatus(HttpStatus.EXPECTATION_FAILED);
     }
 }
