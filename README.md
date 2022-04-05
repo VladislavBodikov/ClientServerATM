@@ -217,14 +217,13 @@ Response should be like:
 3. If don`t have enough money to transfer
 
 
-
       Data:
-         card_number_from : 1111333311113333
-         pin_code:    1221   
-         car_number_to : 1111222211112222
-         amount_to_transfer : 100000000
+      card_number_from : 1111333311113333
+      pin_code:    1221   
+      car_number_to : 1111222211112222
+      amount_to_transfer : 100000000
       Request:
-         curl -X POST http://localhost:8080/client/money/transfer -H "Content-Type: application/json" -d {\"accountFrom\":{\"cardNumber\":\"1111333311113333\",\"pinCode\":\"1221\"},\"cardNumberTo\":\"1111222211112222\",\"amountToTransfer\":\"100000000\"} 
+      curl -X POST http://localhost:8080/client/money/transfer -H "Content-Type: application/json" -d {\"accountFrom\":{\"cardNumber\":\"1111333311113333\",\"pinCode\":\"1221\"},\"cardNumberTo\":\"1111222211112222\",\"amountToTransfer\":\"100000000\"} 
 
 Response should be like:
 
