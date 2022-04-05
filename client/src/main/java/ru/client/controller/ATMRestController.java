@@ -65,7 +65,7 @@ public class ATMRestController {
 
         ResponseEntity<BalanceDTO> balanceBeforeTransfer = requestBalance(transactionDTO.getAccountFrom());
         boolean isRequestBalanceFailure = balanceBeforeTransfer.getStatusCode() == HttpStatus.CONFLICT
-                                || balanceBeforeTransfer.getBody() == null;
+                                        || balanceBeforeTransfer.getBody() == null;
         if (isRequestBalanceFailure){
             log.error("\nFailed request balance from server with data: " + transactionDTO + "\n");
             return "\nWRONG PIN-CODE\n";

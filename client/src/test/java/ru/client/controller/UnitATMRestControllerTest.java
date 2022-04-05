@@ -168,6 +168,29 @@ public class UnitATMRestControllerTest {
     }
 
     @Test
+    @DisplayName("MONEY TRANSACTION - failure (wrong pin)")
+    void sendMoneyWrongPinCodeFailure(){
+        // prepare data to send money
+        AccountDTO accountFrom = getAccountDTO("1111","0000");
+        BigDecimal amountToTransfer = new BigDecimal("800.00");
+
+        TransactionDTO transactionRequest = getTransactionDTO(accountFrom, amountToTransfer);
+
+        // mock response from server
+        ResponseEntity<BalanceDTO> responseBalanceBeforeTrans = ResponseEntity.ok().body(null);
+        String EXPECTED_MESSAGE_AFTER_TRANSACTION = "\nWRONG PIN-CODE\n";
+
+        HttpEntity<AccountDTO> request = new HttpEntity<>(accountFrom);
+        Mockito.when(restTemplate.postForEntity("http://localhost:8082/host/balance", request, BalanceDTO.class))
+                .thenReturn(responseBalanceBeforeTrans);
+
+        // get answer
+        String responseStr = atmRestController.sendMoney(transactionRequest);
+
+        Assertions.assertEquals(EXPECTED_MESSAGE_AFTER_TRANSACTION,responseStr);
+    }
+
+    @Test
     @DisplayName("MONEY TRANSACTION - failure (rest client exception - has not connection with server)")
     void sendMoneyRestClientExeptionFailure(){
         // prepare data to send money
