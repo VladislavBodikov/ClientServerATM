@@ -155,7 +155,7 @@ public class UnitATMRestControllerTest {
 
         // mock response from server
         ResponseEntity<BalanceDTO> responseBalanceBeforeTrans = ResponseEntity.ok().body(balanceBefore);
-        String EXPECTED_MESSAGE_AFTER_TRANSACTION = "\nDon`t have enough money to transfer!\n";
+        String EXPECTED_MESSAGE_AFTER_TRANSACTION = "\nTransaction denied! \nDon`t have enough money to transfer!\n";
 
         HttpEntity<AccountDTO> request = new HttpEntity<>(accountFrom);
         Mockito.when(restTemplate.postForEntity("http://localhost:8082/host/balance", request, BalanceDTO.class))
