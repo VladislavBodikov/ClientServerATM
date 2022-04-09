@@ -22,12 +22,12 @@ import ru.server.entity.Role;
 @EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-//    private UserDetailsService userDetailsService;
-//
-//    @Autowired
-//    public SecurityConfiguration(@Qualifier("userDetailsServiceImpl") UserDetailsService userDetailsService) {
-//        this.userDetailsService = userDetailsService;
-//    }
+    private UserDetailsService userDetailsService;
+
+    @Autowired
+    public SecurityConfiguration(@Qualifier("userDetailsServiceImpl") UserDetailsService userDetailsService) {
+        this.userDetailsService = userDetailsService;
+    }
 // ------ORIGINAL!!!!
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -46,44 +46,49 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .httpBasic();
     }
 
-    @Bean
-    @Override
-    protected UserDetailsService userDetailsService() {
-        return new InMemoryUserDetailsManager(
-                User.builder()
-                        .username("admin")
-                        .password(passwordEncoder().encode("admin"))
-                        .authorities(Role.ADMIN.getAuthorities())
-                        .build(),
-                User.builder()
-                        .username("user")
-                        .password(passwordEncoder().encode("user"))
-                        .authorities(Role.USER.getAuthorities())
-                        .build(),
-                User.builder()
-                        .username("1111222211112222")
-                        .password(passwordEncoder().encode("1221"))
-                        .authorities(Role.USER.getAuthorities())
-                        .build()
-        );
-    }
+//    @Bean
+//    @Override
+//    protected UserDetailsService userDetailsService() {
+//        return new InMemoryUserDetailsManager(
+//                User.builder()
+//                        .username("admin")
+//                        .password(passwordEncoder().encode("admin"))
+//                        .authorities(Role.ADMIN.getAuthorities())
+//                        .build(),
+//                User.builder()
+//                        .username("user")
+//                        .password(passwordEncoder().encode("user"))
+//                        .authorities(Role.USER.getAuthorities())
+//                        .build(),
+//                User.builder()
+//                        .username("1111222211112222")
+//                        .password(passwordEncoder().encode("1221"))
+//                        .authorities(Role.USER.getAuthorities())
+//                        .build()
+//        );
+//    }
+//    @Bean
+//    @Override
+//    protected UserDetailsService userDetailsService() {
+//        return new UserDetailServiceImpl();
+//    }
 
     @Bean
     protected PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(12);
     }
 
-//    @Override
-//    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-//        auth.authenticationProvider(daoAuthenticationProvider());
-//    }
-//
-//
-//    @Bean
-//    public DaoAuthenticationProvider daoAuthenticationProvider() {
-//        DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
-//        daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
-//        daoAuthenticationProvider.setUserDetailsService(userDetailsService);
-//        return daoAuthenticationProvider;
-//    }
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.authenticationProvider(daoAuthenticationProvider());
+    }
+
+
+    @Bean
+    public DaoAuthenticationProvider daoAuthenticationProvider() {
+        DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
+        daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
+        daoAuthenticationProvider.setUserDetailsService(userDetailsService);
+        return daoAuthenticationProvider;
+    }
 }
