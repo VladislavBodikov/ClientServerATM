@@ -12,9 +12,12 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import static ru.server.DataForUnitTests.*;
 
 import ru.server.entity.Account;
+import ru.server.exeption.AccountNotFoundException;
+import ru.server.exeption.DontHaveEnoughMoneyException;
 import ru.server.repository.AccountCrudRepository;
 import ru.server.repository.UserCrudRepository;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -40,6 +43,19 @@ public class UnitAccountServiceTest {
         boolean isAccountSave = accountService.save(account).isPresent();
 
         assertTrue(isAccountSave);
+    }
+
+    @Test
+    @DisplayName("SAVE - failure (user not exist)")
+    void saveAccountUserNotExistFailure() {
+        Account account = getAccountWithId();
+        Mockito.when(accountCrudRepository.findByCardNumber(Mockito.any())).thenReturn(Optional.empty());
+        Mockito.when(accountCrudRepository.findByAccountNumber(Mockito.any())).thenReturn(Optional.empty());
+        Mockito.when(userService.findByNameIfNotHaveId(Mockito.any())).thenReturn(Optional.empty());
+
+        boolean isAccountSave = accountService.save(account).isPresent();
+
+        assertFalse(isAccountSave);
     }
 
     @Test
@@ -148,5 +164,72 @@ public class UnitAccountServiceTest {
 
         assertTrue(isHasAccountWithId56And90);
 
+    }
+
+    @Test
+    @DisplayName("TRANSACTION - success")
+    void transactionSuccess(){
+        Account accountFrom = getAccountWithId();
+        accountFrom.setCardNumber("1111");
+        accountFrom.setAmount(new BigDecimal("1000"));
+
+        Account accountTo = getAccountWithId();
+        accountTo.setCardNumber("2222");
+        accountTo.setAmount(new BigDecimal("0"));
+
+        String cardFrom = accountFrom.getCardNumber();
+        String cardTo   = accountTo.getCardNumber();
+        BigDecimal amountToTransfer = new BigDecimal("250");
+        String EXPECTED_ACCOUNT_FROM_AMOUNT_AFTER_TRANSACTION =
+                accountFrom.getAmount().subtract(amountToTransfer).toString(); // 750
+
+        Mockito.when(accountCrudRepository.findByCardNumber(cardFrom)).thenReturn(Optional.of(accountFrom));
+        Mockito.when(accountCrudRepository.findByCardNumber(cardTo)).thenReturn(Optional.of(accountTo));
+
+        Account accountFromAfterTransaction = accountService.transactionCardToCard(cardFrom,amountToTransfer,cardTo);
+
+        assertEquals(EXPECTED_ACCOUNT_FROM_AMOUNT_AFTER_TRANSACTION,accountFromAfterTransaction.getAmount().toString());
+    }
+
+    @Test
+    @DisplayName("TRANSACTION - failure (don`t have enough money)")
+    void transactionDontEnoughMoneyFailure(){
+        Account accountFrom = getAccountWithId();
+        accountFrom.setCardNumber("1111");
+        accountFrom.setAmount(new BigDecimal("10"));
+
+        Account accountTo = getAccountWithId();
+        accountTo.setCardNumber("2222");
+
+        String cardFrom = accountFrom.getCardNumber();
+        String cardTo   = accountTo.getCardNumber();
+        BigDecimal amountToTransfer = new BigDecimal("2500");
+
+        Mockito.when(accountCrudRepository.findByCardNumber(cardFrom)).thenReturn(Optional.of(accountFrom));
+        Mockito.when(accountCrudRepository.findByCardNumber(cardTo)).thenReturn(Optional.of(accountTo));
+
+
+        assertThrows(DontHaveEnoughMoneyException.class,()->accountService.transactionCardToCard(cardFrom,amountToTransfer,cardTo));
+    }
+
+    @Test
+    @DisplayName("TRANSACTION - failure (account not found)")
+    void transactionAccountNotFoundFailure(){
+        Account accountFrom = getAccountWithId();
+        accountFrom.setCardNumber("1111");
+        accountFrom.setAmount(new BigDecimal("10"));
+
+        Account accountTo = getAccountWithId();
+        accountTo.setCardNumber("2222");
+
+        String cardFrom = accountFrom.getCardNumber();
+        String cardTo   = accountTo.getCardNumber();
+        BigDecimal amountToTransfer = new BigDecimal("2500");
+
+        Mockito.when(accountCrudRepository.findByCardNumber(cardFrom)).thenReturn(Optional.of(accountFrom));
+        Mockito.when(accountCrudRepository.findByCardNumber(cardTo)).thenReturn(Optional.empty());
+
+
+        assertThrows(AccountNotFoundException.class,()->accountService.transactionCardToCard(cardFrom,amountToTransfer,cardTo));
     }
 }

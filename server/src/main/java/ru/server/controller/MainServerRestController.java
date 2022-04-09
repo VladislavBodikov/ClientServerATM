@@ -7,11 +7,15 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.server.dto.AccountDTO;
 import ru.server.dto.BalanceDTO;
+import ru.server.dto.TransactionDTO;
 import ru.server.entity.Account;
+import ru.server.exeption.AccountNotFoundException;
+import ru.server.exeption.DontHaveEnoughMoneyException;
 import ru.server.service.AccountService;
 import ru.server.service.UserService;
 
 import javax.validation.Valid;
+import java.math.BigDecimal;
 import java.util.Optional;
 
 @RestController
@@ -42,7 +46,7 @@ public class MainServerRestController {
             String databasePin = accountFromDb.getPinCode();
             
             if (isPinCorrect(incomingPin, databasePin)) {
-                prepareBalanceToResponsePinCorrect(responseBalance, accountFromDb);
+                prepareBalanceToResponseSuccess(responseBalance, accountFromDb);
             } else {
                 prepareBalanceToResponsePinNotCorrect(responseBalance);
             }
@@ -58,7 +62,7 @@ public class MainServerRestController {
         return inputPin.equals(pinFromDatabase);
     }
 
-    private void prepareBalanceToResponsePinCorrect(BalanceDTO responseBalance, Account accountDB) {
+    private void prepareBalanceToResponseSuccess(BalanceDTO responseBalance, Account accountDB) {
         responseBalance.setCardNumber(accountDB.getCardNumber());
         responseBalance.setAmount(accountDB.getAmount());
         responseBalance.setStatus(HttpStatus.OK);
@@ -80,5 +84,39 @@ public class MainServerRestController {
         StringBuilder sb = new StringBuilder();
         userService.getAllUsers().forEach((x) -> sb.append(x.toString()).append(System.lineSeparator()));
         return sb.toString();
+    }
+
+    @PostMapping("/money/transfer")
+    public BalanceDTO returnBalanceAfterTransaction(@RequestBody TransactionDTO transactionDTO){
+        BalanceDTO responseBalance = new BalanceDTO();
+
+        String cardNumberFrom = transactionDTO.getAccountFrom().getCardNumber();
+        String cardNumberTo   = transactionDTO.getCardNumberTo();
+        BigDecimal amountToTransfer = transactionDTO.getAmountToTransfer();
+
+        Account accountAfterTransfer;
+        try{
+            accountAfterTransfer = accountService.transactionCardToCard(cardNumberFrom,amountToTransfer,cardNumberTo);
+            prepareBalanceToResponseSuccess(responseBalance, accountAfterTransfer);
+        }
+        catch (DontHaveEnoughMoneyException moneyEx){
+            log.info(moneyEx.getMessage());
+            prepareResponseBalanceIfDontHaveEnoughMoneyToTransfer(responseBalance, moneyEx);
+            return responseBalance;
+        }
+        catch (AccountNotFoundException accEx){
+            log.info(accEx.getMessage());
+            prepareResponseBalanceIfAccountsForTransferNotFound(responseBalance,accEx);
+            return responseBalance;
+        }
+        log.info("\nSUCCESS TRANSACTION \nFrom card: " + cardNumberFrom + " to card: " + cardNumberTo + " \nVALUE : " + amountToTransfer + "\n");
+        return responseBalance;
+    }
+
+    private void prepareResponseBalanceIfDontHaveEnoughMoneyToTransfer(BalanceDTO responseBalance, DontHaveEnoughMoneyException e) {
+        responseBalance.setStatus(HttpStatus.BAD_GATEWAY);
+    }
+    private void prepareResponseBalanceIfAccountsForTransferNotFound(BalanceDTO responseBalance, AccountNotFoundException e) {
+        responseBalance.setStatus(HttpStatus.EXPECTATION_FAILED);
     }
 }

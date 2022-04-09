@@ -83,4 +83,34 @@ public class UnitATMServiceTest {
         balanceDTO.setStatus(HttpStatus.OK);
         return balanceDTO;
     }
+
+    @Test
+    @DisplayName("MONEY TRANSACTION - success")
+    void showResultOfTransactionSuccess(){
+        BalanceDTO balanceBefore = new BalanceDTO("1",new BigDecimal("1000"),HttpStatus.OK);
+        BalanceDTO balanceAfter = new BalanceDTO("1",new BigDecimal("0"),HttpStatus.OK);
+
+        ResponseEntity<BalanceDTO> balanceBeforeTransfer = new ResponseEntity<>(balanceBefore,HttpStatus.OK);
+        ResponseEntity<BalanceDTO> balanceAfterTransfer = new ResponseEntity<>(balanceAfter,HttpStatus.OK);
+        BigDecimal amountToTransfer = new BigDecimal("1000");
+
+        String printedMessage = atmService.printResultOfTransaction(balanceBeforeTransfer, balanceAfterTransfer, amountToTransfer);
+
+        assertTrue(printedMessage.contains("Transfer success!"));
+    }
+
+    @Test
+    @DisplayName("MONEY TRANSACTION - failure")
+    void showResultOfTransactionFailure(){
+        BalanceDTO balanceBefore = new BalanceDTO("1",new BigDecimal("1000"),HttpStatus.OK);
+        BalanceDTO balanceAfter = new BalanceDTO("1",new BigDecimal("1000"),HttpStatus.OK);
+
+        ResponseEntity<BalanceDTO> balanceBeforeTransfer = new ResponseEntity<>(balanceBefore,HttpStatus.OK);
+        ResponseEntity<BalanceDTO> balanceAfterTransfer = new ResponseEntity<>(balanceAfter,HttpStatus.OK);
+        BigDecimal amountToTransfer = new BigDecimal("100");
+
+        String printedMessage = atmService.printResultOfTransaction(balanceBeforeTransfer, balanceAfterTransfer, amountToTransfer);
+
+        assertTrue(printedMessage.contains("Transfer denied!"));
+    }
 }

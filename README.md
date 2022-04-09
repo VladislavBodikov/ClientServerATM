@@ -34,6 +34,7 @@ Server URL: http://localhost:8082/
       Client (USER,ADMIN authorities):
          Main projected API:
             Method POST: http://localhost:8080/client/balance - use it for check balance!
+            Method POST: http://localhost:8080/client/money/transfer - use it for transfer money card_To_card!
 
       Server (ADMIN authorities):
          Init API:
@@ -46,8 +47,10 @@ Server URL: http://localhost:8082/
             Method DELETE: http://localhost:8082/host/remove/account/{id} - use it for delete Account from database
          
       Debug API (USER,ADMIN authorities):
-         Method GET: http://localhost:8082/host/users - get all Users in database at server;
-         Method GET: http://localhost:8082/host/accounts - get all Accounts in database at server;
+         Method GET : http://localhost:8082/host/users - get all Users in database at server;
+         Method GET : http://localhost:8082/host/accounts - get all Accounts in database at server;
+      Debug API (ADMIN authorities):
+         Method POST: http://localhost:8082/host/money/transfer - send money from card to card;
 
 <h1>Available auth users:</h1>
 
@@ -105,6 +108,8 @@ Password  :  pin_code;
 
 <h1>Instruction for work:</h1>
 
+<h2>1.Get balance</h2>
+
 1. For checking balance on card: send JSON with <b>"card_number"</b> and <b>"pin_code"</b> to Client API:
 
 
@@ -156,3 +161,72 @@ Response should be like:
 
 
      Invalid input data : check card_number and pin_code!
+
+
+<h2>2.Send money by card_number</h2>
+
+1. To transfer money from card to card should send : 
+
+-cardholders: <b>"card_number"</b> and <b>"pin_code"</b> 
+
+-card_number to transfer: <b>"card_number_to"</b>
+
+-amount to transfer: <b>"amount_to_transfer"</b>
+
+to Client API:
+
+
+            Method POST: http://localhost:8080/client/money/transfer 
+
+Example:
+
+
+            Data:
+               card_number_from : 1111333311113333
+               pin_code:    1221   
+               car_number_to : 1111222211112222
+               amount_to_transfer : 100
+            Request:
+                  curl -X POST http://localhost:8080/client/money/transfer -H "Content-Type: application/json" -d {\"accountFrom\":{\"cardNumber\":\"1111333311113333\",\"pinCode\":\"1221\"},\"cardNumberTo\":\"1111222211112222\",\"amountToTransfer\":\"100\"} 
+
+Response should be like:
+
+
+      Transfer success!
+      Balance BEFORE: 4444.50
+      Balance AFTER: 4344.50
+
+
+2. If data has wong PIN-code
+
+
+       Data:
+         card_number_from : 1111333311113333
+         pin_code:    0000 
+         car_number_to : 1111222211112222
+         amount_to_transfer : 100
+       Request:
+          curl -X POST http://localhost:8080/client/money/transfer -H "Content-Type: application/json" -d {\"accountFrom\":{\"cardNumber\":\"1111333311113333\",\"pinCode\":\"1221\"},\"cardNumberTo\":\"1111222211112222\",\"amountToTransfer\":\"100\"}
+
+Response should be like:
+
+
+      WRONG PIN-CODE
+
+
+3. If don`t have enough money to transfer
+
+
+         Data:
+            card_number_from : 1111333311113333
+            pin_code:    1221   
+            car_number_to : 1111222211112222
+            amount_to_transfer : 100000000
+         Request:
+            curl -X POST http://localhost:8080/client/money/transfer -H "Content-Type: application/json" -d {\"accountFrom\":{\"cardNumber\":\"1111333311113333\",\"pinCode\":\"1221\"},\"cardNumberTo\":\"1111222211112222\",\"amountToTransfer\":\"100000000\"} 
+
+Response should be like:
+
+
+     Don`t have enough money to transfer!
+
