@@ -13,9 +13,11 @@ public interface AccountCrudRepository extends CrudRepository<Account, Long> {
 
     Optional<Account> findByCardNumber(String cardNumber);
 
-    Optional<Account> findByScoreNumber(String scoreNumber);
+    Optional<Account> findByAccountNumber(String scoreNumber);
 
     int removeByCardNumber(String cardNumber);
 
-    int removeByScoreNumber(String scoreNumber);
+    int removeByAccountNumber(String scoreNumber);
+
+    int removeById(Long id);
 }

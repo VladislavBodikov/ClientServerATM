@@ -10,7 +10,6 @@ import javax.annotation.PostConstruct;
 public class RestConfiguration {
 
     @Bean
-    @PostConstruct
     public RestTemplate getRestTemplate(){
         return new RestTemplate();
     }

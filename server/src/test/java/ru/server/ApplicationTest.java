@@ -4,8 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import ru.server.Application;
-import ru.server.controller.HostRestController;
+import ru.server.controller.MainServerRestController;
 import ru.server.repository.AccountCrudRepository;
 import ru.server.repository.UserCrudRepository;
 import ru.server.service.AccountService;
@@ -24,16 +23,16 @@ public class ApplicationTest {
     @Autowired
     private UserCrudRepository userCrudRepository;
     @Autowired
-    private HostRestController hostRestController;
+    private MainServerRestController mainServerRestController;
 
     @Test
-    @DisplayName("Контекст загружается")
+    @DisplayName("Context load")
     public void contextLoad() {
         assertAll(
                 () -> assertNotNull(userService),
                 () -> assertNotNull(accountService),
                 () -> assertNotNull(accountCrudRepository),
                 () -> assertNotNull(userCrudRepository),
-                () -> assertNotNull(hostRestController));
+                () -> assertNotNull(mainServerRestController));
     }
 }

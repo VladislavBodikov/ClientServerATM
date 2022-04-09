@@ -25,6 +25,13 @@ public class UserService {
         return Optional.of(userCrudRepository.save(user));
     }
 
+    public int removeById(Long id){
+        if (userCrudRepository.existsById(id)){
+            return userCrudRepository.removeById(id);
+        }
+        return 0;
+    }
+
     public int removeByFirstNameAndLastName(User user) {
         if (isExistsByFirstNameAndLastName(user)) {
             return userCrudRepository.removeByFirstNameAndLastName(user.getFirstName(), user.getLastName());

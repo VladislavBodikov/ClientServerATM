@@ -32,4 +32,11 @@ public class User {
     @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Set<Account> accounts;
+
+    @Enumerated(value = EnumType.STRING)
+    @Column(name = "status")
+    private Status status = Status.ACTIVE;
+    @Enumerated(value = EnumType.STRING)
+    @Column(name = "role")
+    private Role role = Role.USER;
 }
