@@ -2,6 +2,7 @@ package ru.server.repository;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,10 @@ public class AccountRepoTest {
     @Autowired
     private UserCrudRepository userCrudRepository;
 
-    private List<CrudRepository> repositories;
+    @AfterEach
+    public void clearWasteDataAfterTests(){
+        clearRepos(userCrudRepository,accountCrudRepository);
+    }
 
     @Test
     @DisplayName("SAVE and FIND account")
@@ -40,21 +44,10 @@ public class AccountRepoTest {
         boolean isAccFoundByCardNumber = accountFoundByCardNumber.isPresent();
         boolean isAccFoundByAccNumber = accountFoundByAccNumber.isPresent();
 
-        clearRepositories();
-
         assertAll(
                 () -> assertTrue(isAccFoundByCardNumber),
                 () -> assertTrue(isAccFoundByAccNumber)
         );
-    }
-    private void clearRepositories(){
-        if (repositories == null) {
-            repositories = new ArrayList() {{
-                add(accountCrudRepository);
-                add(userCrudRepository);
-            }};
-        }
-        clearRepos(repositories);
     }
 
     @Test
@@ -76,8 +69,6 @@ public class AccountRepoTest {
         boolean isAccRemovedByCardNumber = rowsAccRemovedByCardNumber == 1;
         boolean isAccRemovedByAccNumber = rowsAccRemovedByAccNumber == 1;
         boolean isAccRemovedById = rowsAccRemovedById == 1;
-
-        clearRepositories();
 
         assertAll(
                 () -> assertTrue(isAccRemovedByCardNumber),

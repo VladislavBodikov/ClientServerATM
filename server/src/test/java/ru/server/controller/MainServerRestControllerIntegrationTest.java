@@ -1,5 +1,6 @@
 package ru.server.controller;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,14 +12,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import ru.server.dto.AccountDTO;
 import ru.server.dto.BalanceDTO;
-import ru.server.dto.TransactionDTO;
 import ru.server.entity.Account;
 import ru.server.entity.Role;
 import ru.server.entity.User;
 import ru.server.repository.AccountCrudRepository;
 import ru.server.repository.UserCrudRepository;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,16 +35,9 @@ public class MainServerRestControllerIntegrationTest {
     @Autowired
     private AccountCrudRepository accountRepository;
 
-    private List<CrudRepository> repositories;
-
-    private void clearRepositories() {
-        if (repositories == null) {
-            repositories = new ArrayList() {{
-                add(accountRepository);
-                add(userRepository);
-            }};
-        }
-        clearRepos(repositories);
+    @AfterEach
+    public void clearWasteDataAfterTests(){
+        clearRepos(userRepository,accountRepository);
     }
 
     @Test
@@ -61,8 +53,6 @@ public class MainServerRestControllerIntegrationTest {
         //get balance of new Account
         AccountDTO accountDTO = getAccountDTO(account);
         BalanceDTO balanceDTO = getBalanceFromServerByAccountDTO(accountDTO);
-
-        clearRepositories();
 
         assertAll(
                 () -> assertTrue(isSaveUser),
@@ -104,8 +94,6 @@ public class MainServerRestControllerIntegrationTest {
         accountDTO.setPinCode(NOT_VALID_PIN_CODE);
         BalanceDTO balanceDTO = getBalanceFromServerByAccountDTO(accountDTO);
 
-        clearRepositories();
-
         assertAll(
                 () -> assertTrue(isSaveUser),
                 () -> assertTrue(isSaveAccount),
@@ -132,8 +120,6 @@ public class MainServerRestControllerIntegrationTest {
         accountDTO.setPinCode(WRONG_PIN_CODE);
         BalanceDTO balanceDTO = getBalanceFromServerByAccountDTO(accountDTO);
 
-        clearRepositories();
-
         assertAll(
                 () -> assertTrue(isSaveUser),
                 () -> assertTrue(isSaveAccount),
@@ -154,15 +140,11 @@ public class MainServerRestControllerIntegrationTest {
                 String.format("User(id=%s, firstName=Vlad, lastName=Bodik, passportData=null, status=ACTIVE, role=USER)\r\n"
                         , savedUserId);
 
-        ResponseEntity<String> response = restTemplate
-                .withBasicAuth(USERNAME_READ, USERNAME_READ)
-                .getForEntity("/host/users", String.class);
-
-        clearRepositories();
+        ResponseEntity<String> response = restTemplate.withBasicAuth(USERNAME_READ, PASSWORD_READ).getForEntity("/host/users", String.class);
 
         assertAll(
                 () -> assertTrue(isSaveUser),
-                () -> assertEquals(EXPECTED_LIST_OF_USERS, response.getBody())
+                () -> assertTrue(response.getBody().contains(EXPECTED_LIST_OF_USERS))
         );
     }
 
@@ -181,131 +163,13 @@ public class MainServerRestControllerIntegrationTest {
                         , savedAccountId);
 
 
-        ResponseEntity<String> response = restTemplate
-                .withBasicAuth(USERNAME_READ, USERNAME_READ)
-                .getForEntity("/host/accounts", String.class);
-
-        clearRepositories();
+        ResponseEntity<String> response = restTemplate.withBasicAuth(USERNAME_READ, PASSWORD_READ).getForEntity("/host/accounts", String.class);
 
         assertAll(
                 () -> assertTrue(isSaveUser),
                 () -> assertTrue(isSaveAccount),
-                () -> assertEquals(EXPECTED_LIST_OF_ACCOUNTS, response.getBody())
+                () -> assertTrue(response.getBody().contains(EXPECTED_LIST_OF_ACCOUNTS))
         );
     }
 
-    @Test
-    @DisplayName("TRANSACTION - CARD to CARD - success")
-    void transactionSuccess() {
-        // prepare data for repository
-        User user = getUserWithoutId();
-        Account accountFrom = getAccountWithoutId();
-        Account accountTo = getAccountWithoutId();
-        accountTo.setCardNumber("1111333311113333");
-        accountTo.setAccountNumber("40800000000000000003");
-
-        BigDecimal balanceAccountFrom = new BigDecimal("1000");
-        BigDecimal amountToTransfer = new BigDecimal("350.00");
-        accountFrom.setAmount(balanceAccountFrom);
-
-        // save user and accounts
-        boolean isSaveUser = createUser(user, restTemplate, Role.ADMIN);
-        boolean isSaveAccount1 = createAccount(accountFrom, restTemplate, Role.ADMIN);
-        boolean isSaveAccount2 = createAccount(accountTo, restTemplate, Role.ADMIN);
-
-        // transfer money
-        TransactionDTO transactionDTO = new TransactionDTO();
-        transactionDTO.setAccountFrom(getAccountDTO(accountFrom));
-        transactionDTO.setCardNumberTo(accountTo.getCardNumber());
-        transactionDTO.setAmountToTransfer(amountToTransfer);
-
-        BalanceDTO balanceBeforeTransaction = getBalanceFromServerByAccountDTO(transactionDTO.getAccountFrom());
-        BalanceDTO balanceAfterTransaction = restTemplate
-                .withBasicAuth(USERNAME_READ, PASSWORD_READ)
-                .postForEntity("/host/money/transfer", new HttpEntity<>(transactionDTO), BalanceDTO.class)
-                .getBody();
-
-        clearRepositories();
-
-        BigDecimal beforeAfterDifference = balanceBeforeTransaction.getAmount().subtract(balanceAfterTransaction.getAmount());
-
-        assertEquals(amountToTransfer, beforeAfterDifference);
-    }
-
-    @Test
-    @DisplayName("TRANSACTION - CARD to CARD - failure (don`t enough money to transfer)")
-    void transactionDontEnoughMoneyFailure() {
-        // prepare data for repository
-        User user = getUserWithoutId();
-        Account accountFrom = getAccountWithoutId();
-        Account accountTo = getAccountWithoutId();
-        accountTo.setCardNumber("1111333311113333");
-        accountTo.setAccountNumber("40800000000000000003");
-
-        BigDecimal balanceAccountFrom = new BigDecimal("100");
-        BigDecimal amountToTransfer = new BigDecimal("350");
-        accountFrom.setAmount(balanceAccountFrom);
-
-        // save user and accounts
-        boolean isSaveUser = createUser(user, restTemplate, Role.ADMIN);
-        boolean isSaveAccount1 = createAccount(accountFrom, restTemplate, Role.ADMIN);
-        boolean isSaveAccount2 = createAccount(accountTo, restTemplate, Role.ADMIN);
-
-        // transfer money
-        TransactionDTO transactionDTO = new TransactionDTO();
-        transactionDTO.setAccountFrom(getAccountDTO(accountFrom));
-        transactionDTO.setCardNumberTo(accountTo.getCardNumber());
-        transactionDTO.setAmountToTransfer(amountToTransfer);
-
-        BalanceDTO balanceBeforeTransaction = getBalanceFromServerByAccountDTO(transactionDTO.getAccountFrom());
-        BalanceDTO balanceAfterTransaction = restTemplate
-                .withBasicAuth(USERNAME_READ, PASSWORD_READ)
-                .postForEntity("/host/money/transfer", new HttpEntity<>(transactionDTO), BalanceDTO.class)
-                .getBody();
-
-        clearRepositories();
-
-        HttpStatus responseBalanceDTOStatus = balanceAfterTransaction.getStatus();
-
-        assertEquals(HttpStatus.BAD_GATEWAY, responseBalanceDTOStatus);
-    }
-
-    @Test
-    @DisplayName("TRANSACTION - CARD to CARD - failure (account not found)")
-    void transactionAccountNotFoundFailure() {
-        // prepare data for repository
-        User user = getUserWithoutId();
-        Account accountFrom = getAccountWithoutId();
-        Account accountTo = getAccountWithoutId();
-        accountTo.setCardNumber("1111333311113333");
-        accountTo.setAccountNumber("40800000000000000003");
-
-        BigDecimal balanceAccountFrom = new BigDecimal("100");
-        BigDecimal amountToTransfer = new BigDecimal("350");
-        accountFrom.setAmount(balanceAccountFrom);
-
-        // save user and accounts
-        boolean isSaveUser = createUser(user, restTemplate, Role.ADMIN);
-        boolean isSaveAccount1 = createAccount(accountFrom, restTemplate, Role.ADMIN);
-        boolean isSaveAccount2 = createAccount(accountTo, restTemplate, Role.ADMIN);
-
-        // transfer money
-        String NOT_EXIST_CARD_NUMBER = "0000000000000000";
-        TransactionDTO transactionDTO = new TransactionDTO();
-        transactionDTO.setAccountFrom(getAccountDTO(accountFrom));
-        transactionDTO.setCardNumberTo(NOT_EXIST_CARD_NUMBER);
-        transactionDTO.setAmountToTransfer(amountToTransfer);
-
-        BalanceDTO balanceBeforeTransaction = getBalanceFromServerByAccountDTO(transactionDTO.getAccountFrom());
-        BalanceDTO balanceAfterTransaction = restTemplate
-                .withBasicAuth(USERNAME_READ, PASSWORD_READ)
-                .postForEntity("/host/money/transfer", new HttpEntity<>(transactionDTO), BalanceDTO.class)
-                .getBody();
-
-        clearRepositories();
-
-        HttpStatus responseBalanceDTOStatus = balanceAfterTransaction.getStatus();
-
-        assertEquals(HttpStatus.EXPECTATION_FAILED, responseBalanceDTOStatus);
-    }
 }

@@ -1,11 +1,16 @@
 package ru.server.controller;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.jdbc.Sql;
 import ru.server.entity.Account;
 import ru.server.entity.Role;
 import ru.server.entity.User;
@@ -19,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static ru.server.DataForUnitTests.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+//@Sql(scripts = "/ru/sql-scripts/data-init.sql")
 public class CreateDataRestControllerIntegrationTest {
 
     @Autowired
@@ -27,8 +33,13 @@ public class CreateDataRestControllerIntegrationTest {
     private UserCrudRepository userRepository;
     @Autowired
     private AccountCrudRepository accountRepository;
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
-    private List<CrudRepository> repositories;
+    @AfterEach
+    public void clearWasteDataAfterTests(){
+        clearRepos(userRepository,accountRepository);
+    }
 
     @Test
     @DisplayName("Создание пользователя в базе - УСПЕХ (У авторизованного юзера достаточно прав)")
@@ -37,19 +48,7 @@ public class CreateDataRestControllerIntegrationTest {
 
         boolean isSaveUser = createUser(user, restTemplate, Role.ADMIN);
 
-        clearRepositories();
-
         assertTrue(isSaveUser);
-    }
-
-    private void clearRepositories() {
-        if (repositories == null) {
-            repositories = new ArrayList() {{
-                add(accountRepository);
-                add(userRepository);
-            }};
-        }
-        clearRepos(repositories);
     }
 
     @Test
@@ -58,8 +57,6 @@ public class CreateDataRestControllerIntegrationTest {
         User user = getUserWithoutId();
 
         boolean isSaveUser = createUser(user, restTemplate, Role.USER);
-
-        clearRepositories();
 
         assertFalse(isSaveUser);
     }
@@ -71,8 +68,6 @@ public class CreateDataRestControllerIntegrationTest {
 
         boolean isSaveUser1 = createUser(user, restTemplate, Role.ADMIN);
         boolean isSaveUser2 = createUser(user, restTemplate, Role.ADMIN);
-
-        clearRepositories();
 
         assertTrue(isSaveUser1);
         assertFalse(isSaveUser2);
@@ -86,8 +81,6 @@ public class CreateDataRestControllerIntegrationTest {
 
         boolean isSaveUser = createUser(user, restTemplate, Role.ADMIN);
 
-        clearRepositories();
-
         assertFalse(isSaveUser);
     }
 
@@ -98,8 +91,6 @@ public class CreateDataRestControllerIntegrationTest {
 
         boolean isSaveUser = createUser(account.getUser(), restTemplate, Role.ADMIN);
         boolean isSaveAccount = createAccount(account, restTemplate, Role.ADMIN);
-
-        clearRepositories();
 
         assertAll(
                 () -> assertTrue(isSaveUser),
@@ -113,8 +104,6 @@ public class CreateDataRestControllerIntegrationTest {
 
         boolean isSaveUser = createUser(account.getUser(), restTemplate, Role.ADMIN);
         boolean isSaveAccount = createAccount(account, restTemplate, Role.USER);
-
-        clearRepositories();
 
         assertAll(
                 () -> assertTrue(isSaveUser),
@@ -130,8 +119,6 @@ public class CreateDataRestControllerIntegrationTest {
         boolean isSaveUser = createUser(user, restTemplate, Role.ADMIN);
         boolean isSaveAccount1 = createAccount(account, restTemplate, Role.ADMIN);
         boolean isSaveAccount2 = createAccount(account, restTemplate, Role.ADMIN);
-
-        clearRepositories();
 
         assertAll(
                 () -> assertTrue(isSaveUser),
@@ -152,8 +139,6 @@ public class CreateDataRestControllerIntegrationTest {
         boolean isSaveUser = createUser(user, restTemplate, Role.ADMIN);
         boolean isSaveAccount = createAccount(account, restTemplate, Role.ADMIN);
 
-        clearRepositories();
-
         assertAll(
                 () -> assertTrue(isSaveUser),
                 () -> assertFalse(isSaveAccount)
@@ -169,8 +154,6 @@ public class CreateDataRestControllerIntegrationTest {
 
         boolean isSaveUser = createUser(user, restTemplate, Role.ADMIN);
         boolean isSaveAccount = createAccount(account, restTemplate, Role.ADMIN);
-
-        clearRepositories();
 
         assertAll(
                 () -> assertTrue(isSaveUser),
