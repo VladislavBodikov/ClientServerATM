@@ -54,7 +54,7 @@ Server URL: http://localhost:8082/
 
 <h1>Available auth users:</h1>
 
-Since work on the implementation of authentication and authorization continues, 3 users are currently available
+Since application start, for auth has two users with different authorities :
 
 Username  :  card_number;
 
@@ -62,24 +62,20 @@ Password  :  pin_code;
 
 1. USER (USER authorities) 
 
-         Username: "user";
-         Password: "user";
-2. USER (USER authorities)
+         Username: "1111222211112222";
+         Password: "1221";
 
-         Username: "1111222211112222"; 
-         Password: "1221";             
+2. ADMIN (ADMIN authorities)
 
-3. ADMIN (ADMIN authorities)
-
-           Username: "admin";
-           Password: "admin";
+           Username: "1111333311113333";
+           Password: "1221";
 
 
 <h1>Require to install and work:</h1>
 
 1. JDK 8
 
-2. cURL
+2. cURL / POSTMAN
 
 
 
