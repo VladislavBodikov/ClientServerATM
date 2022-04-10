@@ -140,11 +140,11 @@ public class MainServerRestControllerIntegrationTest {
                 String.format("User(id=%s, firstName=Vlad, lastName=Bodik, passportData=null, status=ACTIVE, role=USER)\r\n"
                         , savedUserId);
 
-        ResponseEntity<String> response = restTemplate.withBasicAuth(USERNAME_READ, USERNAME_READ).getForEntity("/host/users", String.class);
+        ResponseEntity<String> response = restTemplate.withBasicAuth(USERNAME_READ, PASSWORD_READ).getForEntity("/host/users", String.class);
 
         assertAll(
                 () -> assertTrue(isSaveUser),
-                () -> assertEquals(EXPECTED_LIST_OF_USERS, response.getBody())
+                () -> assertTrue(response.getBody().contains(EXPECTED_LIST_OF_USERS))
         );
     }
 
@@ -163,12 +163,12 @@ public class MainServerRestControllerIntegrationTest {
                         , savedAccountId);
 
 
-        ResponseEntity<String> response = restTemplate.withBasicAuth(USERNAME_READ, USERNAME_READ).getForEntity("/host/accounts", String.class);
+        ResponseEntity<String> response = restTemplate.withBasicAuth(USERNAME_READ, PASSWORD_READ).getForEntity("/host/accounts", String.class);
 
         assertAll(
                 () -> assertTrue(isSaveUser),
                 () -> assertTrue(isSaveAccount),
-                () -> assertEquals(EXPECTED_LIST_OF_ACCOUNTS, response.getBody())
+                () -> assertTrue(response.getBody().contains(EXPECTED_LIST_OF_ACCOUNTS))
         );
     }
 
