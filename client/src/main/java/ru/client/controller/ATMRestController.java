@@ -39,6 +39,8 @@ public class ATMRestController {
     }
 
     private void setRestTemplateWithBasicAuth(AccountDTO authenticationData){
+        restTemplate.getInterceptors().clear();
+
         String username = authenticationData.getCardNumber();
         String password = authenticationData.getPinCode();
         restTemplate.getInterceptors().add(new BasicAuthenticationInterceptor(username,password));
@@ -61,26 +63,20 @@ public class ATMRestController {
 
     @PostMapping(path = "/money/transfer", consumes = "application/json")
     public String sendMoney(@RequestBody TransactionDTO transactionDTO){
-        setRestTemplateWithBasicAuth(transactionDTO.getAccountFrom());
-
-        ResponseEntity<BalanceDTO> balanceBeforeTransfer = requestBalance(transactionDTO.getAccountFrom());
-        boolean isRequestBalanceFailure = balanceBeforeTransfer.getStatusCode() == HttpStatus.CONFLICT
-                                        || balanceBeforeTransfer.getBody() == null;
-        if (isRequestBalanceFailure){
-            log.error("\nFailed request balance from server with data: " + transactionDTO + "\n");
-            return "\nWRONG PIN-CODE\n";
+        if (isAttemptToSendMoneyToSameCard(transactionDTO.getAccountFrom().getCardNumber(),transactionDTO.getCardNumberTo())){
+            return "\nTried to send money to the same card!\n";
         }
 
-        boolean isEnoughBalanceForTransfer = balanceBeforeTransfer.getBody().getAmount()
-                                                .subtract(transactionDTO.getAmountToTransfer())
-                                                .compareTo(new BigDecimal(0)) >= 0;
-        if (isEnoughBalanceForTransfer){
-            ResponseEntity<BalanceDTO> balanceAfterTransfer = transfer(transactionDTO);
-            return atmService.printResultOfTransaction(balanceBeforeTransfer,balanceAfterTransfer,transactionDTO.getAmountToTransfer());
-        }
-        return "\nTransaction denied! \nDon`t have enough money to transfer!\n";
+        AccountDTO authData = transactionDTO.getAccountFrom();
+        setRestTemplateWithBasicAuth(authData);
+
+        ResponseEntity<BalanceDTO> balanceAfterTransfer = transfer(transactionDTO);
+        return atmService.printResultOfTransaction(balanceAfterTransfer);
     }
 
+    private boolean isAttemptToSendMoneyToSameCard(String cardFrom, String cardTo){
+        return cardFrom.equals(cardTo);
+    }
     private ResponseEntity<BalanceDTO> transfer(TransactionDTO transactionDTO){
         HttpEntity<TransactionDTO> request = new HttpEntity<>(transactionDTO);
         log.debug("REQUEST : " + request);
@@ -90,9 +86,12 @@ public class ATMRestController {
             response = restTemplate.postForEntity(SERVER_URL + MONEY_TRANSFER_URL, request, BalanceDTO.class);
         } catch (RestClientException exception) {
             log.error(exception.getMessage());
-            return new ResponseEntity<>(new BalanceDTO(),HttpStatus.CONFLICT);
+            BalanceDTO balanceResponse = new BalanceDTO();
+            balanceResponse.setMessage("WRONG PIN-CODE!");
+            return new ResponseEntity<>(balanceResponse,HttpStatus.CONFLICT);
         }
         log.debug("RESPONSE : " + response);
         return response;
     }
+
 }
