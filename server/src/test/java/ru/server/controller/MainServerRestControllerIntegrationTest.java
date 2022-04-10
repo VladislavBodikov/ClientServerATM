@@ -1,5 +1,6 @@
 package ru.server.controller;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,16 +35,9 @@ public class MainServerRestControllerIntegrationTest {
     @Autowired
     private AccountCrudRepository accountRepository;
 
-    private List<CrudRepository> repositories;
-
-    private void clearRepositories() {
-        if (repositories == null) {
-            repositories = new ArrayList() {{
-                add(accountRepository);
-                add(userRepository);
-            }};
-        }
-        clearRepos(repositories);
+    @AfterEach
+    public void clearWasteDataAfterTests(){
+        clearRepos(userRepository,accountRepository);
     }
 
     @Test
@@ -59,8 +53,6 @@ public class MainServerRestControllerIntegrationTest {
         //get balance of new Account
         AccountDTO accountDTO = getAccountDTO(account);
         BalanceDTO balanceDTO = getBalanceFromServerByAccountDTO(accountDTO);
-
-        clearRepositories();
 
         assertAll(
                 () -> assertTrue(isSaveUser),
@@ -102,8 +94,6 @@ public class MainServerRestControllerIntegrationTest {
         accountDTO.setPinCode(NOT_VALID_PIN_CODE);
         BalanceDTO balanceDTO = getBalanceFromServerByAccountDTO(accountDTO);
 
-        clearRepositories();
-
         assertAll(
                 () -> assertTrue(isSaveUser),
                 () -> assertTrue(isSaveAccount),
@@ -130,8 +120,6 @@ public class MainServerRestControllerIntegrationTest {
         accountDTO.setPinCode(WRONG_PIN_CODE);
         BalanceDTO balanceDTO = getBalanceFromServerByAccountDTO(accountDTO);
 
-        clearRepositories();
-
         assertAll(
                 () -> assertTrue(isSaveUser),
                 () -> assertTrue(isSaveAccount),
@@ -153,8 +141,6 @@ public class MainServerRestControllerIntegrationTest {
                         , savedUserId);
 
         ResponseEntity<String> response = restTemplate.withBasicAuth(USERNAME_READ, USERNAME_READ).getForEntity("/host/users", String.class);
-
-        clearRepositories();
 
         assertAll(
                 () -> assertTrue(isSaveUser),
@@ -178,8 +164,6 @@ public class MainServerRestControllerIntegrationTest {
 
 
         ResponseEntity<String> response = restTemplate.withBasicAuth(USERNAME_READ, USERNAME_READ).getForEntity("/host/accounts", String.class);
-
-        clearRepositories();
 
         assertAll(
                 () -> assertTrue(isSaveUser),
