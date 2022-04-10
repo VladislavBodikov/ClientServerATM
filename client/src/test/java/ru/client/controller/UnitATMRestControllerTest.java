@@ -125,7 +125,7 @@ public class UnitATMRestControllerTest {
                 .thenReturn(responseBalanceBeforeTrans);
         Mockito.when(restTemplate.postForEntity("http://localhost:8082/host/money/transfer", transactionRequest, BalanceDTO.class))
                 .thenReturn(responseBalanceAfterTrans);
-        Mockito.when(atmService.printResultOfTransaction(Mockito.any(), Mockito.any(), Mockito.any()))
+        Mockito.when(atmService.printResultOfTransaction(Mockito.any()))
                 .thenReturn(EXPECTED_MESSAGE_AFTER_SUCCESS_TRANSACTION);
         // get answer
         String responseStr = atmRestController.sendMoney(transactionRequest);
@@ -212,7 +212,7 @@ public class UnitATMRestControllerTest {
                 .thenReturn(responseBalanceBeforeTrans);
         Mockito.when(restTemplate.postForEntity("http://localhost:8082/host/money/transfer", requestTransaction, BalanceDTO.class))
                 .thenThrow(new RestClientException("test throw exception"));
-        Mockito.when(atmService.printResultOfTransaction(Mockito.any(), Mockito.any(), Mockito.any()))
+        Mockito.when(atmService.printResultOfTransaction(Mockito.any()))
                 .thenReturn(EXPECTED_MESSAGE_AFTER_TRANSACTION);
 
         // get answer

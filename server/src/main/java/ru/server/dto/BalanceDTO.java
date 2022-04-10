@@ -13,5 +13,6 @@ public class BalanceDTO {
     private String cardNumber;
     private BigDecimal amount;
     private HttpStatus status;
+    private String message;
 
 }

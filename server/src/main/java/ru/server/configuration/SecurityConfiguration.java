@@ -1,4 +1,4 @@
-package ru.server.exeption.configuration;
+package ru.server.configuration;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -28,7 +28,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     public SecurityConfiguration(@Qualifier("userDetailsServiceImpl") UserDetailsService userDetailsService) {
         this.userDetailsService = userDetailsService;
     }
-// ------ORIGINAL!!!!
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
@@ -37,6 +37,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/").permitAll()
                 .antMatchers(HttpMethod.GET, "/host/**").hasAuthority(Permission.READ.getPermission())
                 .antMatchers(HttpMethod.POST, "/host/balance").hasAuthority(Permission.READ.getPermission())
+                .antMatchers(HttpMethod.POST, "/host/money/transfer").hasAuthority(Permission.READ.getPermission())
                 .antMatchers(HttpMethod.POST, "/host/create/**").hasAuthority(Permission.WRITE.getPermission())
                 .antMatchers(HttpMethod.POST, "/host/remove/**").hasAuthority(Permission.WRITE.getPermission())
                 .antMatchers(HttpMethod.DELETE, "/host/remove/**").hasAuthority(Permission.WRITE.getPermission())
@@ -45,33 +46,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .and()
                 .httpBasic();
     }
-
-//    @Bean
-//    @Override
-//    protected UserDetailsService userDetailsService() {
-//        return new InMemoryUserDetailsManager(
-//                User.builder()
-//                        .username("admin")
-//                        .password(passwordEncoder().encode("admin"))
-//                        .authorities(Role.ADMIN.getAuthorities())
-//                        .build(),
-//                User.builder()
-//                        .username("user")
-//                        .password(passwordEncoder().encode("user"))
-//                        .authorities(Role.USER.getAuthorities())
-//                        .build(),
-//                User.builder()
-//                        .username("1111222211112222")
-//                        .password(passwordEncoder().encode("1221"))
-//                        .authorities(Role.USER.getAuthorities())
-//                        .build()
-//        );
-//    }
-//    @Bean
-//    @Override
-//    protected UserDetailsService userDetailsService() {
-//        return new UserDetailServiceImpl();
-//    }
 
     @Bean
     protected PasswordEncoder passwordEncoder() {
@@ -82,7 +56,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.authenticationProvider(daoAuthenticationProvider());
     }
-
 
     @Bean
     public DaoAuthenticationProvider daoAuthenticationProvider() {
