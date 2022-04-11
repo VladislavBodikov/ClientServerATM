@@ -64,7 +64,7 @@ public class ATMRestController {
     @PostMapping(path = "/money/transfer", consumes = "application/json")
     public String sendMoney(@RequestBody TransactionDTO transactionDTO){
         if (isAttemptToSendMoneyToSameCard(transactionDTO.getAccountFrom().getCardNumber(),transactionDTO.getCardNumberTo())){
-            return "\nTried to send money to the same card!\n";
+            return "\nTried to send money to the self card!\n";
         }
 
         AccountDTO authData = transactionDTO.getAccountFrom();

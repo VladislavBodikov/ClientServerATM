@@ -4,6 +4,7 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import ru.server.dto.AccountDTO;
 import ru.server.entity.Account;
 import ru.server.model.Role;
 import ru.server.entity.User;
@@ -150,5 +151,12 @@ public class DataForUnitTests {
     }
     private static boolean isAuthorized(int responseStatusCode){
         return responseStatusCode == 200;
+    }
+
+    public static AccountDTO getAccountDTOFromAccount(Account account){
+        AccountDTO accountDTO = new AccountDTO();
+        accountDTO.setCardNumber(account.getCardNumber());
+        accountDTO.setPinCode(account.getPinCode());
+        return accountDTO;
     }
 }

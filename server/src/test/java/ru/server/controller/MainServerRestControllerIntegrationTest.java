@@ -7,18 +7,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import ru.server.dto.AccountDTO;
 import ru.server.dto.BalanceDTO;
 import ru.server.entity.Account;
-import ru.server.model.Role;
 import ru.server.entity.User;
+import ru.server.model.Role;
 import ru.server.repository.AccountCrudRepository;
 import ru.server.repository.UserCrudRepository;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static ru.server.DataForUnitTests.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
