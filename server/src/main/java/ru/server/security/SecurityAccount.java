@@ -4,7 +4,7 @@ import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import ru.server.entity.Account;
-import ru.server.entity.Status;
+import ru.server.model.Status;
 import ru.server.entity.User;
 
 import java.util.Collection;
