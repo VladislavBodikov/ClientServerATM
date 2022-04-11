@@ -10,34 +10,39 @@ import java.math.BigDecimal;
 @Service
 public class ATMService {
 
-    public String printBalanceResponse(ResponseEntity<BalanceDTO> response) {
-        if (response == null)
-            return "ERROR : response == null / check connection with server!";
+    private final String RESPONSE_FROM_SERVER_IS_NULL = "\nERROR : response == null. Check connection with server!\n";
+    private final String RESPONSE_BODY_FROM_SERVER_IS_NULL = "\nERROR : ERROR : Response.body == null\n";
 
-        if (response.getBody() != null){
-            BalanceDTO body = response.getBody();
-            if (body.getMessage() != null) {
-                return "\n" + body.getMessage() + "\n";
-            } else {
-                return "\nCARD_NUMBER : " + body.getCardNumber() + "\nBALANCE : " + body.getAmount();
-            }
+    public String printBalanceResponse(ResponseEntity<BalanceDTO> response) {
+        if (response == null) {
+            return RESPONSE_FROM_SERVER_IS_NULL;
         }
-        return "Response body == null";
+        if (response.getBody() == null) {
+            return RESPONSE_BODY_FROM_SERVER_IS_NULL;
+        }
+
+        BalanceDTO body = response.getBody();
+        if (body.getMessage() != null) {
+            return "\n" + body.getMessage() + "\n";
+        } else {
+            return "\nCARD_NUMBER : " + body.getCardNumber() + "\nBALANCE : " + body.getAmount();
+        }
     }
 
     public String printResultOfTransaction(ResponseEntity<BalanceDTO> response) {
-        if (response == null)
-            return "ERROR : response == null / check connection with server!";
-
-        if (response.getBody() != null){
-            BalanceDTO body = response.getBody();
-            if (body.getMessage() != null) {
-                return "\n" + body.getMessage() + "\n";
-            } else {
-                return "\nTransfer success!\n";
-            }
+        if (response == null) {
+            return RESPONSE_FROM_SERVER_IS_NULL;
         }
-        return "Response body == null";
+        if (response.getBody() == null) {
+            return RESPONSE_BODY_FROM_SERVER_IS_NULL;
+        }
+
+        BalanceDTO body = response.getBody();
+        if (body.getMessage() != null) {
+            return "\n" + body.getMessage() + "\n";
+        } else {
+            return "\nTransfer success!\n";
+        }
     }
 
 }

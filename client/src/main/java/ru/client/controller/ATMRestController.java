@@ -77,6 +77,7 @@ public class ATMRestController {
     private boolean isAttemptToSendMoneyToSameCard(String cardFrom, String cardTo){
         return cardFrom.equals(cardTo);
     }
+
     private ResponseEntity<BalanceDTO> transfer(TransactionDTO transactionDTO){
         HttpEntity<TransactionDTO> request = new HttpEntity<>(transactionDTO);
         log.debug("REQUEST : " + request);
