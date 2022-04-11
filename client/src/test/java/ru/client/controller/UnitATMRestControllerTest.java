@@ -1,6 +1,7 @@
 package ru.client.controller;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -75,11 +76,11 @@ public class UnitATMRestControllerTest {
         Mockito.when(restTemplate.postForEntity(Mockito.anyString(), Mockito.any(), Mockito.any(Class.class)))
                 .thenReturn(response);
 
-        String responseStr = sendAccountDTO(accountDTO);
-        Assertions.assertEquals("ERROR : Response.body == null",responseStr);
+        String responseStr = requestBalance(accountDTO);
+        Assertions.assertTrue(responseStr.contains("ERROR : Response.body == null"));
     }
 
-    private String sendAccountDTO(AccountDTO accountRequest) {
+    private String requestBalance(AccountDTO accountRequest) {
         HttpEntity<AccountDTO> request = new HttpEntity<>(accountRequest);
         ResponseEntity<String> response = testRestTemplate.postForEntity("/client/balance", request, String.class);
         return response.getBody();
@@ -142,27 +143,23 @@ public class UnitATMRestControllerTest {
     }
 
     @Test
-    @DisplayName("MONEY TRANSACTION - failure (don`t have enough money for transfer)")
+    @DisplayName("MONEY TRANSACTION - failure (try to send money to the self-card)")
     void sendMoneyDontHaveEnoughMoneyFailure(){
         // prepare data to send money
         AccountDTO accountFrom = getAccountDTO("1111","0000");
         BigDecimal amountToTransfer = new BigDecimal("800.00");
 
         TransactionDTO transactionRequest = getTransactionDTO(accountFrom, amountToTransfer);
+        transactionRequest.setCardNumberTo(accountFrom.getCardNumber());
 
         BalanceDTO balanceBefore = getBalanceDTO();
         balanceBefore.setAmount(new BigDecimal("300"));
 
         // mock response from server
-        ResponseEntity<BalanceDTO> responseBalanceBeforeTrans = ResponseEntity.ok().body(balanceBefore);
-        String EXPECTED_MESSAGE_AFTER_TRANSACTION = "\nTransaction denied! \nDon`t have enough money to transfer!\n";
-
-        HttpEntity<AccountDTO> request = new HttpEntity<>(accountFrom);
-        Mockito.when(restTemplate.postForEntity("http://localhost:8082/host/balance", request, BalanceDTO.class))
-                .thenReturn(responseBalanceBeforeTrans);
+        String EXPECTED_MESSAGE_AFTER_TRANSACTION = "\nTried to send money to the same card!\n";
 
         // get answer
-        String responseStr = atmRestController.sendMoney(transactionRequest);
+        String responseStr = testRestTemplate.postForEntity("/client/money/transfer",new HttpEntity<>(transactionRequest),String.class).getBody();
 
         Assertions.assertEquals(EXPECTED_MESSAGE_AFTER_TRANSACTION,responseStr);
     }
@@ -173,19 +170,19 @@ public class UnitATMRestControllerTest {
         // prepare data to send money
         AccountDTO accountFrom = getAccountDTO("1111","0000");
         BigDecimal amountToTransfer = new BigDecimal("800.00");
-
         TransactionDTO transactionRequest = getTransactionDTO(accountFrom, amountToTransfer);
 
         // mock response from server
         ResponseEntity<BalanceDTO> responseBalanceBeforeTrans = ResponseEntity.ok().body(null);
-        String EXPECTED_MESSAGE_AFTER_TRANSACTION = "\nWRONG PIN-CODE\n";
+        String EXPECTED_MESSAGE_AFTER_TRANSACTION = "\nWRONG PIN-CODE!\n";
 
         HttpEntity<AccountDTO> request = new HttpEntity<>(accountFrom);
-        Mockito.when(restTemplate.postForEntity("http://localhost:8082/host/balance", request, BalanceDTO.class))
+        Mockito.when(restTemplate.postForEntity("http://localhost:8082/host/money/transfer", request, BalanceDTO.class))
                 .thenReturn(responseBalanceBeforeTrans);
 
         // get answer
-        String responseStr = atmRestController.sendMoney(transactionRequest);
+        ResponseEntity<String> response = testRestTemplate.postForEntity("/client/money/transfer",new HttpEntity<>(transactionRequest),String.class);
+        String responseStr = response.getBody();
 
         Assertions.assertEquals(EXPECTED_MESSAGE_AFTER_TRANSACTION,responseStr);
     }
