@@ -2,26 +2,19 @@ package ru.server.controller;
 
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.jdbc.Sql;
 import ru.server.entity.Account;
-import ru.server.entity.Role;
+import ru.server.model.Role;
 import ru.server.entity.User;
 import ru.server.repository.AccountCrudRepository;
 import ru.server.repository.UserCrudRepository;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static ru.server.DataForUnitTests.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-//@Sql(scripts = "/ru/sql-scripts/data-init.sql")
 public class CreateDataRestControllerIntegrationTest {
 
     @Autowired

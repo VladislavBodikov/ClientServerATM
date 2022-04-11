@@ -6,20 +6,16 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import ru.server.dto.AccountDTO;
 import ru.server.dto.BalanceDTO;
 import ru.server.entity.Account;
-import ru.server.entity.Role;
+import ru.server.model.Role;
 import ru.server.entity.User;
 import ru.server.repository.AccountCrudRepository;
 import ru.server.repository.UserCrudRepository;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -84,22 +80,25 @@ public class MainServerRestControllerIntegrationTest {
         //save new User and Account
         Account account = getAccountWithoutId();
         String NOT_VALID_PIN_CODE = "not-valid-pin-code";
-        HttpStatus EXPECTED_STATUS = HttpStatus.BAD_REQUEST;
+        Integer EXPECTED_STATUS_CODE = 401;
 
         boolean isSaveUser = createUser(account.getUser(), restTemplate, Role.ADMIN);
         boolean isSaveAccount = createAccount(account, restTemplate, Role.ADMIN);
 
-        //get balance of new Account
+        //get balance of new saved Account
         AccountDTO accountDTO = getAccountDTO(account);
         accountDTO.setPinCode(NOT_VALID_PIN_CODE);
-        BalanceDTO balanceDTO = getBalanceFromServerByAccountDTO(accountDTO);
+        HttpEntity<AccountDTO> requestBalance = new HttpEntity<>(accountDTO);
+        ResponseEntity<BalanceDTO> responseBalance = restTemplate
+                                                                .withBasicAuth(accountDTO.getCardNumber(), accountDTO.getPinCode())
+                                                                .postForEntity("/host/balance", requestBalance, BalanceDTO.class);
+        BalanceDTO balanceDTO = responseBalance.getBody();
 
         assertAll(
                 () -> assertTrue(isSaveUser),
                 () -> assertTrue(isSaveAccount),
-                () -> assertEquals(EXPECTED_STATUS, balanceDTO.getStatus()),
-                () -> assertNull(balanceDTO.getAmount()),
-                () -> assertNull(balanceDTO.getCardNumber())
+                () -> assertEquals(EXPECTED_STATUS_CODE, responseBalance.getStatusCodeValue()),
+                () -> assertNull(balanceDTO)
         );
     }
 
@@ -110,7 +109,7 @@ public class MainServerRestControllerIntegrationTest {
         Account account = getAccountWithoutId();
         String RIGHT_PIN_CODE = account.getPinCode(); // 1111
         String WRONG_PIN_CODE = "9999";
-        HttpStatus EXPECTED_STATUS = HttpStatus.EXPECTATION_FAILED;
+        Integer EXPECTED_STATUS_CODE = 401;
 
         boolean isSaveUser = createUser(account.getUser(), restTemplate, Role.ADMIN);
         boolean isSaveAccount = createAccount(account, restTemplate, Role.ADMIN);
@@ -118,14 +117,15 @@ public class MainServerRestControllerIntegrationTest {
         //get balance of new Account
         AccountDTO accountDTO = getAccountDTO(account);
         accountDTO.setPinCode(WRONG_PIN_CODE);
-        BalanceDTO balanceDTO = getBalanceFromServerByAccountDTO(accountDTO);
+        ResponseEntity<BalanceDTO> responseBalance = restTemplate
+                                    .withBasicAuth(accountDTO.getCardNumber(), accountDTO.getPinCode())
+                                    .postForEntity("/host/balance", new HttpEntity<>(accountDTO), BalanceDTO.class);
 
         assertAll(
                 () -> assertTrue(isSaveUser),
                 () -> assertTrue(isSaveAccount),
-                () -> assertEquals(EXPECTED_STATUS, balanceDTO.getStatus()),
-                () -> assertNull(balanceDTO.getAmount()),
-                () -> assertNull(balanceDTO.getCardNumber())
+                () -> assertEquals(EXPECTED_STATUS_CODE, responseBalance.getStatusCodeValue()),
+                () -> assertNull(responseBalance.getBody())
         );
     }
 

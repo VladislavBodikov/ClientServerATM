@@ -1,12 +1,11 @@
 package ru.server;
 
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import ru.server.entity.Account;
-import ru.server.entity.Role;
+import ru.server.model.Role;
 import ru.server.entity.User;
 import ru.server.repository.AccountCrudRepository;
 import ru.server.repository.UserCrudRepository;

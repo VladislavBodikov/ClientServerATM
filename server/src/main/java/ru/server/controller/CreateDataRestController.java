@@ -56,14 +56,11 @@ public class CreateDataRestController {
     }
 
     @PostMapping("/account")
-    public String createAccount(@Valid @RequestBody Account account, BindingResult bindingResult) {
-        boolean isInputDataNotValid = bindingResult.hasErrors();
-        if (isInputDataNotValid) {
-            return responseIfInputDataNotValid();
-        }
-
+    public String createAccount(@RequestBody Account account) {
         Optional<Account> savedAccount = accountService.save(account);
+
         boolean isAccountSaved = savedAccount.isPresent();
+
         if (isAccountSaved) {
             String accountSavedSuccessful = accountSavedSuccess(savedAccount.get());
             log.info(accountSavedSuccessful);
