@@ -16,7 +16,7 @@ import ru.server.service.UserService;
 public class UserDetailServiceImpl implements UserDetailsService {
 
     private AccountService accountService;
-    private UserService userService;
+
     @Transactional
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

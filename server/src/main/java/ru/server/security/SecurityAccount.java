@@ -13,7 +13,6 @@ import java.util.Collection;
 public class SecurityAccount implements UserDetails {
 
     private Account account;
-    private org.springframework.security.core.userdetails.User admin;
     private boolean isActive;
 
     public SecurityAccount(Account account,boolean isActive) {

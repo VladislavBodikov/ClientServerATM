@@ -1,8 +1,6 @@
 package ru.common.dto;
 
 import org.junit.jupiter.api.Test;
-import ru.common.dto.AccountDTO;
-import ru.common.dto.BalanceDTO;
 
 import java.math.BigDecimal;
 

@@ -134,21 +134,4 @@ public class CreateDataRestControllerIntegrationTest {
                 () -> assertFalse(isSaveAccount)
         );
     }
-
-    @Test
-    @Disabled // test was written when PIN stored without BCrypt, and has Pin-code Validation
-    @DisplayName("Сохранение счета в базе - ПРОВАЛ (не валидные данные для сохранения)")
-    void createAccountFailureInvalidData() {
-        Account account = getAccountWithoutId();
-        User user = account.getUser();
-        account.setPinCode("0");
-
-        boolean isSaveUser = createUser(user, restTemplate, Role.ADMIN);
-        boolean isSaveAccount = createAccount(account, restTemplate, Role.ADMIN);
-
-        assertAll(
-                () -> assertTrue(isSaveUser),
-                () -> assertFalse(isSaveAccount)
-        );
-    }
 }
