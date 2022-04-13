@@ -1,25 +1,30 @@
 package ru.server;
 
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import ru.server.dto.AccountDTO;
 import ru.server.entity.Account;
-import ru.server.entity.Role;
+import ru.server.model.Role;
 import ru.server.entity.User;
+import ru.server.repository.AccountCrudRepository;
+import ru.server.repository.UserCrudRepository;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class DataForUnitTests {
 
     //Basic auth to WRITE DATA
-    public static String USERNAME_WRITE = "admin";
-    public static String PASSWORD_WRITE = "admin";
+    public static String USERNAME_WRITE = "1111333311113333";
+    public static String PASSWORD_WRITE = "1221";
     //Basic auth to READ DATA
-    public static String USERNAME_READ = "user";
-    public static String PASSWORD_READ = "user";
+    public static String USERNAME_READ = "1111222211112222";
+    public static String PASSWORD_READ = "1221";
+
 
     public static User getUserWithId() {
         User user = new User();
@@ -64,8 +69,20 @@ public class DataForUnitTests {
         return account;
     }
 
-    public static void clearRepos(List<CrudRepository> crudRepositories) {
-        crudRepositories.forEach(CrudRepository::deleteAll);
+    public static void clearRepos(UserCrudRepository userRepository, AccountCrudRepository accountRepository) {
+        int COUNT_OF_BASE_USER_IN_DB = 2;
+        int COUNT_ACCOUNTS_OF_BASED_USERS_IN_DB = 2;
+
+        if (userRepository != null){
+            List<User> users = new ArrayList<>();
+            userRepository.findAll().forEach(users::add);
+            users.stream().skip(COUNT_OF_BASE_USER_IN_DB).forEach(userRepository::delete);
+        }
+        if (accountRepository != null){
+            List<Account> accounts = new ArrayList<>();
+            accountRepository.findAll().forEach(accounts::add);
+            accounts.stream().skip(COUNT_ACCOUNTS_OF_BASED_USERS_IN_DB).forEach(accountRepository::delete);
+        }
     }
 
     public static boolean createUser(User user, TestRestTemplate restTemplate, Role role) {
@@ -74,7 +91,9 @@ public class DataForUnitTests {
 
         ResponseEntity<String> response = getStringResponseEntityByPostRequest(restTemplate, role, url, request);
 
-        return response.getBody().contains("USER SAVED");
+        return Objects.nonNull(response.getBody()) &&
+                isAuthorized(response.getStatusCodeValue()) &&
+                response.getBody().contains("USER SAVED");
     }
 
     private static ResponseEntity<String> getStringResponseEntityByPostRequest(TestRestTemplate restTemplate, Role role, String url, HttpEntity request) {
@@ -104,7 +123,9 @@ public class DataForUnitTests {
 
         ResponseEntity<String> response = getStringResponseEntityByPostRequest(restTemplate, role, url, request);
 
-        return response.getBody().contains("ACCOUNT SAVED");
+        return Objects.nonNull(response.getBody()) &&
+                isAuthorized(response.getStatusCodeValue()) &&
+                response.getBody().contains("ACCOUNT SAVED");
     }
 
     public static boolean removeUser(User user, TestRestTemplate restTemplate, Role role) {
@@ -113,7 +134,9 @@ public class DataForUnitTests {
 
         ResponseEntity<String> response = getStringResponseEntityByPostRequest(restTemplate, role, url, request);
 
-        return response.getBody().contains("removed");
+        return Objects.nonNull(response.getBody()) &&
+                isAuthorized(response.getStatusCodeValue()) &&
+                response.getBody().contains("removed");
     }
 
     public static boolean removeAccount(Account account, TestRestTemplate restTemplate, Role role) {
@@ -122,6 +145,18 @@ public class DataForUnitTests {
 
         ResponseEntity<String> response = getStringResponseEntityByPostRequest(restTemplate, role, url, request);
 
-        return response.getBody().contains("removed");
+        return Objects.nonNull(response.getBody()) &&
+                isAuthorized(response.getStatusCodeValue()) &&
+                response.getBody().contains("removed");
+    }
+    private static boolean isAuthorized(int responseStatusCode){
+        return responseStatusCode == 200;
+    }
+
+    public static AccountDTO getAccountDTOFromAccount(Account account){
+        AccountDTO accountDTO = new AccountDTO();
+        accountDTO.setCardNumber(account.getCardNumber());
+        accountDTO.setPinCode(account.getPinCode());
+        return accountDTO;
     }
 }

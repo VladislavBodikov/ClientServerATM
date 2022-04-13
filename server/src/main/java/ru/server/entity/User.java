@@ -1,6 +1,8 @@
 package ru.server.entity;
 
 import lombok.*;
+import ru.server.model.Role;
+import ru.server.model.Status;
 
 import javax.persistence.*;
 import javax.validation.constraints.Pattern;

@@ -54,7 +54,7 @@ Server URL: http://localhost:8082/
 
 <h1>Available auth users:</h1>
 
-Since work on the implementation of authentication and authorization continues, 3 users are currently available
+From the moment the application starts, by default, two users with different permissions are available :
 
 Username  :  card_number;
 
@@ -62,24 +62,20 @@ Password  :  pin_code;
 
 1. USER (USER authorities) 
 
-         Username: "user";
-         Password: "user";
-2. USER (USER authorities)
+         Username: "1111222211112222";
+         Password: "1221";
 
-         Username: "1111222211112222"; 
-         Password: "1221";             
+2. ADMIN (ADMIN authorities)
 
-3. ADMIN (ADMIN authorities)
-
-           Username: "admin";
-           Password: "admin";
+           Username: "1111333311113333";
+           Password: "1221";
 
 
 <h1>Require to install and work:</h1>
 
 1. JDK 8
 
-2. cURL
+2. cURL / POSTMAN
 
 
 
@@ -95,14 +91,19 @@ Password  :  pin_code;
 
 1. Init 2 test Users and 3 test Accounts with cURL requests
 
-        Create users:
-        curl -X POST http://localhost:8082/host/create/user -H "Authorization: Basic YWRtaW46YWRtaW4=" -H "Content-Type: application/json" -d {\"firstName\":\"Vladislav\",\"lastName\":\"Boikov\"}
-        curl -X POST http://localhost:8082/host/create/user -H "Authorization: Basic YWRtaW46YWRtaW4=" -H "Content-Type: application/json" -d {\"firstName\":\"Alexandra\",\"lastName\":\"Semennova\"}
-        Create accounts:
-        curl -X POST http://localhost:8082/host/create/account -H "Authorization: Basic YWRtaW46YWRtaW4=" -H "Content-Type: application/json" -d {\"cardNumber\":\"1111000011110000\",\"accountNumber\":\"40800000000000000001\",\"amount\":\"1090.50\",\"pinCode\":\"1001\",\"user\":{\"id\":1}}
-        curl -X POST http://localhost:8082/host/create/account -H "Authorization: Basic YWRtaW46YWRtaW4=" -H "Content-Type: application/json" -d {\"cardNumber\":\"1111222211112222\",\"accountNumber\":\"40800000000000000002\",\"amount\":\"390.50\",\"pinCode\":\"1221\",\"user\":{\"id\":1}}
-        curl -X POST http://localhost:8082/host/create/account -H "Authorization: Basic YWRtaW46YWRtaW4=" -H "Content-Type: application/json" -d {\"cardNumber\":\"1111333311113333\",\"accountNumber\":\"40800000000000000003\",\"amount\":\"4444.50\",\"pinCode\":\"1221\",\"user\":{\"id\":2}}
-3. Application now is ready for work
+
+
+           Create users:
+                curl -X POST http://localhost:8082/host/create/user -H "Authorization: Basic MTExMTMzMzMxMTExMzMzMzoxMjIx" -H "Content-Type: application/json" -d {\"firstName\":\"Vladislav\",\"lastName\":\"Boikov\"}
+                curl -X POST http://localhost:8082/host/create/user -H "Authorization: Basic MTExMTMzMzMxMTExMzMzMzoxMjIx" -H "Content-Type: application/json" -d {\"firstName\":\"Alexandra\",\"lastName\":\"Semennova\"}
+           Create accounts:
+                curl -X POST http://localhost:8082/host/create/account -H "Authorization: Basic MTExMTMzMzMxMTExMzMzMzoxMjIx" -H "Content-Type: application/json" -d {\"cardNumber\":\"0000000011111111\",\"accountNumber\":\"40800000000000000003\",\"amount\":\"1090.50\",\"pinCode\":\"$2a$12$Dcvi1lTmeCaAzyOwVax9eO/YkXz.DHXOgQQNys2RC3B5nguh1CQRS\",\"user\":{\"id\":3}} 
+                curl -X POST http://localhost:8082/host/create/account -H "Authorization: Basic MTExMTMzMzMxMTExMzMzMzoxMjIx" -H "Content-Type: application/json" -d {\"cardNumber\":\"0000000022222222\",\"accountNumber\":\"40800000000000000004\",\"amount\":\"390.50\",\"pinCode\":\"$2a$12$RdHqoZDm4KF5NmVlAkgMNunBabRTLgfXk.YI9fZZSxolAO/8fbTCG\",\"user\":{\"id\":3}}
+                curl -X POST http://localhost:8082/host/create/account -H "Authorization: Basic MTExMTMzMzMxMTExMzMzMzoxMjIx" -H "Content-Type: application/json" -d {\"cardNumber\":\"0000000033333333\",\"accountNumber\":\"40800000000000000005\",\"amount\":\"4444.50\",\"pinCode\":\"$2a$12$RdHqoZDm4KF5NmVlAkgMNunBabRTLgfXk.YI9fZZSxolAO/8fbTCG\",\"user\":{\"id\":4}}
+
+
+
+2. Application now is ready for work
 
 
 
@@ -119,26 +120,26 @@ Password  :  pin_code;
 
 
             Data:
-                  card_number: 1111222211112222
+                  card_number: 0000000022222222
                   pin_code:    1221    
             Request:
-                  curl -X POST http://localhost:8080/client/balance -H "Content-Type: application/json" -d {\"cardNumber\":\"1111222211112222\",\"pinCode\":\"1221\"}
+                  curl -X POST http://localhost:8080/client/balance -H "Content-Type: application/json" -d {\"cardNumber\":\"0000000022222222\",\"pinCode\":\"1221\"}
 
 Response should be like:
 
 
-      CARD_NUMBER : 1111222211112222
+      CARD_NUMBER : 0000000022222222
       BALANCE : 390.50
 
 
-2. If data has wong PIN-code
+2. Case: wrong PIN-code
 
 
        Data:
-          card_number: 1111222211112222
+          card_number: 0000000022222222
           pin_code:    9999
        Request:
-          curl -X POST http://localhost:8080/client/balance -H "Content-Type: application/json" -d {\"cardNumber\":\"1111222211112222\",\"pinCode\":\"9999\"}
+          curl -X POST http://localhost:8080/client/balance -H "Content-Type: application/json" -d {\"cardNumber\":\"0000000022222222\",\"pinCode\":\"9999\"}
 
 Response should be like:
 
@@ -146,28 +147,28 @@ Response should be like:
       WRONG PIN-CODE
 
 
-3. If pin-code has not valid - pin=code should consist of 4 digits
+3. Case: ATM do not have connection with server
 
 
 
             Data:
-               card_number: 1111222211112222
-               pin_code:    asd11235
+               card_number: 0000000022222222
+               pin_code:    1221
             
             Request:
-               curl -X POST http://localhost:8080/client/balance -H "Content-Type: application/json" -d {\"cardNumber\":\"1111222211112222\",\"pinCode\":\"9999\"}
+               curl -X POST http://localhost:8080/client/balance -H "Content-Type: application/json" -d {\"cardNumber\":\"0000000022222222\",\"pinCode\":\"9999\"}
 
 Response should be like:
 
 
-     Invalid input data : check card_number and pin_code!
+     Don`t have connection with server
 
 
 <h2>2.Send money by card_number</h2>
 
 1. To transfer money from card to card should send : 
 
--cardholders: <b>"card_number"</b> and <b>"pin_code"</b> 
+-card_holder_data: <b>"card_number"</b> and <b>"pin_code"</b> 
 
 -card_number to transfer: <b>"card_number_to"</b>
 
@@ -182,12 +183,12 @@ Example:
 
 
             Data:
-               card_number_from : 1111333311113333
+               card_number_from : 0000000033333333
                pin_code:    1221   
-               car_number_to : 1111222211112222
+               car_number_to : 0000000022222222
                amount_to_transfer : 100
             Request:
-                  curl -X POST http://localhost:8080/client/money/transfer -H "Content-Type: application/json" -d {\"accountFrom\":{\"cardNumber\":\"1111333311113333\",\"pinCode\":\"1221\"},\"cardNumberTo\":\"1111222211112222\",\"amountToTransfer\":\"100\"} 
+                  curl -X POST http://localhost:8080/client/money/transfer -H "Content-Type: application/json" -d {\"accountFrom\":{\"cardNumber\":\"0000000033333333\",\"pinCode\":\"1221\"},\"cardNumberTo\":\"0000000022222222\",\"amountToTransfer\":\"100\"} 
 
 Response should be like:
 
@@ -197,16 +198,16 @@ Response should be like:
       Balance AFTER: 4344.50
 
 
-2. If data has wong PIN-code
+2. Case  : wrong PIN-code
 
 
        Data:
-         card_number_from : 1111333311113333
+         card_number_from : 0000000033333333
          pin_code:    0000 
-         car_number_to : 1111222211112222
+         car_number_to : 0000000022222222
          amount_to_transfer : 100
        Request:
-          curl -X POST http://localhost:8080/client/money/transfer -H "Content-Type: application/json" -d {\"accountFrom\":{\"cardNumber\":\"1111333311113333\",\"pinCode\":\"1221\"},\"cardNumberTo\":\"1111222211112222\",\"amountToTransfer\":\"100\"}
+          curl -X POST http://localhost:8080/client/money/transfer -H "Content-Type: application/json" -d {\"accountFrom\":{\"cardNumber\":\"0000000033333333\",\"pinCode\":\"1221\"},\"cardNumberTo\":\"0000000022222222\",\"amountToTransfer\":\"100\"}
 
 Response should be like:
 
@@ -214,19 +215,36 @@ Response should be like:
       WRONG PIN-CODE
 
 
-3. If don`t have enough money to transfer
+3. Case  : don`t have enough money to transfer
 
 
          Data:
-            card_number_from : 1111333311113333
+            card_number_from : 0000000033333333
             pin_code:    1221   
-            car_number_to : 1111222211112222
+            car_number_to : 0000000022222222
             amount_to_transfer : 100000000
          Request:
-            curl -X POST http://localhost:8080/client/money/transfer -H "Content-Type: application/json" -d {\"accountFrom\":{\"cardNumber\":\"1111333311113333\",\"pinCode\":\"1221\"},\"cardNumberTo\":\"1111222211112222\",\"amountToTransfer\":\"100000000\"} 
+            curl -X POST http://localhost:8080/client/money/transfer -H "Content-Type: application/json" -d {\"accountFrom\":{\"cardNumber\":\"1111333311113333\",\"pinCode\":\"1221\"},\"cardNumberTo\":\"0000000022222222\",\"amountToTransfer\":\"100000000\"} 
 
 Response should be like:
 
 
-     Don`t have enough money to transfer!
+     Don`t have enough amount to transfer!
+4. Case  : ATM do not have connection with server
+
+
+         Data:
+               card_number_from : 0000000033333333
+               pin_code:    1221   
+               car_number_to : 0000000022222222
+               amount_to_transfer : 100
+            Request:
+                  curl -X POST http://localhost:8080/client/money/transfer -H "Content-Type: application/json" -d {\"accountFrom\":{\"cardNumber\":\"0000000033333333\",\"pinCode\":\"1221\"},\"cardNumberTo\":\"0000000022222222\",\"amountToTransfer\":\"100\"} 
+
+Response should be like:
+
+
+     Don`t have connection with server
+
+
 

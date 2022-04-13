@@ -1,5 +1,6 @@
 package ru.client.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,20 +14,24 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
-import ru.client.dto.TransactionDTO;
-import ru.client.service.ATMService;
 import ru.client.dto.AccountDTO;
 import ru.client.dto.BalanceDTO;
-
-import static org.hamcrest.Matchers.is;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import ru.client.dto.TransactionDTO;
+import ru.client.service.ATMService;
 
 import java.math.BigDecimal;
+
+import static org.hamcrest.Matchers.containsString;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
@@ -65,24 +70,34 @@ public class UnitATMRestControllerTest {
     }
 
     @Test
-    @DisplayName("/balance - check controller mapping - success")
-    void checkMappingBalance(){
-        AccountDTO accountDTO = getAccountDTO("1123","111");
-
-        ResponseEntity response = ResponseEntity
-                .ok()
-                .body(getBalanceDTO());
+    @DisplayName("CHECK BALANCE - failure (auth failed - wrong PIN)")
+    void checkBalanceFailure() throws Exception {
+        // 1. request
+        AccountDTO accountDTO = getAccountDTO("1111222211112222", "1221");
+        // 2. response from SERVER
         Mockito.when(restTemplate.postForEntity(Mockito.anyString(), Mockito.any(), Mockito.any(Class.class)))
-                .thenReturn(response);
+                .thenThrow(new HttpClientErrorException(HttpStatus.UNAUTHORIZED));
+        Mockito.when(atmService.printBalanceResponse(Mockito.any())).thenCallRealMethod();
 
-        String responseStr = sendAccountDTO(accountDTO);
-        Assertions.assertEquals("ERROR : Response.body == null",responseStr);
+        String answer = atmRestController.balance(accountDTO);
+        String expect = "\nWRONG PIN-CODE!\n";
+
+        Assertions.assertEquals(expect,answer);
     }
 
-    private String sendAccountDTO(AccountDTO accountRequest) {
-        HttpEntity<AccountDTO> request = new HttpEntity<>(accountRequest);
-        ResponseEntity<String> response = testRestTemplate.postForEntity("/client/balance", request, String.class);
-        return response.getBody();
+    @Test
+    @DisplayName("/balance - check controller mapping - success")
+    void checkMappingBalance() throws Exception {
+        AccountDTO accountDTO = getAccountDTO("1123","111");
+
+        ObjectMapper om = new ObjectMapper();
+        mockMvc.perform(
+                post("/client/balance")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(om.writeValueAsString(accountDTO)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Don`t have connection with server")));
     }
 
     private AccountDTO getAccountDTO(String cardNumber, String pinCode) {
@@ -125,7 +140,7 @@ public class UnitATMRestControllerTest {
                 .thenReturn(responseBalanceBeforeTrans);
         Mockito.when(restTemplate.postForEntity("http://localhost:8082/host/money/transfer", transactionRequest, BalanceDTO.class))
                 .thenReturn(responseBalanceAfterTrans);
-        Mockito.when(atmService.printResultOfTransaction(Mockito.any(), Mockito.any(), Mockito.any()))
+        Mockito.when(atmService.printResultOfTransaction(Mockito.any()))
                 .thenReturn(EXPECTED_MESSAGE_AFTER_SUCCESS_TRANSACTION);
         // get answer
         String responseStr = atmRestController.sendMoney(transactionRequest);
@@ -142,50 +157,23 @@ public class UnitATMRestControllerTest {
     }
 
     @Test
-    @DisplayName("MONEY TRANSACTION - failure (don`t have enough money for transfer)")
+    @DisplayName("MONEY TRANSACTION - failure (try to send money to the self-card)")
     void sendMoneyDontHaveEnoughMoneyFailure(){
         // prepare data to send money
         AccountDTO accountFrom = getAccountDTO("1111","0000");
         BigDecimal amountToTransfer = new BigDecimal("800.00");
 
         TransactionDTO transactionRequest = getTransactionDTO(accountFrom, amountToTransfer);
+        transactionRequest.setCardNumberTo(accountFrom.getCardNumber());
 
         BalanceDTO balanceBefore = getBalanceDTO();
         balanceBefore.setAmount(new BigDecimal("300"));
 
         // mock response from server
-        ResponseEntity<BalanceDTO> responseBalanceBeforeTrans = ResponseEntity.ok().body(balanceBefore);
-        String EXPECTED_MESSAGE_AFTER_TRANSACTION = "\nTransaction denied! \nDon`t have enough money to transfer!\n";
-
-        HttpEntity<AccountDTO> request = new HttpEntity<>(accountFrom);
-        Mockito.when(restTemplate.postForEntity("http://localhost:8082/host/balance", request, BalanceDTO.class))
-                .thenReturn(responseBalanceBeforeTrans);
+        String EXPECTED_MESSAGE_AFTER_TRANSACTION = "\nTried to send money to the self card!\n";
 
         // get answer
-        String responseStr = atmRestController.sendMoney(transactionRequest);
-
-        Assertions.assertEquals(EXPECTED_MESSAGE_AFTER_TRANSACTION,responseStr);
-    }
-
-    @Test
-    @DisplayName("MONEY TRANSACTION - failure (wrong pin)")
-    void sendMoneyWrongPinCodeFailure(){
-        // prepare data to send money
-        AccountDTO accountFrom = getAccountDTO("1111","0000");
-        BigDecimal amountToTransfer = new BigDecimal("800.00");
-
-        TransactionDTO transactionRequest = getTransactionDTO(accountFrom, amountToTransfer);
-
-        // mock response from server
-        ResponseEntity<BalanceDTO> responseBalanceBeforeTrans = ResponseEntity.ok().body(null);
-        String EXPECTED_MESSAGE_AFTER_TRANSACTION = "\nWRONG PIN-CODE\n";
-
-        HttpEntity<AccountDTO> request = new HttpEntity<>(accountFrom);
-        Mockito.when(restTemplate.postForEntity("http://localhost:8082/host/balance", request, BalanceDTO.class))
-                .thenReturn(responseBalanceBeforeTrans);
-
-        // get answer
-        String responseStr = atmRestController.sendMoney(transactionRequest);
+        String responseStr = testRestTemplate.postForEntity("/client/money/transfer",new HttpEntity<>(transactionRequest),String.class).getBody();
 
         Assertions.assertEquals(EXPECTED_MESSAGE_AFTER_TRANSACTION,responseStr);
     }
@@ -196,29 +184,38 @@ public class UnitATMRestControllerTest {
         // prepare data to send money
         AccountDTO accountFrom = getAccountDTO("1111","0000");
         BigDecimal amountToTransfer = new BigDecimal("800.00");
-
         TransactionDTO transactionRequest = getTransactionDTO(accountFrom, amountToTransfer);
 
-        BalanceDTO balanceBefore = getBalanceDTO();
-        balanceBefore.setAmount(new BigDecimal("1000"));
-
         // mock response from server
-        ResponseEntity<BalanceDTO> responseBalanceBeforeTrans = ResponseEntity.ok().body(balanceBefore);
-        String EXPECTED_MESSAGE_AFTER_TRANSACTION = "\nTransfer denied!\n";
+        String EXPECTED_MESSAGE_AFTER_TRANSACTION = "\nDon`t have connection with server\n";
 
-        HttpEntity<AccountDTO> request = new HttpEntity<>(accountFrom);
-        HttpEntity<TransactionDTO> requestTransaction = new HttpEntity<>(transactionRequest);
-        Mockito.when(restTemplate.postForEntity("http://localhost:8082/host/balance", request, BalanceDTO.class))
-                .thenReturn(responseBalanceBeforeTrans);
-        Mockito.when(restTemplate.postForEntity("http://localhost:8082/host/money/transfer", requestTransaction, BalanceDTO.class))
-                .thenThrow(new RestClientException("test throw exception"));
-        Mockito.when(atmService.printResultOfTransaction(Mockito.any(), Mockito.any(), Mockito.any()))
-                .thenReturn(EXPECTED_MESSAGE_AFTER_TRANSACTION);
-
+        Mockito.when(restTemplate.postForEntity(Mockito.anyString(), Mockito.any(), Mockito.any()))
+                .thenThrow(new RestClientException(""));
+        Mockito.when(atmService.printResultOfTransaction(Mockito.any())).thenCallRealMethod();
         // get answer
         String responseStr = atmRestController.sendMoney(transactionRequest);
 
         Assertions.assertEquals(EXPECTED_MESSAGE_AFTER_TRANSACTION,responseStr);
     }
 
+    @Test
+    @DisplayName("MONEY TRANSACTION - failure (auth failed - wrong PIN)")
+    void sendMoneyWrongPinCodeFailure(){
+        // prepare data to send money
+        AccountDTO accountFrom = getAccountDTO("1111","0000");
+        BigDecimal amountToTransfer = new BigDecimal("800.00");
+        TransactionDTO transactionRequest = getTransactionDTO(accountFrom, amountToTransfer);
+
+        // mock response from server
+        String EXPECTED_MESSAGE_AFTER_TRANSACTION = "\nWRONG PIN-CODE!\n";
+
+        HttpEntity<AccountDTO> request = new HttpEntity<>(accountFrom);
+        Mockito.when(restTemplate.postForEntity(Mockito.anyString(), Mockito.any(), Mockito.any()))
+                .thenThrow(new HttpClientErrorException(HttpStatus.UNAUTHORIZED));
+        Mockito.when(atmService.printResultOfTransaction(Mockito.any())).thenCallRealMethod();
+        // get answer
+        String responseStr = atmRestController.sendMoney(transactionRequest);
+
+        Assertions.assertEquals(EXPECTED_MESSAGE_AFTER_TRANSACTION,responseStr);
+    }
 }

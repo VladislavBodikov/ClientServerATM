@@ -1,4 +1,4 @@
-package ru.server.entity;
+package ru.server.model;
 
 import lombok.Getter;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

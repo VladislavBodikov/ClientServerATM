@@ -7,14 +7,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.support.BasicAuthenticationInterceptor;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import ru.client.dto.AccountDTO;
 import ru.client.dto.BalanceDTO;
 import ru.client.dto.TransactionDTO;
 import ru.client.service.ATMService;
-
-import java.math.BigDecimal;
 
 @RestController
 @RequestMapping("/client")
@@ -23,8 +22,8 @@ import java.math.BigDecimal;
 public class ATMRestController {
 
     private final String SERVER_URL = "http://localhost:8082/host";
-    private final String BALANCE_URL = "/balance";
-    private final String MONEY_TRANSFER_URL = "/money/transfer";
+    private final String BALANCE_URL = SERVER_URL + "/balance";
+    private final String MONEY_TRANSFER_URL = SERVER_URL + "/money/transfer";
 
     private ATMService atmService;
     private RestTemplate restTemplate;
@@ -38,61 +37,74 @@ public class ATMRestController {
         return atmService.printBalanceResponse(response);
     }
 
-    private void setRestTemplateWithBasicAuth(AccountDTO authenticationData){
+    private void setRestTemplateWithBasicAuth(AccountDTO authenticationData) {
+        restTemplate.getInterceptors().clear();
+
         String username = authenticationData.getCardNumber();
         String password = authenticationData.getPinCode();
-        restTemplate.getInterceptors().add(new BasicAuthenticationInterceptor(username,password));
+        restTemplate.getInterceptors().add(new BasicAuthenticationInterceptor(username, password));
     }
 
-    private ResponseEntity<BalanceDTO> requestBalance(AccountDTO requestAuthData){
+    private ResponseEntity<BalanceDTO> requestBalance(AccountDTO requestAuthData) {
         HttpEntity<AccountDTO> request = new HttpEntity<>(requestAuthData);
         log.info("REQUEST : " + request);
 
         ResponseEntity<BalanceDTO> response;
         try {
-            response = restTemplate.postForEntity(SERVER_URL + BALANCE_URL, request, BalanceDTO.class);
+            response = restTemplate.postForEntity(BALANCE_URL, request, BalanceDTO.class);
+        } catch (HttpClientErrorException authException) {
+            BalanceDTO balanceResponse = new BalanceDTO();
+            balanceResponse.setMessage("WRONG PIN-CODE!");
+            log.error("Authentication with data " + request + " failed: wrong pin-code");
+            return new ResponseEntity<>(balanceResponse, HttpStatus.CONFLICT);
         } catch (RestClientException exception) {
-            log.error("RESPONSE : " + exception.getMessage());
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
+            BalanceDTO balanceResponse = new BalanceDTO();
+            balanceResponse.setMessage("Don`t have connection with server");
+            log.error(exception.getMessage());
+            return new ResponseEntity<>(balanceResponse, HttpStatus.CONFLICT);
         }
-        log.info("RESPONSE : " + response);
+        log.info("RESPONSE : " + response.getBody());
         return response;
     }
 
     @PostMapping(path = "/money/transfer", consumes = "application/json")
-    public String sendMoney(@RequestBody TransactionDTO transactionDTO){
-        setRestTemplateWithBasicAuth(transactionDTO.getAccountFrom());
-
-        ResponseEntity<BalanceDTO> balanceBeforeTransfer = requestBalance(transactionDTO.getAccountFrom());
-        boolean isRequestBalanceFailure = balanceBeforeTransfer.getStatusCode() == HttpStatus.CONFLICT
-                                        || balanceBeforeTransfer.getBody() == null;
-        if (isRequestBalanceFailure){
-            log.error("\nFailed request balance from server with data: " + transactionDTO + "\n");
-            return "\nWRONG PIN-CODE\n";
+    public String sendMoney(@RequestBody TransactionDTO transactionDTO) {
+        if (isAttemptToSendMoneyToSelfCard(transactionDTO.getAccountFrom().getCardNumber(), transactionDTO.getCardNumberTo())) {
+            return "\nTried to send money to the self card!\n";
         }
 
-        boolean isEnoughBalanceForTransfer = balanceBeforeTransfer.getBody().getAmount()
-                                                .subtract(transactionDTO.getAmountToTransfer())
-                                                .compareTo(new BigDecimal(0)) >= 0;
-        if (isEnoughBalanceForTransfer){
-            ResponseEntity<BalanceDTO> balanceAfterTransfer = transfer(transactionDTO);
-            return atmService.printResultOfTransaction(balanceBeforeTransfer,balanceAfterTransfer,transactionDTO.getAmountToTransfer());
-        }
-        return "\nTransaction denied! \nDon`t have enough money to transfer!\n";
+        AccountDTO authData = transactionDTO.getAccountFrom();
+        setRestTemplateWithBasicAuth(authData);
+
+        ResponseEntity<BalanceDTO> balanceAfterTransfer = transfer(transactionDTO);
+        return atmService.printResultOfTransaction(balanceAfterTransfer);
     }
 
-    private ResponseEntity<BalanceDTO> transfer(TransactionDTO transactionDTO){
+    private boolean isAttemptToSendMoneyToSelfCard(String cardFrom, String cardTo) {
+        return cardFrom.equals(cardTo);
+    }
+
+    private ResponseEntity<BalanceDTO> transfer(TransactionDTO transactionDTO) {
         HttpEntity<TransactionDTO> request = new HttpEntity<>(transactionDTO);
-        log.debug("REQUEST : " + request);
+        log.info("REQUEST : " + request);
 
         ResponseEntity<BalanceDTO> response;
         try {
-            response = restTemplate.postForEntity(SERVER_URL + MONEY_TRANSFER_URL, request, BalanceDTO.class);
+            response = restTemplate.postForEntity(MONEY_TRANSFER_URL, request, BalanceDTO.class);
+        } catch (HttpClientErrorException authException) {
+            BalanceDTO balanceResponse = new BalanceDTO();
+            balanceResponse.setMessage("WRONG PIN-CODE!");
+            log.error("Authentication with data " + request + " failed: wrong pin-code");
+            return new ResponseEntity<>(balanceResponse, HttpStatus.CONFLICT);
         } catch (RestClientException exception) {
+            BalanceDTO balanceResponse = new BalanceDTO();
+            balanceResponse.setMessage("Don`t have connection with server");
             log.error(exception.getMessage());
-            return new ResponseEntity<>(new BalanceDTO(),HttpStatus.CONFLICT);
+            return new ResponseEntity<>(balanceResponse, HttpStatus.CONFLICT);
         }
         log.debug("RESPONSE : " + response);
         return response;
     }
+
+
 }

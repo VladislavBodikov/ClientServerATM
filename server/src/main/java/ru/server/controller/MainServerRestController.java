@@ -29,47 +29,19 @@ public class MainServerRestController {
     private UserService userService;
 
     @PostMapping(value = "/balance", consumes = "application/json")
-    public BalanceDTO getBalance(@Valid @RequestBody AccountDTO accountDTO, BindingResult bindingResult) {
+    public BalanceDTO getBalance(@RequestBody AccountDTO accountDTO) {
         BalanceDTO responseBalance = new BalanceDTO();
 
-        boolean isInputDataNotValid = bindingResult.hasErrors();
-        if (isInputDataNotValid) {
-            prepareBalanceToResponseInvalidInputData(responseBalance);
-            return responseBalance;
-        }
-
         Optional<Account> accountFromDB = accountService.findByCardNumber(accountDTO.getCardNumber());
-        boolean isAccountFound = accountFromDB.isPresent();
-        if (isAccountFound) {
-            Account accountFromDb = accountFromDB.get();
-            String incomingPin = accountDTO.getPinCode();
-            String databasePin = accountFromDb.getPinCode();
-            
-            if (isPinCorrect(incomingPin, databasePin)) {
-                prepareBalanceToResponseSuccess(responseBalance, accountFromDb);
-            } else {
-                prepareBalanceToResponsePinNotCorrect(responseBalance);
-            }
-        }
+        prepareBalanceToResponseSuccess(responseBalance,accountFromDB.get());
+
         return responseBalance;
-    }
-
-    private void prepareBalanceToResponseInvalidInputData(BalanceDTO responseBalance) {
-        responseBalance.setStatus(HttpStatus.BAD_REQUEST);
-    }
-
-    private boolean isPinCorrect(String inputPin, String pinFromDatabase) {
-        return inputPin.equals(pinFromDatabase);
     }
 
     private void prepareBalanceToResponseSuccess(BalanceDTO responseBalance, Account accountDB) {
         responseBalance.setCardNumber(accountDB.getCardNumber());
         responseBalance.setAmount(accountDB.getAmount());
         responseBalance.setStatus(HttpStatus.OK);
-    }
-
-    private void prepareBalanceToResponsePinNotCorrect(BalanceDTO responseBalance) {
-        responseBalance.setStatus(HttpStatus.EXPECTATION_FAILED);
     }
 
     @GetMapping("/accounts")
@@ -101,7 +73,7 @@ public class MainServerRestController {
         }
         catch (DontHaveEnoughMoneyException moneyEx){
             log.info(moneyEx.getMessage());
-            prepareResponseBalanceIfDontHaveEnoughMoneyToTransfer(responseBalance, moneyEx);
+            prepareResponseBalanceIfDontHaveEnoughMoneyToTransfer(responseBalance);
             return responseBalance;
         }
         catch (AccountNotFoundException accEx){
@@ -113,10 +85,12 @@ public class MainServerRestController {
         return responseBalance;
     }
 
-    private void prepareResponseBalanceIfDontHaveEnoughMoneyToTransfer(BalanceDTO responseBalance, DontHaveEnoughMoneyException e) {
+    private void prepareResponseBalanceIfDontHaveEnoughMoneyToTransfer(BalanceDTO responseBalance) {
         responseBalance.setStatus(HttpStatus.BAD_GATEWAY);
+        responseBalance.setMessage("Don`t have enough amount to transfer!");
     }
     private void prepareResponseBalanceIfAccountsForTransferNotFound(BalanceDTO responseBalance, AccountNotFoundException e) {
         responseBalance.setStatus(HttpStatus.EXPECTATION_FAILED);
+        responseBalance.setMessage("Account with card_number to transfer not found!");
     }
 }

@@ -1,19 +1,15 @@
 package ru.server.controller;
 
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.jdbc.core.JdbcTemplate;
 import ru.server.entity.Account;
-import ru.server.entity.Role;
+import ru.server.model.Role;
 import ru.server.entity.User;
 import ru.server.repository.AccountCrudRepository;
 import ru.server.repository.UserCrudRepository;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static ru.server.DataForUnitTests.*;
@@ -27,8 +23,13 @@ public class CreateDataRestControllerIntegrationTest {
     private UserCrudRepository userRepository;
     @Autowired
     private AccountCrudRepository accountRepository;
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
-    private List<CrudRepository> repositories;
+    @AfterEach
+    public void clearWasteDataAfterTests(){
+        clearRepos(userRepository,accountRepository);
+    }
 
     @Test
     @DisplayName("Создание пользователя в базе - УСПЕХ (У авторизованного юзера достаточно прав)")
@@ -37,19 +38,7 @@ public class CreateDataRestControllerIntegrationTest {
 
         boolean isSaveUser = createUser(user, restTemplate, Role.ADMIN);
 
-        clearRepositories();
-
         assertTrue(isSaveUser);
-    }
-
-    private void clearRepositories() {
-        if (repositories == null) {
-            repositories = new ArrayList() {{
-                add(accountRepository);
-                add(userRepository);
-            }};
-        }
-        clearRepos(repositories);
     }
 
     @Test
@@ -58,8 +47,6 @@ public class CreateDataRestControllerIntegrationTest {
         User user = getUserWithoutId();
 
         boolean isSaveUser = createUser(user, restTemplate, Role.USER);
-
-        clearRepositories();
 
         assertFalse(isSaveUser);
     }
@@ -71,8 +58,6 @@ public class CreateDataRestControllerIntegrationTest {
 
         boolean isSaveUser1 = createUser(user, restTemplate, Role.ADMIN);
         boolean isSaveUser2 = createUser(user, restTemplate, Role.ADMIN);
-
-        clearRepositories();
 
         assertTrue(isSaveUser1);
         assertFalse(isSaveUser2);
@@ -86,8 +71,6 @@ public class CreateDataRestControllerIntegrationTest {
 
         boolean isSaveUser = createUser(user, restTemplate, Role.ADMIN);
 
-        clearRepositories();
-
         assertFalse(isSaveUser);
     }
 
@@ -98,8 +81,6 @@ public class CreateDataRestControllerIntegrationTest {
 
         boolean isSaveUser = createUser(account.getUser(), restTemplate, Role.ADMIN);
         boolean isSaveAccount = createAccount(account, restTemplate, Role.ADMIN);
-
-        clearRepositories();
 
         assertAll(
                 () -> assertTrue(isSaveUser),
@@ -113,8 +94,6 @@ public class CreateDataRestControllerIntegrationTest {
 
         boolean isSaveUser = createUser(account.getUser(), restTemplate, Role.ADMIN);
         boolean isSaveAccount = createAccount(account, restTemplate, Role.USER);
-
-        clearRepositories();
 
         assertAll(
                 () -> assertTrue(isSaveUser),
@@ -130,8 +109,6 @@ public class CreateDataRestControllerIntegrationTest {
         boolean isSaveUser = createUser(user, restTemplate, Role.ADMIN);
         boolean isSaveAccount1 = createAccount(account, restTemplate, Role.ADMIN);
         boolean isSaveAccount2 = createAccount(account, restTemplate, Role.ADMIN);
-
-        clearRepositories();
 
         assertAll(
                 () -> assertTrue(isSaveUser),
@@ -151,26 +128,6 @@ public class CreateDataRestControllerIntegrationTest {
 
         boolean isSaveUser = createUser(user, restTemplate, Role.ADMIN);
         boolean isSaveAccount = createAccount(account, restTemplate, Role.ADMIN);
-
-        clearRepositories();
-
-        assertAll(
-                () -> assertTrue(isSaveUser),
-                () -> assertFalse(isSaveAccount)
-        );
-    }
-
-    @Test
-    @DisplayName("Сохранение счета в базе - ПРОВАЛ (не валидные данные для сохранения)")
-    void createAccountFailureInvalidData() {
-        Account account = getAccountWithoutId();
-        User user = account.getUser();
-        account.setPinCode("0");
-
-        boolean isSaveUser = createUser(user, restTemplate, Role.ADMIN);
-        boolean isSaveAccount = createAccount(account, restTemplate, Role.ADMIN);
-
-        clearRepositories();
 
         assertAll(
                 () -> assertTrue(isSaveUser),

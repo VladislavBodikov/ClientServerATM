@@ -25,55 +25,40 @@ public class UnitATMServiceTest {
     void showBalanceSuccess() {
         BalanceDTO balanceDTO = getBalanceDTO();
 
-        responseEntity = new ResponseEntity<>(balanceDTO,HttpStatus.OK);
+        responseEntity = new ResponseEntity<>(balanceDTO, HttpStatus.OK);
         String response = atmService.printBalanceResponse(responseEntity);
 
         assertTrue(response.contains("BALANCE : " + balanceDTO.getAmount()));
     }
-    @Test
-    @DisplayName("SHOW BALANCE - Invalid input data")
-    void showBalanceInvalidInputData() {
-        BalanceDTO balanceDTO = getBalanceDTO();
-        balanceDTO.setStatus(HttpStatus.BAD_REQUEST);
 
-        responseEntity = new ResponseEntity<>(balanceDTO,HttpStatus.BAD_REQUEST);
+    @Test
+    @DisplayName("SHOW BALANCE - failure (server response == null)")
+    void showBalanceHasNotConnectionWithServer() {
+        responseEntity = null;
         String response = atmService.printBalanceResponse(responseEntity);
 
-        assertTrue(response.contains("Invalid input data : check card_number and pin_code!"));
+        assertTrue(response.contains("ERROR : response == null. Check connection with server!"));
     }
 
     @Test
-    @DisplayName("SHOW BALANCE - failure - wrong pin-code")
-    void showBalanceWrongPin() {
-        BalanceDTO balanceDTO = new BalanceDTO();
-        balanceDTO.setStatus(HttpStatus.EXPECTATION_FAILED);
-
-        responseEntity = new ResponseEntity<>(balanceDTO,HttpStatus.EXPECTATION_FAILED);
+    @DisplayName("SHOW BALANCE - failure (server response body == null)")
+    void showBalanceInvalidResponseBody() {
+        responseEntity = new ResponseEntity<>(null, HttpStatus.CONFLICT);
         String response = atmService.printBalanceResponse(responseEntity);
 
-        assertTrue(response.contains("WRONG PIN-CODE"));
+        assertTrue(response.contains("ERROR : Response.body == null"));
     }
 
     @Test
-    @DisplayName("SHOW BALANCE - failure - balance status == null")
-    void showBalanceFailureNull() {
+    @DisplayName("SHOW BALANCE - failure (print message from server)")
+    void showBalancePrintMessage() {
         BalanceDTO balanceDTO = new BalanceDTO();
+        balanceDTO.setMessage("some message from server");
 
-        responseEntity = new ResponseEntity<>(balanceDTO,HttpStatus.OK);
+        responseEntity = new ResponseEntity<>(balanceDTO, HttpStatus.CHECKPOINT);
         String response = atmService.printBalanceResponse(responseEntity);
 
-        assertTrue(response.contains("Balance status is null"));
-    }
-    @Test
-    @DisplayName("SHOW BALANCE - failure - unexpected status")
-    void showBalanceFailureUnexpectedStatus() {
-        BalanceDTO balanceDTO = new BalanceDTO();
-        balanceDTO.setStatus(HttpStatus.CHECKPOINT); // unknown status for ATMService
-
-        responseEntity = new ResponseEntity<>(balanceDTO,HttpStatus.CHECKPOINT);
-        String response = atmService.printBalanceResponse(responseEntity);
-
-        assertTrue(response.contains("Unexpected HttpResponse status!!!"));
+        assertTrue(response.contains("some message from server"));
     }
 
     private BalanceDTO getBalanceDTO() {
@@ -86,31 +71,41 @@ public class UnitATMServiceTest {
 
     @Test
     @DisplayName("MONEY TRANSACTION - success")
-    void showResultOfTransactionSuccess(){
-        BalanceDTO balanceBefore = new BalanceDTO("1",new BigDecimal("1000"),HttpStatus.OK);
-        BalanceDTO balanceAfter = new BalanceDTO("1",new BigDecimal("0"),HttpStatus.OK);
+    void showResultOfTransactionSuccess() {
+        BalanceDTO balanceBefore = new BalanceDTO("1", new BigDecimal("1000"), HttpStatus.OK, null);
 
-        ResponseEntity<BalanceDTO> balanceBeforeTransfer = new ResponseEntity<>(balanceBefore,HttpStatus.OK);
-        ResponseEntity<BalanceDTO> balanceAfterTransfer = new ResponseEntity<>(balanceAfter,HttpStatus.OK);
-        BigDecimal amountToTransfer = new BigDecimal("1000");
+        ResponseEntity<BalanceDTO> balanceBeforeTransfer = new ResponseEntity<>(balanceBefore, HttpStatus.OK);
 
-        String printedMessage = atmService.printResultOfTransaction(balanceBeforeTransfer, balanceAfterTransfer, amountToTransfer);
+        String printedMessage = atmService.printResultOfTransaction(balanceBeforeTransfer);
 
         assertTrue(printedMessage.contains("Transfer success!"));
+    }
+    @Test
+    @DisplayName("MONEY TRANSACTION - failure (server response == null)")
+    void showResultOfTransactionHasNotConnectionWithServer() {
+        responseEntity = null;
+        String response = atmService.printResultOfTransaction(responseEntity);
+
+        assertTrue(response.contains("ERROR : response == null. Check connection with server!"));
+    }
+    @Test
+    @DisplayName("MONEY TRANSACTION - failure (server response body == null)")
+    void showResultOfTransactionInvalidResponseBody() {
+        responseEntity = new ResponseEntity<>(null, HttpStatus.CONFLICT);
+        String response = atmService.printResultOfTransaction(responseEntity);
+
+        assertTrue(response.contains("ERROR : Response.body == null"));
     }
 
     @Test
     @DisplayName("MONEY TRANSACTION - failure")
-    void showResultOfTransactionFailure(){
-        BalanceDTO balanceBefore = new BalanceDTO("1",new BigDecimal("1000"),HttpStatus.OK);
-        BalanceDTO balanceAfter = new BalanceDTO("1",new BigDecimal("1000"),HttpStatus.OK);
+    void showResultOfTransactionPrintMessage() {
+        BalanceDTO balanceDTO = new BalanceDTO();
+        balanceDTO.setMessage("some message from server");
 
-        ResponseEntity<BalanceDTO> balanceBeforeTransfer = new ResponseEntity<>(balanceBefore,HttpStatus.OK);
-        ResponseEntity<BalanceDTO> balanceAfterTransfer = new ResponseEntity<>(balanceAfter,HttpStatus.OK);
-        BigDecimal amountToTransfer = new BigDecimal("100");
+        responseEntity = new ResponseEntity<>(balanceDTO, HttpStatus.CHECKPOINT);
+        String response = atmService.printResultOfTransaction(responseEntity);
 
-        String printedMessage = atmService.printResultOfTransaction(balanceBeforeTransfer, balanceAfterTransfer, amountToTransfer);
-
-        assertTrue(printedMessage.contains("Transfer denied!"));
+        assertTrue(response.contains("some message from server"));
     }
 }

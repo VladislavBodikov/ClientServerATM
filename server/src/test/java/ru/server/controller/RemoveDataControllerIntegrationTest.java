@@ -1,13 +1,13 @@
 package ru.server.controller;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.data.repository.CrudRepository;
 import ru.server.entity.Account;
-import ru.server.entity.Role;
+import ru.server.model.Role;
 import ru.server.entity.User;
 import ru.server.repository.AccountCrudRepository;
 import ru.server.repository.UserCrudRepository;
@@ -29,16 +29,9 @@ public class RemoveDataControllerIntegrationTest {
     @Autowired
     private AccountCrudRepository accountRepository;
 
-    private List<CrudRepository> repositories;
-
-    private void clearRepositories() {
-        if (repositories == null) {
-            repositories = new ArrayList() {{
-                add(accountRepository);
-                add(userRepository);
-            }};
-        }
-        clearRepos(repositories);
+    @AfterEach
+    public void clearWasteDataAfterTests(){
+        clearRepos(userRepository,accountRepository);
     }
 
     @Test
@@ -48,8 +41,6 @@ public class RemoveDataControllerIntegrationTest {
 
         boolean isSaveUser = createUser(user, restTemplate, Role.ADMIN);
         boolean isRemoveUser = removeUser(user, restTemplate, Role.ADMIN);
-
-        clearRepositories();
 
         assertAll(
                 () -> assertTrue(isRemoveUser),
@@ -64,8 +55,6 @@ public class RemoveDataControllerIntegrationTest {
 
         boolean isRemoveUser = removeUser(user, restTemplate, Role.ADMIN);
 
-        clearRepositories();
-
         assertFalse(isRemoveUser);
     }
 
@@ -77,7 +66,6 @@ public class RemoveDataControllerIntegrationTest {
         boolean isSaveUser = createUser(user, restTemplate, Role.ADMIN);
         boolean isRemoveUser = removeUser(user, restTemplate, Role.USER);
 
-        clearRepositories();
 
         assertAll(
                 () -> assertTrue(isSaveUser),
@@ -93,8 +81,6 @@ public class RemoveDataControllerIntegrationTest {
         boolean isSaveUser = createUser(user, restTemplate, Role.ADMIN);
         long savedUserId = userRepository.findByFirstNameAndLastName(user.getFirstName(), user.getLastName()).get().getId();
         boolean isRemoveUser = removeUserByIdBasicAuth(savedUserId, USERNAME_WRITE, PASSWORD_WRITE);
-
-        clearRepositories();
 
         assertAll(
                 () -> assertTrue(isRemoveUser),
@@ -125,8 +111,6 @@ public class RemoveDataControllerIntegrationTest {
         boolean isSaveUser = createUser(user, restTemplate, Role.ADMIN);
         boolean isRemoveUser = removeUserByIdBasicAuth(1, USERNAME_READ, PASSWORD_READ);
 
-        clearRepositories();
-
         assertAll(
                 () -> assertTrue(isSaveUser),
                 () -> assertFalse(isRemoveUser)
@@ -137,7 +121,7 @@ public class RemoveDataControllerIntegrationTest {
     @DisplayName("REMOVE USER by Id - failure (user don`t exist)")
     public void removeUserByIdFailureUserNotExist() {
 
-        boolean isRemoveUser = removeUserByIdBasicAuth(1, USERNAME_WRITE, PASSWORD_WRITE);
+        boolean isRemoveUser = removeUserByIdBasicAuth(3, USERNAME_WRITE, PASSWORD_WRITE);
 
         assertFalse(isRemoveUser);
     }
@@ -151,8 +135,6 @@ public class RemoveDataControllerIntegrationTest {
         boolean isSaveAccount = createAccount(account, restTemplate, Role.ADMIN);
         boolean isRemoveAccount = removeAccount(account, restTemplate, Role.ADMIN);
         boolean isRemoveUser = removeUser(account.getUser(), restTemplate, Role.ADMIN);
-
-        clearRepositories();
 
         assertAll(
                 () -> assertTrue(isSaveUser),
@@ -169,8 +151,6 @@ public class RemoveDataControllerIntegrationTest {
 
         boolean isRemoveAccount = removeAccount(account, restTemplate, Role.ADMIN);
 
-        clearRepositories();
-
         assertFalse(isRemoveAccount);
     }
 
@@ -180,8 +160,6 @@ public class RemoveDataControllerIntegrationTest {
         long randomId = Math.round(Math.random() * 100);
 
         boolean isRemoveAccount = removeAccountByIdBasicAuth(randomId, USERNAME_WRITE, PASSWORD_WRITE);
-
-        clearRepositories();
 
         assertFalse(isRemoveAccount);
     }
@@ -196,8 +174,6 @@ public class RemoveDataControllerIntegrationTest {
         boolean isSavedAccount = createAccount(account, restTemplate, Role.ADMIN);
         long savedAccountId = accountRepository.findByAccountNumber(account.getAccountNumber()).get().getId();
         boolean isRemoveAccount = removeAccountByIdBasicAuth(savedAccountId, USERNAME_WRITE, PASSWORD_WRITE);
-
-        clearRepositories();
 
         assertAll(
                 () -> assertTrue(isSaveUser),
@@ -231,8 +207,6 @@ public class RemoveDataControllerIntegrationTest {
         boolean isSaveAccount = createAccount(account, restTemplate, Role.ADMIN);
         long savedAccountId = accountRepository.findByAccountNumber(account.getAccountNumber()).get().getId();
         boolean isRemoveAccount = removeAccountByIdBasicAuth(savedAccountId, USERNAME_READ, PASSWORD_READ);
-
-        clearRepositories();
 
         assertAll(
                 () -> assertTrue(isSaveUser),

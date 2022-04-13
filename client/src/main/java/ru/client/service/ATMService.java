@@ -10,43 +10,39 @@ import java.math.BigDecimal;
 @Service
 public class ATMService {
 
+    private final String RESPONSE_FROM_SERVER_IS_NULL = "\nERROR : response == null. Check connection with server!\n";
+    private final String RESPONSE_BODY_FROM_SERVER_IS_NULL = "\nERROR : ERROR : Response.body == null\n";
+
     public String printBalanceResponse(ResponseEntity<BalanceDTO> response) {
-        if (response.getBody() == null){
-            return  "ERROR : Response.body == null";
+        if (response == null) {
+            return RESPONSE_FROM_SERVER_IS_NULL;
+        }
+        if (response.getBody() == null) {
+            return RESPONSE_BODY_FROM_SERVER_IS_NULL;
         }
 
-        BalanceDTO balanceDTO = response.getBody();
-        HttpStatus balanceStatus = balanceDTO.getStatus();
-
-        if (balanceStatus == null){
-            return "Balance status is null";
-        }
-
-        switch (balanceStatus) {
-            case OK:
-                return "\nCARD_NUMBER : " + balanceDTO.getCardNumber() + "\nBALANCE : " + balanceDTO.getAmount();
-            case BAD_REQUEST:
-                return "\nInvalid input data : check card_number and pin_code!\n";
-            case EXPECTATION_FAILED:
-                return "\nWRONG PIN-CODE\n";
-            default:
-                return "\nUnexpected HttpResponse status!!!\n";
+        BalanceDTO body = response.getBody();
+        if (body.getMessage() != null) {
+            return "\n" + body.getMessage() + "\n";
+        } else {
+            return "\nCARD_NUMBER : " + body.getCardNumber() + "\nBALANCE : " + body.getAmount();
         }
     }
 
-    public String printResultOfTransaction(
-            ResponseEntity<BalanceDTO> balanceBeforeTransfer,
-            ResponseEntity<BalanceDTO> balanceAfterTransfer,
-            BigDecimal amountToTransfer){
-
-        BigDecimal before = balanceBeforeTransfer.getBody().getAmount();
-        BigDecimal after = balanceAfterTransfer.getBody().getAmount();
-
-        if (before.subtract(amountToTransfer).compareTo(after) == 0){
-            return "\nTransfer success!\n" +
-                    "Balance BEFORE: " + before + "\n" +
-                    "Balance AFTER: " + after + "\n";
+    public String printResultOfTransaction(ResponseEntity<BalanceDTO> response) {
+        if (response == null) {
+            return RESPONSE_FROM_SERVER_IS_NULL;
         }
-        return "\nTransfer denied!\n";
+        if (response.getBody() == null) {
+            return RESPONSE_BODY_FROM_SERVER_IS_NULL;
+        }
+
+        BalanceDTO body = response.getBody();
+        if (body.getMessage() != null) {
+            return "\n" + body.getMessage() + "\n";
+        } else {
+            return "\nTransfer success!\n";
+        }
     }
+
 }

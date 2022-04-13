@@ -30,7 +30,6 @@ public class Account {
     private BigDecimal amount;
 
     @Column(name = "pin_code",nullable = false)
-    @Pattern(regexp = "^[\\d]{4}$")
     private String pinCode;
 
     @ManyToOne(fetch = FetchType.LAZY)

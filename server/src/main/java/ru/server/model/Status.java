@@ -1,4 +1,4 @@
-package ru.server.entity;
+package ru.server.model;
 
 public enum Status {
     ACTIVE,
