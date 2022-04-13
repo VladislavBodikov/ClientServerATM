@@ -93,13 +93,13 @@ Password  :  pin_code;
 
 
 
-      Create users:
-         curl -X POST http://localhost:8082/host/create/user -H "Authorization: Basic MTExMTMzMzMxMTExMzMzMzoxMjIx" -H "Content-Type: application/json" -d {\"firstName\":\"Vladislav\",\"lastName\":\"Boikov\"}
-         curl -X POST http://localhost:8082/host/create/user -H "Authorization: Basic MTExMTMzMzMxMTExMzMzMzoxMjIx" -H "Content-Type: application/json" -d {\"firstName\":\"Alexandra\",\"lastName\":\"Semennova\"}
-      Create accounts:
-         curl -X POST http://localhost:8082/host/create/account -H "Authorization: Basic MTExMTMzMzMxMTExMzMzMzoxMjIx" -H "Content-Type: application/json" -d {\"cardNumber\":\"0000000011111111\",\"accountNumber\":\"40800000000000000003\",\"amount\":\"1090.50\",\"pinCode\":\"$2a$12$Dcvi1lTmeCaAzyOwVax9eO/YkXz.DHXOgQQNys2RC3B5nguh1CQRS\",\"user\":{\"id\":3}} 
-         curl -X POST http://localhost:8082/host/create/account -H "Authorization: Basic MTExMTMzMzMxMTExMzMzMzoxMjIx" -H "Content-Type: application/json" -d {\"cardNumber\":\"0000000022222222\",\"accountNumber\":\"40800000000000000004\",\"amount\":\"390.50\",\"pinCode\":\"$2a$12$RdHqoZDm4KF5NmVlAkgMNunBabRTLgfXk.YI9fZZSxolAO/8fbTCG\",\"user\":{\"id\":3}}
-         curl -X POST http://localhost:8082/host/create/account -H "Authorization: Basic MTExMTMzMzMxMTExMzMzMzoxMjIx" -H "Content-Type: application/json" -d {\"cardNumber\":\"0000000033333333\",\"accountNumber\":\"40800000000000000005\",\"amount\":\"4444.50\",\"pinCode\":\"$2a$12$RdHqoZDm4KF5NmVlAkgMNunBabRTLgfXk.YI9fZZSxolAO/8fbTCG\",\"user\":{\"id\":4}}
+           Create users:
+                curl -X POST http://localhost:8082/host/create/user -H "Authorization: Basic MTExMTMzMzMxMTExMzMzMzoxMjIx" -H "Content-Type: application/json" -d {\"firstName\":\"Vladislav\",\"lastName\":\"Boikov\"}
+                curl -X POST http://localhost:8082/host/create/user -H "Authorization: Basic MTExMTMzMzMxMTExMzMzMzoxMjIx" -H "Content-Type: application/json" -d {\"firstName\":\"Alexandra\",\"lastName\":\"Semennova\"}
+           Create accounts:
+                curl -X POST http://localhost:8082/host/create/account -H "Authorization: Basic MTExMTMzMzMxMTExMzMzMzoxMjIx" -H "Content-Type: application/json" -d {\"cardNumber\":\"0000000011111111\",\"accountNumber\":\"40800000000000000003\",\"amount\":\"1090.50\",\"pinCode\":\"$2a$12$Dcvi1lTmeCaAzyOwVax9eO/YkXz.DHXOgQQNys2RC3B5nguh1CQRS\",\"user\":{\"id\":3}} 
+                curl -X POST http://localhost:8082/host/create/account -H "Authorization: Basic MTExMTMzMzMxMTExMzMzMzoxMjIx" -H "Content-Type: application/json" -d {\"cardNumber\":\"0000000022222222\",\"accountNumber\":\"40800000000000000004\",\"amount\":\"390.50\",\"pinCode\":\"$2a$12$RdHqoZDm4KF5NmVlAkgMNunBabRTLgfXk.YI9fZZSxolAO/8fbTCG\",\"user\":{\"id\":3}}
+                curl -X POST http://localhost:8082/host/create/account -H "Authorization: Basic MTExMTMzMzMxMTExMzMzMzoxMjIx" -H "Content-Type: application/json" -d {\"cardNumber\":\"0000000033333333\",\"accountNumber\":\"40800000000000000005\",\"amount\":\"4444.50\",\"pinCode\":\"$2a$12$RdHqoZDm4KF5NmVlAkgMNunBabRTLgfXk.YI9fZZSxolAO/8fbTCG\",\"user\":{\"id\":4}}
 
 
 
