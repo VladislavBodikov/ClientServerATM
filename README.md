@@ -3,7 +3,9 @@ Client (ATM) - Server (bank-server)
 #Description:
 The application represents a model of interaction between an ATM and a bank server. 
 
-The application allows the user to find out the balance on the card.
+Functions:
+1) The application allows the user to find out the balance on the card.
+2) The application allows the user to transfer money from card to card (intrabank transfer).
 
 Client and Server are two Spring Boot Web apps, which connect by REST.
 
