@@ -3,7 +3,7 @@ package ru.server.service;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.server.entity.User;
+import ru.server.model.entity.User;
 import ru.server.repository.UserCrudRepository;
 
 import java.util.ArrayList;

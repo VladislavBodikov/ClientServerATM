@@ -3,10 +3,10 @@ package ru.server.service;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.server.entity.Account;
-import ru.server.entity.User;
-import ru.server.exeption.AccountNotFoundException;
-import ru.server.exeption.DontHaveEnoughMoneyException;
+import ru.server.model.entity.Account;
+import ru.server.model.entity.User;
+import ru.server.exceptions.AccountNotFoundException;
+import ru.server.exceptions.DontHaveEnoughMoneyException;
 import ru.server.repository.AccountCrudRepository;
 
 import java.math.BigDecimal;

@@ -3,7 +3,7 @@ package ru.server.repository;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import ru.server.entity.Account;
+import ru.server.model.entity.Account;
 
 import java.util.Optional;
 

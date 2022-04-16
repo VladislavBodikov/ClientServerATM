@@ -2,6 +2,9 @@ package ru.server.entity;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import ru.server.model.entity.Account;
+import ru.server.model.entity.User;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.math.BigDecimal;

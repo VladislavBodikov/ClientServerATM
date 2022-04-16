@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
+import ru.server.model.dto.AccountDTO;
+import ru.server.model.dto.BalanceDTO;
 
 import java.math.BigDecimal;
 

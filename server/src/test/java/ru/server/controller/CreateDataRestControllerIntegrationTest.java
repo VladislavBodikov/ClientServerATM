@@ -5,9 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.jdbc.core.JdbcTemplate;
-import ru.server.entity.Account;
+import ru.server.model.entity.Account;
 import ru.server.model.Role;
-import ru.server.entity.User;
+import ru.server.model.entity.User;
 import ru.server.repository.AccountCrudRepository;
 import ru.server.repository.UserCrudRepository;
 

@@ -4,8 +4,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import ru.server.DataForUnitTests;
-import ru.server.entity.Account;
-import ru.server.entity.User;
+import ru.server.model.entity.Account;
+import ru.server.model.entity.User;
+import ru.server.model.security.SecurityAccount;
 
 public class SecurityAccountUnitTest {
 

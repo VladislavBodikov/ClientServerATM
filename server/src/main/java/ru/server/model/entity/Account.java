@@ -1,4 +1,4 @@
-package ru.server.entity;
+package ru.server.model.entity;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -8,8 +8,8 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import ru.server.entity.Account;
-import ru.server.entity.User;
+import ru.server.model.entity.Account;
+import ru.server.model.entity.User;
 import ru.server.repository.UserCrudRepository;
 
 import java.util.ArrayList;

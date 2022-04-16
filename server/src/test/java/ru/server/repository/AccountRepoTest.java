@@ -7,13 +7,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.repository.CrudRepository;
-import ru.server.DataForUnitTests;
-import ru.server.entity.Account;
-import ru.server.entity.User;
+import ru.server.model.entity.Account;
+import ru.server.model.entity.User;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 import static ru.server.DataForUnitTests.*;

@@ -1,4 +1,4 @@
-package ru.server.exeption;
+package ru.server.exceptions;
 
 public class DontHaveEnoughMoneyException extends RuntimeException {
 

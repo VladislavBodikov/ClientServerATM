@@ -3,18 +3,16 @@ package ru.server.controller;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import ru.server.dto.AccountDTO;
-import ru.server.dto.BalanceDTO;
-import ru.server.dto.TransactionDTO;
-import ru.server.entity.Account;
-import ru.server.exeption.AccountNotFoundException;
-import ru.server.exeption.DontHaveEnoughMoneyException;
+import ru.server.model.dto.AccountDTO;
+import ru.server.model.dto.BalanceDTO;
+import ru.server.model.dto.TransactionDTO;
+import ru.server.model.entity.Account;
+import ru.server.exceptions.AccountNotFoundException;
+import ru.server.exceptions.DontHaveEnoughMoneyException;
 import ru.server.service.AccountService;
 import ru.server.service.UserService;
 
-import javax.validation.Valid;
 import java.math.BigDecimal;
 import java.util.Optional;
 

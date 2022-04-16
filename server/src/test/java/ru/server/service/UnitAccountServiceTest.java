@@ -11,11 +11,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 
 import static ru.server.DataForUnitTests.*;
 
-import ru.server.entity.Account;
-import ru.server.exeption.AccountNotFoundException;
-import ru.server.exeption.DontHaveEnoughMoneyException;
+import ru.server.model.entity.Account;
+import ru.server.exceptions.AccountNotFoundException;
+import ru.server.exceptions.DontHaveEnoughMoneyException;
 import ru.server.repository.AccountCrudRepository;
-import ru.server.repository.UserCrudRepository;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;

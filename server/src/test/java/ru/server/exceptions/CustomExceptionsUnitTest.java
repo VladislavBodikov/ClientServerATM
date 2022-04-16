@@ -2,10 +2,6 @@ package ru.server.exceptions;
 
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
-import ru.server.exeption.AccountNotFoundException;
-import ru.server.exeption.DontHaveEnoughMoneyException;
-
-import java.util.function.Function;
 
 public class CustomExceptionsUnitTest {
     

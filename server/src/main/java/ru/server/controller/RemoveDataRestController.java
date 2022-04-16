@@ -3,8 +3,8 @@ package ru.server.controller;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import ru.server.entity.Account;
-import ru.server.entity.User;
+import ru.server.model.entity.Account;
+import ru.server.model.entity.User;
 import ru.server.service.AccountService;
 import ru.server.service.UserService;
 
