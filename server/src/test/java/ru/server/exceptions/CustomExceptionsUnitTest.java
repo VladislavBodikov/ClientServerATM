@@ -21,4 +21,18 @@ public class CustomExceptionsUnitTest {
         assertThrows(DontHaveEnoughMoneyException.class,()->{throw dontHaveEnoughMoneyException;});
 
     }
+    @Test
+    void negativeAmount(){
+        NegativeAmountToTransferException negativeAmountToTransferException =
+                new NegativeAmountToTransferException("negative amount",new NegativeAmountToTransferException("negative amount"));
+        assertEquals("negative amount",negativeAmountToTransferException.getMessage());
+        assertThrows(NegativeAmountToTransferException.class,()->{throw negativeAmountToTransferException;});
+    }
+    @Test
+    void selfCardTransfer(){
+        SendMoneyToSelfCardException sendMoneyToSelfCardException =
+                new SendMoneyToSelfCardException("self-card",new NegativeAmountToTransferException("self-card"));
+        assertEquals("self-card",sendMoneyToSelfCardException.getMessage());
+        assertThrows(SendMoneyToSelfCardException.class,()->{throw sendMoneyToSelfCardException;});
+    }
 }

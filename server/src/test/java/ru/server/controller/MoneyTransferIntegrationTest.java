@@ -18,8 +18,7 @@ import ru.server.repository.UserCrudRepository;
 
 import java.math.BigDecimal;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static ru.server.DataForUnitTests.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -82,9 +81,7 @@ public class MoneyTransferIntegrationTest {
                 .withBasicAuth(USERNAME_READ, PASSWORD_READ)
                 .postForEntity(TRANSFER_URL, new HttpEntity<>(transactionRequest), BalanceDTO.class);
 
-        assertEquals("Account with card_number to transfer not found!",
-                            responseBalanceOfAccountFrom.getBody().getMessage()
-        );
+        assertTrue(responseBalanceOfAccountFrom.getBody().getMessage().contains("Account with card_number"));
     }
     @Test
     @DisplayName("TRANSFER - failure (don`t have enough money for transfer)")
@@ -104,10 +101,55 @@ public class MoneyTransferIntegrationTest {
                 .withBasicAuth(USERNAME_READ, PASSWORD_READ)
                 .postForEntity(TRANSFER_URL, new HttpEntity<>(transactionRequestFrom), BalanceDTO.class);
 
-        assertEquals("Don`t have enough amount to transfer!",
-                responseBalanceOfAccountFrom.getBody().getMessage()
-        );
+        assertTrue(responseBalanceOfAccountFrom.getBody().getMessage().contains("Don`t have enough money to transfer"));
     }
+//
+//    @Test
+//    @DisplayName("TRANSFER - failure (tried to transfer to self card)")
+//    void moneyTransferFailure() {
+//        // prepare data in db
+//        Account accountFrom = getAccountFrom();
+//        Account accountTo = getAccountTo();
+//        User user = accountFrom.getUser();
+//
+//        boolean isSavedUser = createUser(user, restTemplate, Role.ADMIN);
+//        boolean isSavedAccountFrom = createAccount(accountFrom, restTemplate, Role.ADMIN);
+//        boolean isSavedAccountTo = createAccount(accountTo, restTemplate, Role.ADMIN);
+//
+//        TransactionDTO transactionRequestFrom = getTransactionDTO(accountFrom, accountTo.getCardNumber(), "100");
+//        ResponseEntity<BalanceDTO> responseBalanceOfAccountFrom = restTemplate
+//                .withBasicAuth(USERNAME_READ, PASSWORD_READ)
+//                .postForEntity(TRANSFER_URL, new HttpEntity<>(transactionRequestFrom), BalanceDTO.class);
+//
+//        ResponseEntity<BalanceDTO> responseBalanceOfAccountTo = restTemplate
+//                .withBasicAuth(USERNAME_READ, PASSWORD_READ)
+//                .postForEntity("/host/balance", new HttpEntity<>(getAccountDTOFromAccount(accountTo)), BalanceDTO.class);
+//
+//        assertTrue(responseBalanceOfAccountFrom.getBody().getMessage().contains("\\nAmount to transfer less or equals 0\\n\" + \"Amount: "));
+//    }
+//    @Test
+//    @DisplayName("TRANSFER - failure (tried to transfer to self card)")
+//    void moneyTransferFailure() {
+//        // prepare data in db
+//        Account accountFrom = getAccountFrom();
+//        Account accountTo = getAccountTo();
+//        User user = accountFrom.getUser();
+//
+//        boolean isSavedUser = createUser(user, restTemplate, Role.ADMIN);
+//        boolean isSavedAccountFrom = createAccount(accountFrom, restTemplate, Role.ADMIN);
+//        boolean isSavedAccountTo = createAccount(accountTo, restTemplate, Role.ADMIN);
+//
+//        TransactionDTO transactionRequestFrom = getTransactionDTO(accountFrom, accountTo.getCardNumber(), "100");
+//        ResponseEntity<BalanceDTO> responseBalanceOfAccountFrom = restTemplate
+//                .withBasicAuth(USERNAME_READ, PASSWORD_READ)
+//                .postForEntity(TRANSFER_URL, new HttpEntity<>(transactionRequestFrom), BalanceDTO.class);
+//
+//        ResponseEntity<BalanceDTO> responseBalanceOfAccountTo = restTemplate
+//                .withBasicAuth(USERNAME_READ, PASSWORD_READ)
+//                .postForEntity("/host/balance", new HttpEntity<>(getAccountDTOFromAccount(accountTo)), BalanceDTO.class);
+//
+//        assertTrue(responseBalanceOfAccountFrom.getBody().getMessage().contains("\\nAmount to transfer less or equals 0\\n\" + \"Amount: "));
+//    }
 
     private Account getAccountFrom() {
         Account account = getAccountWithoutId();

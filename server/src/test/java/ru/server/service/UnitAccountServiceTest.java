@@ -11,6 +11,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 
 import static ru.server.DataForUnitTests.*;
 
+import ru.server.exceptions.NegativeAmountToTransferException;
+import ru.server.exceptions.SendMoneyToSelfCardException;
 import ru.server.model.entity.Account;
 import ru.server.exceptions.AccountNotFoundException;
 import ru.server.exceptions.DontHaveEnoughMoneyException;
@@ -230,5 +232,39 @@ public class UnitAccountServiceTest {
 
 
         assertThrows(AccountNotFoundException.class,()->accountService.transactionCardToCard(cardFrom,amountToTransfer,cardTo));
+    }
+
+    @Test
+    @DisplayName("TRANSACTION - failure (self card transfer)")
+    void transactionSelfCardTransactionFailure(){
+        Account accountFrom = getAccountWithId();
+        accountFrom.setCardNumber("1111");
+        accountFrom.setAmount(new BigDecimal("10"));
+
+        Account accountTo = getAccountWithId();
+        accountTo.setCardNumber(accountFrom.getCardNumber());
+
+        String cardFrom = accountFrom.getCardNumber();
+        String cardTo   = accountTo.getCardNumber();
+        BigDecimal amountToTransfer = new BigDecimal("2500");
+
+        assertThrows(SendMoneyToSelfCardException.class,()->accountService.transactionCardToCard(cardFrom,amountToTransfer,cardTo));
+    }
+
+    @Test
+    @DisplayName("TRANSACTION - failure (amount to transfer less or equals 0)")
+    void transactionNegativeAmountToTransferFailure(){
+        Account accountFrom = getAccountWithId();
+        accountFrom.setCardNumber("1111");
+        accountFrom.setAmount(new BigDecimal("10"));
+
+        Account accountTo = getAccountWithId();
+        accountTo.setCardNumber(accountFrom.getCardNumber());
+
+        String cardFrom = accountFrom.getCardNumber();
+        String cardTo   = accountTo.getCardNumber();
+        BigDecimal amountToTransfer = new BigDecimal("-2500");
+
+        assertThrows(NegativeAmountToTransferException.class,()->accountService.transactionCardToCard(cardFrom,amountToTransfer,cardTo));
     }
 }

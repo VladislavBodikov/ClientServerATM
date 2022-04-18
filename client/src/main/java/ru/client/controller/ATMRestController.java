@@ -15,6 +15,8 @@ import ru.client.dto.BalanceDTO;
 import ru.client.dto.TransactionDTO;
 import ru.client.service.ATMService;
 
+import java.math.BigDecimal;
+
 @RestController
 @RequestMapping("/client")
 @AllArgsConstructor
@@ -71,6 +73,9 @@ public class ATMRestController {
     public String sendMoney(@RequestBody TransactionDTO transactionDTO) {
         if (isAttemptToSendMoneyToSelfCard(transactionDTO.getAccountFrom().getCardNumber(), transactionDTO.getCardNumberTo())) {
             return "\nTried to send money to the self card!\n";
+        }
+        if (transactionDTO.getAmountToTransfer().compareTo(new BigDecimal(0)) <= 0){
+            return "\nAmount less or equals 0\n";
         }
 
         AccountDTO authData = transactionDTO.getAccountFrom();

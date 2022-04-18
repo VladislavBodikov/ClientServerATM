@@ -3,6 +3,8 @@ package ru.server.service;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.server.exceptions.NegativeAmountToTransferException;
+import ru.server.exceptions.SendMoneyToSelfCardException;
 import ru.server.model.entity.Account;
 import ru.server.model.entity.User;
 import ru.server.exceptions.AccountNotFoundException;
@@ -84,6 +86,17 @@ public class AccountService {
     }
 
     public Account transactionCardToCard(String cardNumberFrom, BigDecimal amountToTransfer, String cardNumberTo){
+        boolean isAmountToTransferNegative = amountToTransfer.compareTo(new BigDecimal(0)) <= 0;
+        if (isAmountToTransferNegative){
+            String exceptionMessage = "\nAmount to transfer less or equals 0\n" + "Amount: " + amountToTransfer;
+            throw new NegativeAmountToTransferException(exceptionMessage);
+        }
+        boolean isTryToTransferToSelfCard = cardNumberFrom.equals(cardNumberTo);
+        if (isTryToTransferToSelfCard){
+            String exceptionMessage = "\nTried to send money to the self card!\n";
+            throw new SendMoneyToSelfCardException(exceptionMessage);
+        }
+
         Optional<Account> accountFromOpt = accountCrudRepository.findByCardNumber(cardNumberFrom);
         Optional<Account> accountToOpt   = accountCrudRepository.findByCardNumber(cardNumberTo);
         boolean isExistAccountFrom = accountFromOpt.isPresent();

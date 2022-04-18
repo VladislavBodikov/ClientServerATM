@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import ru.server.exceptions.NegativeAmountToTransferException;
+import ru.server.exceptions.SendMoneyToSelfCardException;
 import ru.server.model.dto.AccountDTO;
 import ru.server.model.dto.BalanceDTO;
 import ru.server.model.dto.TransactionDTO;
@@ -69,26 +71,17 @@ public class MainServerRestController {
             accountAfterTransfer = accountService.transactionCardToCard(cardNumberFrom,amountToTransfer,cardNumberTo);
             prepareBalanceToResponseSuccess(responseBalance, accountAfterTransfer);
         }
-        catch (DontHaveEnoughMoneyException moneyEx){
-            log.info(moneyEx.getMessage());
-            prepareResponseBalanceIfDontHaveEnoughMoneyToTransfer(responseBalance);
-            return responseBalance;
-        }
-        catch (AccountNotFoundException accEx){
-            log.info(accEx.getMessage());
-            prepareResponseBalanceIfAccountsForTransferNotFound(responseBalance,accEx);
+        catch (NegativeAmountToTransferException | SendMoneyToSelfCardException | AccountNotFoundException | DontHaveEnoughMoneyException ex){
+            log.info(ex.getMessage());
+            prepareResponseBalanceWithErrorMessage(responseBalance,ex.getMessage());
             return responseBalance;
         }
         log.info("\nSUCCESS TRANSACTION \nFrom card: " + cardNumberFrom + " to card: " + cardNumberTo + " \nVALUE : " + amountToTransfer + "\n");
         return responseBalance;
     }
 
-    private void prepareResponseBalanceIfDontHaveEnoughMoneyToTransfer(BalanceDTO responseBalance) {
-        responseBalance.setStatus(HttpStatus.BAD_GATEWAY);
-        responseBalance.setMessage("Don`t have enough amount to transfer!");
-    }
-    private void prepareResponseBalanceIfAccountsForTransferNotFound(BalanceDTO responseBalance, AccountNotFoundException e) {
+    private void prepareResponseBalanceWithErrorMessage(BalanceDTO responseBalance, String message){
         responseBalance.setStatus(HttpStatus.EXPECTATION_FAILED);
-        responseBalance.setMessage("Account with card_number to transfer not found!");
+        responseBalance.setMessage(message);
     }
 }

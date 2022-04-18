@@ -177,6 +177,27 @@ public class UnitATMRestControllerTest {
 
         Assertions.assertEquals(EXPECTED_MESSAGE_AFTER_TRANSACTION,responseStr);
     }
+    @Test
+    @DisplayName("MONEY TRANSACTION - failure (negative amount to transfer)")
+    void sendMoneyNegativeAmountToTransferFailure(){
+        // prepare data to send money
+        AccountDTO accountFrom = getAccountDTO("1111","0000");
+        BigDecimal amountToTransfer = new BigDecimal("-800.00");
+
+        TransactionDTO transactionRequest = getTransactionDTO(accountFrom, amountToTransfer);
+        transactionRequest.setCardNumberTo("2222");
+
+        BalanceDTO balanceBefore = getBalanceDTO();
+        balanceBefore.setAmount(new BigDecimal("300"));
+
+        // mock response from server
+        String EXPECTED_MESSAGE_AFTER_TRANSACTION = "\nAmount less or equals 0\n";
+
+        // get answer
+        String responseStr = testRestTemplate.postForEntity("/client/money/transfer",new HttpEntity<>(transactionRequest),String.class).getBody();
+
+        Assertions.assertEquals(EXPECTED_MESSAGE_AFTER_TRANSACTION,responseStr);
+    }
 
     @Test
     @DisplayName("MONEY TRANSACTION - failure (rest client exception - has not connection with server)")
