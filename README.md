@@ -232,7 +232,40 @@ Response should be like:
 
 
      Don`t have enough amount to transfer!
-4. Case  : ATM do not have connection with server
+4. Case  : Tried to send money to the self card
+
+
+         Data:
+               card_number_from : 0000000033333333
+               pin_code:    1221   
+               car_number_to : 0000000033333333
+               amount_to_transfer : 1000
+            Request:
+                  curl -X POST http://localhost:8080/client/money/transfer -H "Content-Type: application/json" -d {\"accountFrom\":{\"cardNumber\":\"0000000033333333\",\"pinCode\":\"1221\"},\"cardNumberTo\":\"0000000022222222\",\"amountToTransfer\":\"100\"} 
+
+Response should be like:
+
+
+     Tried to send money to the self card!
+
+5. Case  : Amount to transfer less or equals than 0
+
+
+         Data:
+               card_number_from : 0000000033333333
+               pin_code:    1221   
+               car_number_to : 0000000033333333
+               amount_to_transfer : -1000
+            Request:
+                  curl -X POST http://localhost:8080/client/money/transfer -H "Content-Type: application/json" -d {\"accountFrom\":{\"cardNumber\":\"0000000033333333\",\"pinCode\":\"1221\"},\"cardNumberTo\":\"0000000022222222\",\"amountToTransfer\":\"100\"} 
+
+Response should be like:
+
+
+     Amount less or equals then 0
+
+
+6. Case  : ATM do not have connection with server
 
 
          Data:

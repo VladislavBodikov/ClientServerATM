@@ -191,7 +191,7 @@ public class UnitATMRestControllerTest {
         balanceBefore.setAmount(new BigDecimal("300"));
 
         // mock response from server
-        String EXPECTED_MESSAGE_AFTER_TRANSACTION = "\nAmount less or equals 0\n";
+        String EXPECTED_MESSAGE_AFTER_TRANSACTION = "\nAmount less or equals then 0\n";
 
         // get answer
         String responseStr = testRestTemplate.postForEntity("/client/money/transfer",new HttpEntity<>(transactionRequest),String.class).getBody();

@@ -75,7 +75,7 @@ public class ATMRestController {
             return "\nTried to send money to the self card!\n";
         }
         if (transactionDTO.getAmountToTransfer().compareTo(new BigDecimal(0)) <= 0){
-            return "\nAmount less or equals 0\n";
+            return "\nAmount less or equals then 0\n";
         }
 
         AccountDTO authData = transactionDTO.getAccountFrom();
