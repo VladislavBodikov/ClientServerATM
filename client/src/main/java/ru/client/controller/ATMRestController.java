@@ -6,6 +6,8 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.support.BasicAuthenticationInterceptor;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
@@ -27,14 +29,21 @@ public class ATMRestController {
 
     private ATMService atmService;
     private RestTemplate restTemplate;
+    private KafkaTemplate<String,Object> kafkaTemplate;
 
     @PostMapping(path = "/balance", consumes = "application/json")
     public String balance(@RequestBody AccountDTO incomeAuthData) {
         setRestTemplateWithBasicAuth(incomeAuthData);
 
-        ResponseEntity<BalanceDTO> response = requestBalance(incomeAuthData);
+//        ResponseEntity<BalanceDTO> response = requestBalance(incomeAuthData);
+        kafkaTemplate.send("balance-request-topic","balance",incomeAuthData);
 
-        return atmService.printBalanceResponse(response);
+        return "\nsend BALANCE request!\n\n";
+    }
+    @KafkaListener(topics = "balance-response-topic",groupId = "balance")
+    private void listenResponseBalance(BalanceDTO responseBalance){
+        log.info("\nGET BALANCE RESPONSE:\n" + atmService.printBalanceResponse(new ResponseEntity<>(responseBalance,HttpStatus.OK)) + "\n");
+        System.out.println("\nGET BALANCE RESPONSE:\n" + atmService.printBalanceResponse(new ResponseEntity<>(responseBalance,HttpStatus.OK)) + "\n");
     }
 
     private void setRestTemplateWithBasicAuth(AccountDTO authenticationData) {
@@ -45,27 +54,27 @@ public class ATMRestController {
         restTemplate.getInterceptors().add(new BasicAuthenticationInterceptor(username, password));
     }
 
-    private ResponseEntity<BalanceDTO> requestBalance(AccountDTO requestAuthData) {
-        HttpEntity<AccountDTO> request = new HttpEntity<>(requestAuthData);
-        log.info("REQUEST : " + request);
-
-        ResponseEntity<BalanceDTO> response;
-        try {
-            response = restTemplate.postForEntity(BALANCE_URL, request, BalanceDTO.class);
-        } catch (HttpClientErrorException authException) {
-            BalanceDTO balanceResponse = new BalanceDTO();
-            balanceResponse.setMessage("WRONG PIN-CODE!");
-            log.error("Authentication with data " + request + " failed: wrong pin-code");
-            return new ResponseEntity<>(balanceResponse, HttpStatus.CONFLICT);
-        } catch (RestClientException exception) {
-            BalanceDTO balanceResponse = new BalanceDTO();
-            balanceResponse.setMessage("Don`t have connection with server");
-            log.error(exception.getMessage());
-            return new ResponseEntity<>(balanceResponse, HttpStatus.CONFLICT);
-        }
-        log.info("RESPONSE : " + response.getBody());
-        return response;
-    }
+//    private ResponseEntity<BalanceDTO> requestBalance(AccountDTO requestAuthData) {
+//        HttpEntity<AccountDTO> request = new HttpEntity<>(requestAuthData);
+//        log.info("REQUEST : " + request);
+//
+//        ResponseEntity<BalanceDTO> response;
+//        try {
+//            response = restTemplate.postForEntity(BALANCE_URL, request, BalanceDTO.class);
+//        } catch (HttpClientErrorException authException) {
+//            BalanceDTO balanceResponse = new BalanceDTO();
+//            balanceResponse.setMessage("WRONG PIN-CODE!");
+//            log.error("Authentication with data " + request + " failed: wrong pin-code");
+//            return new ResponseEntity<>(balanceResponse, HttpStatus.CONFLICT);
+//        } catch (RestClientException exception) {
+//            BalanceDTO balanceResponse = new BalanceDTO();
+//            balanceResponse.setMessage("Don`t have connection with server");
+//            log.error(exception.getMessage());
+//            return new ResponseEntity<>(balanceResponse, HttpStatus.CONFLICT);
+//        }
+//        log.info("RESPONSE : " + response.getBody());
+//        return response;
+//    }
 
     @PostMapping(path = "/money/transfer", consumes = "application/json")
     public String sendMoney(@RequestBody TransactionDTO transactionDTO) {

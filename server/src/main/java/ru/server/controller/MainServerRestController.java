@@ -1,9 +1,17 @@
 package ru.server.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.support.BasicAuthenticationInterceptor;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 import ru.server.model.dto.AccountDTO;
 import ru.server.model.dto.BalanceDTO;
 import ru.server.model.dto.TransactionDTO;
@@ -25,6 +33,19 @@ public class MainServerRestController {
     private AccountService accountService;
 
     private UserService userService;
+
+    private KafkaTemplate<String,String> kafkaTemplate;
+
+    private ObjectMapper objectMapper;
+
+    @KafkaListener(topics = "balance-request-topic",groupId = "balance")
+    private void listenRequestBalance(String inputAccountData) throws JsonProcessingException {
+        RestTemplate restTemplate = new RestTemplate();
+        AccountDTO accountDTO = objectMapper.readValue(inputAccountData,AccountDTO.class);
+        restTemplate.getInterceptors().add(new BasicAuthenticationInterceptor(accountDTO.getCardNumber(),accountDTO.getPinCode()));
+        ResponseEntity<BalanceDTO> response = restTemplate.postForEntity("/host/balance", new HttpEntity<>(accountDTO), BalanceDTO.class);
+        kafkaTemplate.send("balance-response-topic","balance","");
+    }
 
     @PostMapping(value = "/balance", consumes = "application/json")
     public BalanceDTO getBalance(@RequestBody AccountDTO accountDTO) {
