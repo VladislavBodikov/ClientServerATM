@@ -254,7 +254,7 @@ Response should be like:
          Data:
                card_number_from : 0000000033333333
                pin_code:    1221   
-               car_number_to : 0000000033333333
+               car_number_to : 0000000022222222
                amount_to_transfer : -1000
             Request:
                   curl -X POST http://localhost:8080/client/money/transfer -H "Content-Type: application/json" -d {\"accountFrom\":{\"cardNumber\":\"0000000033333333\",\"pinCode\":\"1221\"},\"cardNumberTo\":\"0000000022222222\",\"amountToTransfer\":\"100\"} 
