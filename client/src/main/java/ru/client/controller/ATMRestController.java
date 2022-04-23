@@ -1,5 +1,7 @@
 package ru.client.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
@@ -41,9 +43,11 @@ public class ATMRestController {
         return "\nsend BALANCE request!\n\n";
     }
     @KafkaListener(topics = "balance-response-topic",groupId = "balance")
-    private void listenResponseBalance(BalanceDTO responseBalance){
-        log.info("\nGET BALANCE RESPONSE:\n" + atmService.printBalanceResponse(new ResponseEntity<>(responseBalance,HttpStatus.OK)) + "\n");
-        System.out.println("\nGET BALANCE RESPONSE:\n" + atmService.printBalanceResponse(new ResponseEntity<>(responseBalance,HttpStatus.OK)) + "\n");
+    private void listenResponseBalance(String responseBalance) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        BalanceDTO balanceDTO = objectMapper.readValue(responseBalance, BalanceDTO.class);
+        log.info("\nGET BALANCE RESPONSE:\n" + atmService.printBalanceResponse(new ResponseEntity<>(balanceDTO,HttpStatus.OK)) + "\n");
+        System.out.println("\nGET BALANCE RESPONSE:\n" + atmService.printBalanceResponse(new ResponseEntity<>(balanceDTO,HttpStatus.OK)) + "\n");
     }
 
     private void setRestTemplateWithBasicAuth(AccountDTO authenticationData) {

@@ -34,17 +34,20 @@ public class MainServerRestController {
 
     private UserService userService;
 
-    private KafkaTemplate<String,String> kafkaTemplate;
+    private KafkaTemplate<String,Object> kafkaObject;
 
     private ObjectMapper objectMapper;
 
+
     @KafkaListener(topics = "balance-request-topic",groupId = "balance")
     private void listenRequestBalance(String inputAccountData) throws JsonProcessingException {
-        RestTemplate restTemplate = new RestTemplate();
+        System.out.println(inputAccountData);
+//        RestTemplate restTemplate = new RestTemplate();
         AccountDTO accountDTO = objectMapper.readValue(inputAccountData,AccountDTO.class);
-        restTemplate.getInterceptors().add(new BasicAuthenticationInterceptor(accountDTO.getCardNumber(),accountDTO.getPinCode()));
-        ResponseEntity<BalanceDTO> response = restTemplate.postForEntity("/host/balance", new HttpEntity<>(accountDTO), BalanceDTO.class);
-        kafkaTemplate.send("balance-response-topic","balance","");
+//        restTemplate.getInterceptors().add(new BasicAuthenticationInterceptor(accountDTO.getCardNumber(),accountDTO.getPinCode()));
+//        ResponseEntity<BalanceDTO> response = restTemplate.postForEntity("http://localhost:8082/host/balance", new HttpEntity<>(accountDTO), BalanceDTO.class);
+        BalanceDTO balanceDTO = getBalance(accountDTO);
+        kafkaObject.send("balance-response-topic","balance",balanceDTO);
     }
 
     @PostMapping(value = "/balance", consumes = "application/json")

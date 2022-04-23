@@ -25,7 +25,7 @@ public class KafkaConfiguration {
     @Bean
     public NewTopic topic1() {
         return TopicBuilder.name("balance-request-topic")
-                .partitions(2)
+                .partitions(1)
                 .replicas(1)
 //                .compact().config("","")
                 .build();
@@ -33,7 +33,7 @@ public class KafkaConfiguration {
     @Bean
     public NewTopic topic2() {
         return TopicBuilder.name("balance-response-topic")
-                .partitions(2)
+                .partitions(1)
                 .replicas(1)
                 .build();
     }
